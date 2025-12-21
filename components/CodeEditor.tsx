@@ -132,17 +132,18 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
           >
             {showPreview && preview && (
               <div
-                className="absolute inset-0 z-10 overflow-auto fira-code"
+                className="absolute z-1 overflow-auto"
                 style={{
                   fontSize: settings.fontSize,
                   lineHeight: `${lineHeight}px`,
-                  padding: "12px 0",
+                  padding: "12px 28px",
                 }}
               >
                 <ShikiMagicMove
+                  className="fira-code"
                   highlighter={preview.highlighter}
                   lang={preview.language}
-                  theme={preview.theme}
+                  theme={shikiTheme}
                   code={preview.code}
                   options={{
                     duration: 800,
@@ -165,8 +166,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
                   fontSize: settings.fontSize,
                   lineHeight,
                   lineNumbers: settings.showLineNumbers ? "on" : "off",
-                  lineNumbersMinChars: 4,
-                  lineDecorationsWidth: 10,
+                  lineDecorationsWidth: 20,
                   wordWrap: "on",
                   guides: { indentation: false },
                   scrollBeyondLastLine: false,

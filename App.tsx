@@ -1,13 +1,12 @@
-
-import React, { useState, useCallback, useEffect } from 'react';
-import { toPng } from 'html-to-image';
-import type { HighlighterCore } from 'shiki/core';
-import CodeEditor from './components/CodeEditor';
-import SettingsPanel from './components/SettingsPanel';
-import { EditorSettings, Language } from './types';
-import { enhanceCode, detectLanguage } from './services/geminiService';
-import { THEMES } from './constants';
-import { getHighlighter } from './services/shiki';
+import React, { useState, useCallback, useEffect } from "react";
+import { toPng } from "html-to-image";
+import type { HighlighterCore } from "shiki/core";
+import CodeEditor from "./components/CodeEditor";
+import SettingsPanel from "./components/SettingsPanel";
+import { EditorSettings, Language } from "./types";
+import { enhanceCode, detectLanguage } from "./services/geminiService";
+import { THEMES } from "./constants";
+import { getHighlighter } from "./services/shiki";
 
 const DEFAULT_CODE = `function helloWorld() {
   console.log("Hello from CodeSnap AI!");
@@ -30,7 +29,7 @@ type CodeSnippet = {
 
 const App: React.FC = () => {
   const [snippets, setSnippets] = useState<CodeSnippet[]>([
-    { id: INITIAL_SNIPPET_ID, title: 'Step 1', code: DEFAULT_CODE }
+    { id: INITIAL_SNIPPET_ID, title: "Step 1", code: DEFAULT_CODE },
   ]);
   const [activeSnippetId, setActiveSnippetId] = useState(INITIAL_SNIPPET_ID);
   const [previewIndex, setPreviewIndex] = useState(0);
@@ -38,10 +37,10 @@ const App: React.FC = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [highlighter, setHighlighter] = useState<HighlighterCore | null>(null);
   const [settings, setSettings] = useState<EditorSettings>({
-    theme: 'one-dark',
-    language: 'javascript',
+    theme: "one-dark",
+    language: "javascript",
     padding: 64,
-    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
     showLineNumbers: true,
     windowControls: true,
     fontSize: 16,
@@ -49,30 +48,32 @@ const App: React.FC = () => {
   });
 
   const handleSettingsChange = (newSettings: Partial<EditorSettings>) => {
-    setSettings(prev => ({ ...prev, ...newSettings }));
+    setSettings((prev) => ({ ...prev, ...newSettings }));
   };
 
-  const activeSnippetIndex = snippets.findIndex((snippet) => snippet.id === activeSnippetId);
+  const activeSnippetIndex = snippets.findIndex(
+    (snippet) => snippet.id === activeSnippetId
+  );
   const activeSnippet = snippets[activeSnippetIndex] ?? snippets[0];
   const previewSnippet = snippets[previewIndex] ?? snippets[0];
   const shikiTheme = THEMES[settings.theme].shikiTheme;
 
   const handleExport = useCallback(() => {
-    const node = document.getElementById('code-capture-area');
+    const node = document.getElementById("code-capture-area");
     if (!node) return;
 
-    toPng(node, { 
-        cacheBust: true,
-        pixelRatio: 2 // High resolution
+    toPng(node, {
+      cacheBust: true,
+      pixelRatio: 2, // High resolution
     })
       .then((dataUrl) => {
-        const link = document.createElement('a');
+        const link = document.createElement("a");
         link.download = `codesnap-${Date.now()}.png`;
         link.href = dataUrl;
         link.click();
       })
       .catch((err) => {
-        console.error('Export failed:', err);
+        console.error("Export failed:", err);
       });
   }, []);
 
@@ -110,7 +111,9 @@ const App: React.FC = () => {
   const handleSnippetChange = (nextCode: string) => {
     setSnippets((prev) =>
       prev.map((snippet) =>
-        snippet.id === activeSnippet.id ? { ...snippet, code: nextCode } : snippet
+        snippet.id === activeSnippet.id
+          ? { ...snippet, code: nextCode }
+          : snippet
       )
     );
   };
@@ -119,14 +122,14 @@ const App: React.FC = () => {
     const id = crypto.randomUUID();
     setSnippets((prev) => {
       const nextIndex = prev.length + 1;
-      const baseCode = prev[prev.length - 1]?.code ?? '';
+      const baseCode = prev[prev.length - 1]?.code ?? "";
       const next = [
         ...prev,
         {
           id,
           title: `Step ${nextIndex}`,
-          code: baseCode
-        }
+          code: baseCode,
+        },
       ];
       setActiveSnippetId(id);
       setPreviewIndex(next.length - 1);
@@ -137,7 +140,9 @@ const App: React.FC = () => {
   const handleRemoveSnippet = () => {
     setSnippets((prev) => {
       if (prev.length === 1) return prev;
-      const currentIndex = prev.findIndex((snippet) => snippet.id === activeSnippet.id);
+      const currentIndex = prev.findIndex(
+        (snippet) => snippet.id === activeSnippet.id
+      );
       const next = prev.filter((snippet) => snippet.id !== activeSnippet.id);
       const nextIndex = Math.max(0, Math.min(currentIndex, next.length - 1));
       const nextSnippet = next[nextIndex];
@@ -158,10 +163,15 @@ const App: React.FC = () => {
   const handleMagicFix = async () => {
     setIsProcessing(true);
     try {
-      const enhanced = await enhanceCode(activeSnippet.code, "Modernize, add comments, and fix potential bugs.");
+      const enhanced = await enhanceCode(
+        activeSnippet.code,
+        "Modernize, add comments, and fix potential bugs."
+      );
       setSnippets((prev) =>
         prev.map((snippet) =>
-          snippet.id === activeSnippet.id ? { ...snippet, code: enhanced } : snippet
+          snippet.id === activeSnippet.id
+            ? { ...snippet, code: enhanced }
+            : snippet
         )
       );
       const lang = await detectLanguage(enhanced);
@@ -176,9 +186,9 @@ const App: React.FC = () => {
   return (
     <div className="flex h-screen w-full bg-[#0f172a] overflow-hidden">
       {/* Settings Panel on the Left */}
-      <SettingsPanel 
-        settings={settings} 
-        onSettingsChange={handleSettingsChange} 
+      <SettingsPanel
+        settings={settings}
+        onSettingsChange={handleSettingsChange}
         onExport={handleExport}
         onMagicFix={handleMagicFix}
         isProcessing={isProcessing}
@@ -191,13 +201,15 @@ const App: React.FC = () => {
             <h1 className="text-4xl font-extrabold text-white tracking-tight mb-2">
               CodeSnap <span className="text-blue-500">AI</span>
             </h1>
-            <p className="text-slate-400">Transform your code into professional sharing-ready images.</p>
+            <p className="text-slate-400">
+              Transform your code into professional sharing-ready images.
+            </p>
           </div>
 
-          <CodeEditor 
-            code={activeSnippet.code} 
-            onCodeChange={handleSnippetChange} 
-            settings={settings} 
+          <CodeEditor
+            code={activeSnippet.code}
+            onCodeChange={handleSnippetChange}
+            settings={settings}
             showPreview={isPlaying && Boolean(highlighter)}
             preview={
               highlighter
@@ -205,7 +217,7 @@ const App: React.FC = () => {
                     highlighter,
                     code: previewSnippet.code,
                     language: settings.language,
-                    theme: shikiTheme
+                    theme: shikiTheme,
                   }
                 : undefined
             }
@@ -223,8 +235,8 @@ const App: React.FC = () => {
                     }}
                     className={`rounded-full border px-3 py-1 text-xs font-medium transition ${
                       snippet.id === activeSnippet.id
-                        ? 'border-blue-400 bg-blue-500/10 text-blue-200'
-                        : 'border-white/10 text-slate-300 hover:border-white/30 hover:text-white'
+                        ? "border-blue-400 bg-blue-500/10 text-blue-200"
+                        : "border-white/10 text-slate-300 hover:border-white/30 hover:text-white"
                     }`}
                   >
                     {snippet.title}
@@ -251,7 +263,7 @@ const App: React.FC = () => {
                   disabled={snippets.length < 2 || !highlighter}
                   className="rounded-full bg-emerald-500/90 px-3 py-1 text-xs font-semibold text-white shadow-lg shadow-emerald-900/20 transition hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  {isPlaying ? 'Playing...' : 'Play Animation'}
+                  {isPlaying ? "Playing..." : "Play Animation"}
                 </button>
               </div>
             </div>
