@@ -7,12 +7,20 @@ interface SettingsPanelProps {
   settings: EditorSettings;
   onSettingsChange: (settings: Partial<EditorSettings>) => void;
   onExport: () => void;
+  onCopyImage: () => void;
+  isCopying: boolean;
+  isCopySupported: boolean;
+  copyStatus?: { tone: "success" | "error"; message: string } | null;
 }
 
 const SettingsPanel: React.FC<SettingsPanelProps> = ({ 
   settings, 
   onSettingsChange, 
-  onExport
+  onExport,
+  onCopyImage,
+  isCopying,
+  isCopySupported,
+  copyStatus
 }) => {
   return (
     <div className="w-80 bg-slate-900 border-r border-slate-800 p-6 flex flex-col gap-8 h-full overflow-y-auto">
@@ -130,6 +138,24 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
       </div>
 
       <div className="mt-auto pt-6 flex flex-col gap-3">
+        {copyStatus && (
+          <div
+            className={`rounded-lg px-3 py-2 text-sm font-medium ${
+              copyStatus.tone === "success"
+                ? "bg-emerald-500/15 text-emerald-200 border border-emerald-500/30"
+                : "bg-rose-500/15 text-rose-200 border border-rose-500/30"
+            }`}
+          >
+            {copyStatus.message}
+          </div>
+        )}
+        <button 
+          onClick={onCopyImage}
+          disabled={isCopying || !isCopySupported}
+          className="w-full bg-slate-800 hover:bg-slate-700 disabled:opacity-50 text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-slate-900/20 transition-all"
+        >
+          {isCopying ? 'Copying...' : 'Copy Image'}
+        </button>
         <button 
           onClick={onExport}
           className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-blue-900/20 transition-all"

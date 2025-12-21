@@ -34,6 +34,11 @@ const App: React.FC = () => {
   const [previewIndex, setPreviewIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [highlighter, setHighlighter] = useState<HighlighterCore | null>(null);
+  const [isCopying, setIsCopying] = useState(false);
+  const [copyStatus, setCopyStatus] = useState<{
+    tone: "success" | "error";
+    message: string;
+  } | null>(null);
   const [settings, setSettings] = useState<EditorSettings>({
     theme: "one-dark",
     language: "javascript",
@@ -83,6 +88,60 @@ const App: React.FC = () => {
         console.error("Export failed:", err);
       });
   }, []);
+
+  const handleCopyImage = useCallback(async () => {
+    if (!("clipboard" in navigator) || !("ClipboardItem" in window)) {
+      setCopyStatus({
+        tone: "error",
+        message: "Clipboard image copy is not supported in this browser.",
+      });
+      return;
+    }
+    const node = document.getElementById("code-capture-area");
+    if (!node) return;
+
+    setIsCopying(true);
+    const exportWidth = Math.ceil(node.scrollWidth);
+    const exportHeight = Math.ceil(node.scrollHeight);
+
+    try {
+      const dataUrl = await domToPng(node, {
+        cacheBust: true,
+        pixelRatio: 2,
+        width: exportWidth,
+        height: exportHeight,
+        style: {
+          width: `${exportWidth}px`,
+          height: `${exportHeight}px`,
+        },
+      });
+      const response = await fetch(dataUrl);
+      const blob = await response.blob();
+      await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
+      setCopyStatus({ tone: "success", message: "Image copied to clipboard." });
+    } catch (err) {
+      console.error("Copy failed:", err);
+      setCopyStatus({
+        tone: "error",
+        message: "Copy failed. Please try again.",
+      });
+    } finally {
+      setIsCopying(false);
+    }
+  }, []);
+
+  const isCopySupported =
+    typeof window !== "undefined" &&
+    "clipboard" in navigator &&
+    "ClipboardItem" in window;
+
+  useEffect(() => {
+    if (!copyStatus) return;
+    const timer = window.setTimeout(() => {
+      setCopyStatus(null);
+    }, 2200);
+    return () => window.clearTimeout(timer);
+  }, [copyStatus]);
 
   useEffect(() => {
     let mounted = true;
@@ -174,6 +233,10 @@ const App: React.FC = () => {
         settings={settings}
         onSettingsChange={handleSettingsChange}
         onExport={handleExport}
+        onCopyImage={handleCopyImage}
+        isCopying={isCopying}
+        isCopySupported={isCopySupported}
+        copyStatus={copyStatus}
       />
 
       {/* Main Preview Area */}
