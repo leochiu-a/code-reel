@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { toPng } from "html-to-image";
+import { domToPng } from "modern-screenshot";
 import type { HighlighterCore } from "shiki/core";
 import CodeEditor from "./components/CodeEditor";
 import SettingsPanel from "./components/SettingsPanel";
@@ -60,9 +60,18 @@ const App: React.FC = () => {
     const node = document.getElementById("code-capture-area");
     if (!node) return;
 
-    toPng(node, {
-      cacheBust: true,
-      pixelRatio: 2, // High resolution
+    const exportWidth = Math.ceil(node.scrollWidth);
+    const exportHeight = Math.ceil(node.scrollHeight);
+
+    domToPng(node, {
+      quality: 1,
+      scale: 2,
+      width: exportWidth,
+      height: exportHeight,
+      style: {
+        width: `${exportWidth}px`,
+        height: `${exportHeight}px`,
+      },
     })
       .then((dataUrl) => {
         const link = document.createElement("a");
