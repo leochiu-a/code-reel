@@ -136,7 +136,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
                 style={{
                   fontSize: settings.fontSize,
                   lineHeight: `${lineHeight}px`,
-                  padding: "12px 28px",
+                  padding: "12px 20px",
                 }}
               >
                 <ShikiMagicMove
