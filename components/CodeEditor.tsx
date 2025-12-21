@@ -125,14 +125,13 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
           </div>
         )}
 
-        <div className="relative flex overflow-x-auto min-h-[100px] fira-code">
+        <div className="relative flex min-h-[100px] fira-code">
           <div
             className="relative flex-1"
             style={{ backgroundColor: themeBackground }}
           >
             {showPreview && preview && (
               <div
-                className="absolute z-1 overflow-auto"
                 style={{
                   fontSize: settings.fontSize,
                   lineHeight: `${lineHeight}px`,
@@ -149,11 +148,18 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
                     duration: 800,
                     stagger: 0.2,
                     lineNumbers: settings.showLineNumbers,
+                    delayMove: 0.4,
                   }}
                 />
               </div>
             )}
-            <div className={showPreview ? "opacity-0 pointer-events-none" : ""}>
+            <div
+              className={
+                showPreview
+                  ? "absolute inset-0 opacity-0 pointer-events-none"
+                  : ""
+              }
+            >
               <Editor
                 value={code}
                 onChange={(value) => onCodeChange(value ?? "")}
