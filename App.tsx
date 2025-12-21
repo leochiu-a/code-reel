@@ -41,7 +41,7 @@ const App: React.FC = () => {
     language: "javascript",
     padding: 64,
     background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-    showLineNumbers: true,
+    showLineNumbers: false,
     windowControls: true,
     fontSize: 16,
     borderRadius: 16,
