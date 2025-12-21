@@ -268,12 +268,6 @@ const App: React.FC = () => {
               </div>
             </div>
           </section>
-
-          <div className="flex justify-center gap-4 text-xs text-slate-500 font-mono">
-            <span>TIP: Paste your code directly into the frame.</span>
-            <span>•</span>
-            <span>Powered by Gemini 3</span>
-          </div>
         </div>
       </main>
     </div>
