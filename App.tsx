@@ -3,8 +3,7 @@ import { toPng } from "html-to-image";
 import type { HighlighterCore } from "shiki/core";
 import CodeEditor from "./components/CodeEditor";
 import SettingsPanel from "./components/SettingsPanel";
-import { EditorSettings, Language } from "./types";
-import { enhanceCode, detectLanguage } from "./services/geminiService";
+import { EditorSettings } from "./types";
 import { THEMES } from "./constants";
 import { getHighlighter } from "./services/shiki";
 
@@ -34,7 +33,6 @@ const App: React.FC = () => {
   const [activeSnippetId, setActiveSnippetId] = useState(INITIAL_SNIPPET_ID);
   const [previewIndex, setPreviewIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
   const [highlighter, setHighlighter] = useState<HighlighterCore | null>(null);
   const [settings, setSettings] = useState<EditorSettings>({
     theme: "one-dark",
@@ -160,29 +158,6 @@ const App: React.FC = () => {
     setIsPlaying(true);
   };
 
-  const handleMagicFix = async () => {
-    setIsProcessing(true);
-    try {
-      const enhanced = await enhanceCode(
-        activeSnippet.code,
-        "Modernize, add comments, and fix potential bugs."
-      );
-      setSnippets((prev) =>
-        prev.map((snippet) =>
-          snippet.id === activeSnippet.id
-            ? { ...snippet, code: enhanced }
-            : snippet
-        )
-      );
-      const lang = await detectLanguage(enhanced);
-      handleSettingsChange({ language: lang as Language });
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
   return (
     <div className="flex h-screen w-full bg-[#0f172a] overflow-hidden">
       {/* Settings Panel on the Left */}
@@ -190,8 +165,6 @@ const App: React.FC = () => {
         settings={settings}
         onSettingsChange={handleSettingsChange}
         onExport={handleExport}
-        onMagicFix={handleMagicFix}
-        isProcessing={isProcessing}
       />
 
       {/* Main Preview Area */}

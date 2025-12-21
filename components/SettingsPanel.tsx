@@ -7,16 +7,12 @@ interface SettingsPanelProps {
   settings: EditorSettings;
   onSettingsChange: (settings: Partial<EditorSettings>) => void;
   onExport: () => void;
-  onMagicFix: () => void;
-  isProcessing: boolean;
 }
 
 const SettingsPanel: React.FC<SettingsPanelProps> = ({ 
   settings, 
   onSettingsChange, 
-  onExport, 
-  onMagicFix,
-  isProcessing 
+  onExport
 }) => {
   return (
     <div className="w-80 bg-slate-900 border-r border-slate-800 p-6 flex flex-col gap-8 h-full overflow-y-auto">
@@ -134,13 +130,6 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
       </div>
 
       <div className="mt-auto pt-6 flex flex-col gap-3">
-        <button 
-          onClick={onMagicFix}
-          disabled={isProcessing}
-          className="w-full bg-purple-600 hover:bg-purple-500 disabled:opacity-50 text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-purple-900/20 transition-all flex items-center justify-center gap-2"
-        >
-          {isProcessing ? '✨ Processing...' : '✨ Magic Refactor'}
-        </button>
         <button 
           onClick={onExport}
           className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-blue-900/20 transition-all"
