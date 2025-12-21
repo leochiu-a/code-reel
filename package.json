@@ -16,10 +16,12 @@
     "monaco-editor": "^0.55.1",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
-    "shiki": "^3.20.0"
+    "shiki": "^3.20.0",
+    "shiki-magic-move": "^1.2.1"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
+    "@types/react": "^19.2.7",
     "@vitejs/plugin-react": "^5.0.0",
     "typescript": "~5.8.2",
     "vite": "^6.2.0"
