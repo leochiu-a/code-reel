@@ -19,7 +19,8 @@
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "shiki": "^3.20.0",
-    "shiki-magic-move": "^1.2.1"
+    "shiki-magic-move": "^1.2.1",
+    "usehooks-ts": "^3.1.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.13",

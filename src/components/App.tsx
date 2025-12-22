@@ -8,6 +8,7 @@ import SettingsPanel from "./SettingsPanel";
 import { EditorSettings } from "../types";
 import { PLAY_ANIMATION_INTERVAL_MS, THEMES } from "../constants";
 import { getHighlighter } from "../services/shiki";
+import useStepState from "../hooks/useStepState";
 
 const DEFAULT_CODE = `function helloWorld() {
   console.log("Hello from CodeSnap AI!");
@@ -20,20 +21,24 @@ const DEFAULT_CODE = `function helloWorld() {
   return greeting;
 }`;
 
-const INITIAL_SNIPPET_ID = crypto.randomUUID();
-type CodeSnippet = {
-  id: string;
-  title: string;
-  code: string;
-};
-
 const App: React.FC = () => {
-  const [snippets, setSnippets] = useState<CodeSnippet[]>([
-    { id: INITIAL_SNIPPET_ID, title: "Step 1", code: DEFAULT_CODE },
-  ]);
-  const [activeSnippetId, setActiveSnippetId] = useState(INITIAL_SNIPPET_ID);
-  const [previewIndex, setPreviewIndex] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const {
+    snippets,
+    activeSnippet,
+    previewSnippet,
+    isPlaying,
+    isResetOpen,
+    setIsResetOpen,
+    handleSnippetChange,
+    handleAddSnippet,
+    handleRemoveSnippet,
+    handlePlay,
+    handleSelectSnippet,
+    handleResetConfirm,
+  } = useStepState({
+    defaultCode: DEFAULT_CODE,
+    intervalMs: PLAY_ANIMATION_INTERVAL_MS,
+  });
   const [highlighter, setHighlighter] = useState<HighlighterCore | null>(null);
   const [isCopying, setIsCopying] = useState(false);
   const [copyStatus, setCopyStatus] = useState<{
@@ -56,11 +61,6 @@ const App: React.FC = () => {
     setSettings((prev) => ({ ...prev, ...newSettings }));
   };
 
-  const activeSnippetIndex = snippets.findIndex(
-    (snippet) => snippet.id === activeSnippetId
-  );
-  const activeSnippet = snippets[activeSnippetIndex] ?? snippets[0];
-  const previewSnippet = snippets[previewIndex] ?? snippets[0];
   const shikiTheme = THEMES[settings.theme].shikiTheme;
 
   const handleExport = useCallback(() => {
@@ -159,77 +159,7 @@ const App: React.FC = () => {
     };
   }, []);
 
-  useEffect(() => {
-    if (!isPlaying) return;
-    if (snippets.length < 2) {
-      setIsPlaying(false);
-      return;
-    }
-    const timer = window.setTimeout(() => {
-      setPreviewIndex((prev) => {
-        const next = prev + 1;
-        if (next >= snippets.length) {
-          setIsPlaying(false);
-          return prev;
-        }
-        return next;
-      });
-    }, PLAY_ANIMATION_INTERVAL_MS);
 
-    return () => window.clearTimeout(timer);
-  }, [isPlaying, previewIndex, snippets.length]);
-
-  const handleSnippetChange = (nextCode: string) => {
-    setSnippets((prev) =>
-      prev.map((snippet) =>
-        snippet.id === activeSnippet.id
-          ? { ...snippet, code: nextCode }
-          : snippet
-      )
-    );
-  };
-
-  const handleAddSnippet = () => {
-    const id = crypto.randomUUID();
-    setSnippets((prev) => {
-      const nextIndex = prev.length + 1;
-      const baseCode = prev[prev.length - 1]?.code ?? "";
-      const next = [
-        ...prev,
-        {
-          id,
-          title: `Step ${nextIndex}`,
-          code: baseCode,
-        },
-      ];
-      setActiveSnippetId(id);
-      setPreviewIndex(next.length - 1);
-      return next;
-    });
-  };
-
-  const handleRemoveSnippet = () => {
-    setSnippets((prev) => {
-      if (prev.length === 1) return prev;
-      const currentIndex = prev.findIndex(
-        (snippet) => snippet.id === activeSnippet.id
-      );
-      const next = prev.filter((snippet) => snippet.id !== activeSnippet.id);
-      const nextIndex = Math.max(0, Math.min(currentIndex, next.length - 1));
-      const nextSnippet = next[nextIndex];
-      if (nextSnippet) {
-        setActiveSnippetId(nextSnippet.id);
-        setPreviewIndex(nextIndex);
-      }
-      return next;
-    });
-  };
-
-  const handlePlay = () => {
-    if (snippets.length < 2) return;
-    setPreviewIndex(0);
-    setIsPlaying(true);
-  };
 
   return (
     <div className="flex h-screen w-full bg-[#0f172a] overflow-hidden">
@@ -280,8 +210,7 @@ const App: React.FC = () => {
                   <button
                     key={snippet.id}
                     onClick={() => {
-                      setActiveSnippetId(snippet.id);
-                      setPreviewIndex(index);
+                      handleSelectSnippet(snippet.id, index);
                     }}
                     className={`rounded-full border px-3 py-1 text-xs font-medium transition ${
                       snippet.id === activeSnippet.id
@@ -308,6 +237,35 @@ const App: React.FC = () => {
                 >
                   Remove
                 </button>
+                <div className="relative">
+                  <button
+                    onClick={() => setIsResetOpen((prev) => !prev)}
+                    className="rounded-full border border-white/10 px-3 py-1 text-xs font-semibold text-slate-300 transition hover:border-white/30 hover:text-white"
+                  >
+                    Reset
+                  </button>
+                  {isResetOpen && (
+                    <div className="absolute right-0 z-10 mt-2 w-56 rounded-xl border border-white/10 bg-slate-950 p-3 text-xs text-slate-200 shadow-2xl">
+                      <p className="mb-3 text-slate-300">
+                        Reset all steps and start over?
+                      </p>
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => setIsResetOpen(false)}
+                          className="rounded-full border border-white/10 px-3 py-1 text-xs font-semibold text-slate-300 transition hover:border-white/30 hover:text-white"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          onClick={handleResetConfirm}
+                          className="rounded-full bg-rose-500/90 px-3 py-1 text-xs font-semibold text-white transition hover:bg-rose-400"
+                        >
+                          Reset
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
                 <button
                   onClick={handlePlay}
                   disabled={snippets.length < 2 || !highlighter}
