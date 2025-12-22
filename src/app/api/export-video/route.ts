@@ -12,7 +12,15 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { spawn } from "node:child_process";
 import puppeteer from "puppeteer";
-import { PLAY_ANIMATION_INTERVAL_MS } from "@/constants";
+import {
+  EXPORT_CAPTURE_FORMAT,
+  EXPORT_CAPTURE_QUALITY,
+  EXPORT_DEVICE_SCALE,
+  EXPORT_PAGE_PATH,
+  EXPORT_VIDEO_FPS,
+  EXPORT_VIEWPORT,
+  PLAY_ANIMATION_INTERVAL_MS,
+} from "@/constants";
 import type { EditorSettings } from "@/types";
 
 export const runtime = "nodejs";
@@ -100,21 +108,25 @@ export async function POST(request: Request) {
 
     const url = new URL(request.url);
     const debug = process.env.PUPPETEER_DEBUG === "1";
-    const targetFps = body.fps && body.fps > 0 ? body.fps : 30;
-    const captureFormat = body.captureFormat === "png" ? "png" : "jpeg";
+    const targetFps =
+      body.fps && body.fps > 0 ? body.fps : EXPORT_VIDEO_FPS;
+    const captureFormat =
+      body.captureFormat === "png" || body.captureFormat === "jpeg"
+        ? body.captureFormat
+        : EXPORT_CAPTURE_FORMAT;
     const captureQuality =
       typeof body.captureQuality === "number"
         ? Math.min(100, Math.max(1, body.captureQuality))
-        : 82;
+        : EXPORT_CAPTURE_QUALITY;
     const deviceScaleFactor =
       typeof body.deviceScaleFactor === "number" && body.deviceScaleFactor > 0
         ? body.deviceScaleFactor
-        : 2;
+        : EXPORT_DEVICE_SCALE;
     const intervalMs =
       body.intervalMs && body.intervalMs > 0
         ? body.intervalMs
         : PLAY_ANIMATION_INTERVAL_MS;
-    const pagePath = body.pagePath ?? "/?export=1";
+    const pagePath = body.pagePath ?? EXPORT_PAGE_PATH;
     const headless = debug ? false : body.headless ?? true;
     const origin = url.origin;
     const pageUrl = new URL(pagePath, origin).toString();
@@ -134,8 +146,8 @@ export async function POST(request: Request) {
 
     const page = await browser.newPage();
     await page.setViewport({
-      width: 1600,
-      height: 900,
+      width: EXPORT_VIEWPORT.width,
+      height: EXPORT_VIEWPORT.height,
       deviceScaleFactor,
     });
 

@@ -7,7 +7,16 @@ import type { HighlighterCore } from "shiki/core";
 import CodeEditor from "./CodeEditor";
 import SettingsPanel from "./SettingsPanel";
 import { EditorSettings } from "../types";
-import { PLAY_ANIMATION_INTERVAL_MS, THEMES } from "../constants";
+import {
+  DEFAULT_EDITOR_SETTINGS,
+  EXPORT_CAPTURE_FORMAT,
+  EXPORT_CAPTURE_QUALITY,
+  EXPORT_DEVICE_SCALE,
+  EXPORT_PAGE_PATH,
+  EXPORT_VIDEO_FPS,
+  PLAY_ANIMATION_INTERVAL_MS,
+  THEMES,
+} from "../constants";
 import { getHighlighter } from "../services/shiki";
 import useStepState from "../hooks/useStepState";
 import { useLocalStorage } from "usehooks-ts";
@@ -22,21 +31,6 @@ const DEFAULT_CODE = `function helloWorld() {
   
   return greeting;
 }`;
-
-const DEFAULT_SETTINGS: EditorSettings = {
-  theme: "one-dark",
-  language: "javascript",
-  padding: 64,
-  background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-  showLineNumbers: false,
-  windowControls: true,
-  fontSize: 16,
-  borderRadius: 16,
-};
-const EXPORT_FPS = 60;
-const EXPORT_CAPTURE_QUALITY = 92;
-const EXPORT_CAPTURE_FORMAT = "png" as const;
-const EXPORT_DEVICE_SCALE = 2;
 
 const App: React.FC = () => {
   const searchParams = useSearchParams();
@@ -72,7 +66,7 @@ const App: React.FC = () => {
   } | null>(null);
   const [storedSettings, setStoredSettings] = useLocalStorage<EditorSettings>(
     "codesnap-settings",
-    DEFAULT_SETTINGS
+    DEFAULT_EDITOR_SETTINGS
   );
   const [settings, setSettings] = useState<EditorSettings>(storedSettings);
   const [isCopySupported, setIsCopySupported] = useState(false);
@@ -165,8 +159,8 @@ const App: React.FC = () => {
       })),
       settings,
       intervalMs: PLAY_ANIMATION_INTERVAL_MS,
-      pagePath: "/?export=1",
-      fps: EXPORT_FPS,
+      pagePath: EXPORT_PAGE_PATH,
+      fps: EXPORT_VIDEO_FPS,
       captureFormat: EXPORT_CAPTURE_FORMAT,
       captureQuality: EXPORT_CAPTURE_QUALITY,
       deviceScaleFactor: EXPORT_DEVICE_SCALE,

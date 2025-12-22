@@ -1,5 +1,5 @@
 
-import { Theme } from './types';
+import type { EditorSettings, Theme } from './types';
 
 export const GRADIENTS = [
   'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -48,3 +48,21 @@ export const MAGIC_MOVE_DELAY_MOVE_S = 0.4;
 // after the move delay + animation duration finishes.
 export const PLAY_ANIMATION_INTERVAL_MS =
   MAGIC_MOVE_DURATION_MS + MAGIC_MOVE_DELAY_MOVE_S * 1000;
+
+export const DEFAULT_EDITOR_SETTINGS: EditorSettings = {
+  theme: 'one-dark',
+  language: 'javascript',
+  padding: 64,
+  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+  showLineNumbers: false,
+  windowControls: true,
+  fontSize: 16,
+  borderRadius: 16
+};
+
+export const EXPORT_PAGE_PATH = '/?export=1';
+export const EXPORT_VIDEO_FPS = 60;
+export const EXPORT_CAPTURE_QUALITY = 92;
+export const EXPORT_CAPTURE_FORMAT = 'png' as const;
+export const EXPORT_DEVICE_SCALE = 2;
+export const EXPORT_VIEWPORT = { width: 1600, height: 900 };
