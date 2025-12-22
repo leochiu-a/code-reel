@@ -51,6 +51,7 @@ const App: React.FC = () => {
     fontSize: 16,
     borderRadius: 16,
   });
+  const [isCopySupported, setIsCopySupported] = useState(false);
 
   const handleSettingsChange = (newSettings: Partial<EditorSettings>) => {
     setSettings((prev) => ({ ...prev, ...newSettings }));
@@ -132,11 +133,6 @@ const App: React.FC = () => {
     }
   }, []);
 
-  const isCopySupported =
-    typeof window !== "undefined" &&
-    "clipboard" in navigator &&
-    "ClipboardItem" in window;
-
   useEffect(() => {
     if (!copyStatus) return;
     const timer = window.setTimeout(() => {
@@ -144,6 +140,14 @@ const App: React.FC = () => {
     }, 2200);
     return () => window.clearTimeout(timer);
   }, [copyStatus]);
+
+  useEffect(() => {
+    setIsCopySupported(
+      typeof window !== "undefined" &&
+        "clipboard" in navigator &&
+        "ClipboardItem" in window
+    );
+  }, []);
 
   useEffect(() => {
     let mounted = true;
