@@ -1,4 +1,6 @@
 
+"use client";
+
 import React from 'react';
 import { EditorSettings, Theme, Language } from '../types';
 import { GRADIENTS, THEMES } from '../constants';

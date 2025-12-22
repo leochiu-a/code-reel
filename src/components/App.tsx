@@ -1,11 +1,13 @@
+"use client";
+
 import React, { useState, useCallback, useEffect } from "react";
 import { domToPng } from "modern-screenshot";
 import type { HighlighterCore } from "shiki/core";
-import CodeEditor from "./components/CodeEditor";
-import SettingsPanel from "./components/SettingsPanel";
-import { EditorSettings } from "./types";
-import { THEMES } from "./constants";
-import { getHighlighter } from "./services/shiki";
+import CodeEditor from "./CodeEditor";
+import SettingsPanel from "./SettingsPanel";
+import { EditorSettings } from "../types";
+import { THEMES } from "../constants";
+import { getHighlighter } from "../services/shiki";
 
 const DEFAULT_CODE = `function helloWorld() {
   console.log("Hello from CodeSnap AI!");
