@@ -9,20 +9,26 @@ interface SettingsPanelProps {
   settings: EditorSettings;
   onSettingsChange: (settings: Partial<EditorSettings>) => void;
   onExport: () => void;
+  onExportVideo: () => void;
   onCopyImage: () => void;
   isCopying: boolean;
+  isExportingVideo: boolean;
   isCopySupported: boolean;
   copyStatus?: { tone: "success" | "error"; message: string } | null;
+  videoStatus?: { tone: "success" | "error"; message: string } | null;
 }
 
 const SettingsPanel: React.FC<SettingsPanelProps> = ({ 
   settings, 
   onSettingsChange, 
   onExport,
+  onExportVideo,
   onCopyImage,
   isCopying,
+  isExportingVideo,
   isCopySupported,
-  copyStatus
+  copyStatus,
+  videoStatus
 }) => {
   return (
     <div className="w-80 bg-slate-900 border-r border-slate-800 p-6 flex flex-col gap-8 h-full overflow-y-auto">
@@ -140,6 +146,17 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
       </div>
 
       <div className="mt-auto pt-6 flex flex-col gap-3">
+        {videoStatus && (
+          <div
+            className={`rounded-lg px-3 py-2 text-sm font-medium ${
+              videoStatus.tone === "success"
+                ? "bg-emerald-500/15 text-emerald-200 border border-emerald-500/30"
+                : "bg-rose-500/15 text-rose-200 border border-rose-500/30"
+            }`}
+          >
+            {videoStatus.message}
+          </div>
+        )}
         {copyStatus && (
           <div
             className={`rounded-lg px-3 py-2 text-sm font-medium ${
@@ -163,6 +180,13 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
           className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-blue-900/20 transition-all"
         >
           Export Image
+        </button>
+        <button 
+          onClick={onExportVideo}
+          disabled={isExportingVideo}
+          className="w-full bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-emerald-900/20 transition-all"
+        >
+          {isExportingVideo ? "Exporting..." : "Export Video"}
         </button>
       </div>
     </div>
