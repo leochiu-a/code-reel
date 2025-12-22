@@ -119,7 +119,9 @@ const App: React.FC = () => {
       });
       const response = await fetch(dataUrl);
       const blob = await response.blob();
-      await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
+      await navigator.clipboard.write([
+        new ClipboardItem({ "image/png": blob }),
+      ]);
       setCopyStatus({ tone: "success", message: "Image copied to clipboard." });
     } catch (err) {
       console.error("Copy failed:", err);
@@ -159,8 +161,6 @@ const App: React.FC = () => {
     };
   }, []);
 
-
-
   return (
     <div className="flex h-screen w-full bg-[#0f172a] overflow-hidden">
       {/* Settings Panel on the Left */}
@@ -179,7 +179,7 @@ const App: React.FC = () => {
         <div className="w-full max-w-5xl flex flex-col gap-6 animate-in fade-in duration-700">
           <div className="text-center mb-4">
             <h1 className="text-4xl font-extrabold text-white tracking-tight mb-2">
-              CodeSnap <span className="text-blue-500">AI</span>
+              CodeSnap
             </h1>
             <p className="text-slate-400">
               Transform your code into professional sharing-ready images.
