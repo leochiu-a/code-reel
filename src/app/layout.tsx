@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Script from "next/script";
 import { Inter, Fira_Code } from "next/font/google";
 import "./globals.css";
 import "monaco-editor/min/vs/editor/editor.main.css";
@@ -29,9 +28,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${inter.variable} ${firaCode.variable}`}>
-      <head>
-        <Script src="https://cdn.tailwindcss.com" strategy="beforeInteractive" />
-      </head>
       <body>{children}</body>
     </html>
   );
