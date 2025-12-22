@@ -16,9 +16,16 @@ type UseStepStateOptions = {
 
 const useStepState = ({ defaultCode, intervalMs }: UseStepStateOptions) => {
   const initialSnippetIdRef = useRef(crypto.randomUUID());
-  const [snippets, setSnippets] = useState<CodeSnippet[]>(() => [
-    { id: initialSnippetIdRef.current, title: "Step 1", code: defaultCode },
-  ]);
+  const [storedSnippets, setStoredSnippets] = useLocalStorage<CodeSnippet[]>(
+    "codesnap-snippets",
+    []
+  );
+  const [snippets, setSnippets] = useState<CodeSnippet[]>(() => {
+    if (storedSnippets.length > 0) return storedSnippets;
+    return [
+      { id: initialSnippetIdRef.current, title: "Step 1", code: defaultCode },
+    ];
+  });
   const [activeSnippetId, setActiveSnippetId] = useState(
     initialSnippetIdRef.current
   );
@@ -82,6 +89,11 @@ const useStepState = ({ defaultCode, intervalMs }: UseStepStateOptions) => {
     }
   }, [activeSnippetId, snippets, storedStepIndex, setStoredStepIndex]);
 
+  useEffect(() => {
+    if (snippets.length === 0) return;
+    setStoredSnippets(snippets);
+  }, [snippets, setStoredSnippets]);
+
   const handleSnippetChange = (nextCode: string) => {
     setSnippets((prev) =>
       prev.map((snippet) =>
@@ -141,7 +153,11 @@ const useStepState = ({ defaultCode, intervalMs }: UseStepStateOptions) => {
 
   const handleResetConfirm = () => {
     const resetId = crypto.randomUUID();
-    setSnippets([{ id: resetId, title: "Step 1", code: defaultCode }]);
+    const nextSnippets = [
+      { id: resetId, title: "Step 1", code: defaultCode },
+    ];
+    setSnippets(nextSnippets);
+    setStoredSnippets(nextSnippets);
     setActiveSnippetId(resetId);
     setPreviewIndex(0);
     setIsPlaying(false);
