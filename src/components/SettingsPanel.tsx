@@ -14,6 +14,8 @@ interface SettingsPanelProps {
   isCopying: boolean;
   isExportingVideo: boolean;
   isCopySupported: boolean;
+  exportProgress: number;
+  exportEtaMs?: number | null;
   copyStatus?: { tone: "success" | "error"; message: string } | null;
   videoStatus?: { tone: "success" | "error"; message: string } | null;
 }
@@ -27,9 +29,15 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
   isCopying,
   isExportingVideo,
   isCopySupported,
+  exportProgress,
+  exportEtaMs,
   copyStatus,
   videoStatus
 }) => {
+  const etaLabel =
+    typeof exportEtaMs === 'number'
+      ? `~${(Math.max(exportEtaMs, 0) / 1000).toFixed(1)}s`
+      : null;
   return (
     <div className="w-80 bg-slate-900 border-r border-slate-800 p-6 flex flex-col gap-8 h-full overflow-y-auto">
       <div>
@@ -146,6 +154,20 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
       </div>
 
       <div className="mt-auto pt-6 flex flex-col gap-3">
+        {isExportingVideo && (
+          <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-100">
+            <div className="flex items-center justify-between text-xs text-emerald-200/80">
+              <span>Exporting video...</span>
+              {etaLabel && <span>{etaLabel}</span>}
+            </div>
+            <div className="mt-2 h-1.5 w-full rounded-full bg-emerald-950/60">
+              <div
+                className="h-full rounded-full bg-emerald-400 transition-[width] duration-150"
+                style={{ width: `${Math.round(exportProgress * 100)}%` }}
+              />
+            </div>
+          </div>
+        )}
         {videoStatus && (
           <div
             className={`rounded-lg px-3 py-2 text-sm font-medium ${

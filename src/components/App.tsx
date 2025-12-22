@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback, useEffect, useMemo } from "react";
+import React, { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { domToPng } from "modern-screenshot";
 import type { HighlighterCore } from "shiki/core";
@@ -13,6 +13,7 @@ import {
   EXPORT_CAPTURE_QUALITY,
   EXPORT_DEVICE_SCALE,
   EXPORT_PAGE_PATH,
+  EXPORT_PROCESSING_BUFFER_MS,
   EXPORT_VIDEO_FPS,
   PLAY_ANIMATION_INTERVAL_MS,
   THEMES,
@@ -64,6 +65,9 @@ const App: React.FC = () => {
     tone: "success" | "error";
     message: string;
   } | null>(null);
+  const [exportProgress, setExportProgress] = useState(0);
+  const [exportEtaMs, setExportEtaMs] = useState<number | null>(null);
+  const exportTimerRef = useRef<number | null>(null);
   const [storedSettings, setStoredSettings] = useLocalStorage<EditorSettings>(
     "codesnap-settings",
     DEFAULT_EDITOR_SETTINGS
@@ -78,6 +82,30 @@ const App: React.FC = () => {
   const shikiTheme = THEMES[settings.theme].shikiTheme;
   const shouldShowPreview =
     Boolean(highlighter) && (isPlaying || isExportMode);
+
+  const startExportProgress = useCallback((estimateMs: number) => {
+    if (exportTimerRef.current) {
+      window.clearInterval(exportTimerRef.current);
+    }
+    const start = window.performance.now();
+    setExportProgress(0);
+    setExportEtaMs(estimateMs);
+    exportTimerRef.current = window.setInterval(() => {
+      const elapsed = window.performance.now() - start;
+      const ratio = Math.min(elapsed / estimateMs, 0.95);
+      setExportProgress(ratio);
+      setExportEtaMs(Math.max(0, estimateMs - elapsed));
+    }, 120);
+  }, []);
+
+  const stopExportProgress = useCallback((success: boolean) => {
+    if (exportTimerRef.current) {
+      window.clearInterval(exportTimerRef.current);
+      exportTimerRef.current = null;
+    }
+    setExportProgress(success ? 1 : 0);
+    setExportEtaMs(null);
+  }, []);
 
   const handleExport = useCallback(() => {
     const node = document.getElementById("code-capture-area");
@@ -172,6 +200,10 @@ const App: React.FC = () => {
     if (snippets.length === 0) return;
     setIsExportingVideo(true);
     setVideoStatus(null);
+    const transitions = Math.max(snippets.length - 1, 0);
+    const estimateMs =
+      transitions * PLAY_ANIMATION_INTERVAL_MS + EXPORT_PROCESSING_BUFFER_MS;
+    startExportProgress(Math.max(1000, estimateMs));
     try {
       const response = await fetch("/api/export-video", {
         method: "POST",
@@ -192,16 +224,18 @@ const App: React.FC = () => {
       link.click();
       URL.revokeObjectURL(url);
       setVideoStatus({ tone: "success", message: "Video exported." });
+      stopExportProgress(true);
     } catch (err) {
       console.error("Video export failed:", err);
       setVideoStatus({
         tone: "error",
         message: "Video export failed. Please try again.",
       });
+      stopExportProgress(false);
     } finally {
       setIsExportingVideo(false);
     }
-  }, [exportRequestPayload, snippets.length]);
+  }, [exportRequestPayload, snippets.length, startExportProgress, stopExportProgress]);
 
   useEffect(() => {
     if (!copyStatus) return;
@@ -248,6 +282,15 @@ const App: React.FC = () => {
   }, [isPlaying]);
 
   useEffect(() => {
+    return () => {
+      if (exportTimerRef.current) {
+        window.clearInterval(exportTimerRef.current);
+        exportTimerRef.current = null;
+      }
+    };
+  }, []);
+
+  useEffect(() => {
     if (typeof window === "undefined") return;
     (window as any).__codesnap_previewIndex = previewIndex;
     return () => {
@@ -282,14 +325,16 @@ const App: React.FC = () => {
           settings={settings}
           onSettingsChange={handleSettingsChange}
           onExport={handleExport}
-          onExportVideo={handleExportVideo}
-          onCopyImage={handleCopyImage}
-          isCopying={isCopying}
-          isExportingVideo={isExportingVideo}
-          isCopySupported={isCopySupported}
-          copyStatus={copyStatus}
-          videoStatus={videoStatus}
-        />
+        onExportVideo={handleExportVideo}
+        onCopyImage={handleCopyImage}
+        isCopying={isCopying}
+        isExportingVideo={isExportingVideo}
+        exportProgress={exportProgress}
+        exportEtaMs={exportEtaMs}
+        isCopySupported={isCopySupported}
+        copyStatus={copyStatus}
+        videoStatus={videoStatus}
+      />
       )}
 
       {/* Main Preview Area */}

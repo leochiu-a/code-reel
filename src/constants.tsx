@@ -66,3 +66,4 @@ export const EXPORT_CAPTURE_QUALITY = 92;
 export const EXPORT_CAPTURE_FORMAT = 'png' as const;
 export const EXPORT_DEVICE_SCALE = 2;
 export const EXPORT_VIEWPORT = { width: 1600, height: 900 };
+export const EXPORT_PROCESSING_BUFFER_MS = 2000;
