@@ -109,8 +109,8 @@ const App: React.FC = () => {
 
     try {
       const dataUrl = await domToPng(node, {
-        cacheBust: true,
-        pixelRatio: 2,
+        quality: 1,
+        scale: 2,
         width: exportWidth,
         height: exportHeight,
         style: {
