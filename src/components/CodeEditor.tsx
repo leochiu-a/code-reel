@@ -8,7 +8,11 @@ import { ShikiMagicMove } from "shiki-magic-move/react";
 import { shikiToMonaco } from "@shikijs/monaco";
 
 import { EditorSettings } from "../types";
-import { THEMES } from "../constants";
+import {
+  MAGIC_MOVE_DELAY_MOVE_S,
+  MAGIC_MOVE_DURATION_MS,
+  THEMES,
+} from "../constants";
 import { getHighlighter, getThemeBackground } from "../services/shiki";
 
 interface CodeEditorProps {
@@ -147,10 +151,10 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
                   theme={shikiTheme}
                   code={preview.code}
                   options={{
-                    duration: 800,
+                    duration: MAGIC_MOVE_DURATION_MS,
                     stagger: 0.2,
                     lineNumbers: settings.showLineNumbers,
-                    delayMove: 0.4,
+                    delayMove: MAGIC_MOVE_DELAY_MOVE_S,
                   }}
                 />
               </div>

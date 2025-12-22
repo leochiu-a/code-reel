@@ -6,7 +6,7 @@ import type { HighlighterCore } from "shiki/core";
 import CodeEditor from "./CodeEditor";
 import SettingsPanel from "./SettingsPanel";
 import { EditorSettings } from "../types";
-import { THEMES } from "../constants";
+import { PLAY_ANIMATION_INTERVAL_MS, THEMES } from "../constants";
 import { getHighlighter } from "../services/shiki";
 
 const DEFAULT_CODE = `function helloWorld() {
@@ -21,7 +21,6 @@ const DEFAULT_CODE = `function helloWorld() {
 }`;
 
 const INITIAL_SNIPPET_ID = crypto.randomUUID();
-
 type CodeSnippet = {
   id: string;
   title: string;
@@ -175,7 +174,7 @@ const App: React.FC = () => {
         }
         return next;
       });
-    }, 1100);
+    }, PLAY_ANIMATION_INTERVAL_MS);
 
     return () => window.clearTimeout(timer);
   }, [isPlaying, previewIndex, snippets.length]);

@@ -41,3 +41,10 @@ export const THEMES: Record<Theme, { label: string; shikiTheme: string }> = {
     shikiTheme: 'night-owl'
   }
 };
+
+export const MAGIC_MOVE_DURATION_MS = 800;
+export const MAGIC_MOVE_DELAY_MOVE_S = 0.4;
+// Keep the step switch in sync with ShikiMagicMove so the next step starts
+// after the move delay + animation duration finishes.
+export const PLAY_ANIMATION_INTERVAL_MS =
+  MAGIC_MOVE_DURATION_MS + MAGIC_MOVE_DELAY_MOVE_S * 1000;
