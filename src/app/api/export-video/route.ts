@@ -54,7 +54,9 @@ const runCommand = (command: string, args: string[]) =>
         resolve();
         return;
       }
-      reject(new Error(stderr || `${command} exited with code ${code}`));
+      const message = stderr || `${command} exited with code ${code}`;
+      console.error(`${command} failed`, { code, args, stderr });
+      reject(new Error(message));
     });
   });
 
@@ -369,6 +371,9 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     console.error("Video export failed:", error);
+    if (error instanceof Error && error.stack) {
+      console.error(error.stack);
+    }
     return NextResponse.json(
       {
         error: error instanceof Error ? error.message : "Video export failed.",
