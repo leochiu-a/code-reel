@@ -108,8 +108,7 @@ export async function POST(request: Request) {
 
     const url = new URL(request.url);
     const debug = process.env.PUPPETEER_DEBUG === "1";
-    const targetFps =
-      body.fps && body.fps > 0 ? body.fps : EXPORT_VIDEO_FPS;
+    const targetFps = body.fps && body.fps > 0 ? body.fps : EXPORT_VIDEO_FPS;
     const captureFormat =
       body.captureFormat === "png" || body.captureFormat === "jpeg"
         ? body.captureFormat
@@ -128,7 +127,12 @@ export async function POST(request: Request) {
         : PLAY_ANIMATION_INTERVAL_MS;
     const pagePath = body.pagePath ?? EXPORT_PAGE_PATH;
     const headless = debug ? false : body.headless ?? true;
-    const origin = url.origin;
+    const publicOrigin = process.env.PUBLIC_ORIGIN?.trim();
+    let origin: string;
+    if (publicOrigin) {
+      origin = new URL(publicOrigin).origin;
+    }
+
     const pageUrl = new URL(pagePath, origin).toString();
 
     tempDir = await mkdtemp(path.join(tmpdir(), "codesnap-video-"));
