@@ -227,7 +227,6 @@ export async function POST(request: Request) {
     const screencastSession = await page.target().createCDPSession();
     let frameSize: { width: number; height: number } | null = null;
     let capturing = false;
-    let playTriggered = false;
     let startTimestamp: number | null = null;
     let nextCaptureTime = 0;
     let endTimestamp = 0;
@@ -257,7 +256,7 @@ export async function POST(request: Request) {
           frameSize = { width: Math.floor(width), height: Math.floor(height) };
         }
       }
-      if (!capturing || stopped || !playTriggered) return;
+      if (!capturing || stopped) return;
 
       const timestamp = event.metadata?.timestamp ?? 0;
       if (startTimestamp === null) {
@@ -304,7 +303,7 @@ export async function POST(request: Request) {
     }
     await screencastSession.send("Page.startScreencast", screencastOptions);
 
-    playTriggered = true;
+    capturing = true;
     await page.evaluate(() => {
       (window as any).__codesnap_play?.();
     });
@@ -320,7 +319,6 @@ export async function POST(request: Request) {
       }
     }
 
-    capturing = true;
     startStopTimer();
 
     if (!stopPromise) {
