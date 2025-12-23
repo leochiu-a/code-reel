@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useState, useCallback, useEffect, useMemo, useRef } from "react";
+import React, {
+  useState,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+} from "react";
 import { useSearchParams } from "next/navigation";
 import type { HighlighterCore } from "shiki/core";
 import CodeEditor from "./CodeEditor";
@@ -76,8 +82,7 @@ const App: React.FC = () => {
   };
 
   const shikiTheme = THEMES[settings.theme].shikiTheme;
-  const shouldShowPreview =
-    Boolean(highlighter) && (isPlaying || isExportMode);
+  const shouldShowPreview = Boolean(highlighter) && (isPlaying || isExportMode);
 
   const startExportProgress = useCallback((estimateMs: number) => {
     if (exportTimerRef.current) {
@@ -160,7 +165,12 @@ const App: React.FC = () => {
     } finally {
       setIsExportingVideo(false);
     }
-  }, [exportRequestPayload, snippets.length, startExportProgress, stopExportProgress]);
+  }, [
+    exportRequestPayload,
+    snippets.length,
+    startExportProgress,
+    stopExportProgress,
+  ]);
 
   useEffect(() => {
     setStoredSettings(settings);
@@ -247,7 +257,7 @@ const App: React.FC = () => {
       )}
 
       {/* Main Preview Area */}
-      <main className="flex-1 overflow-y-auto p-8 lg:p-12 flex items-center justify-center bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black">
+      <main className="flex-1 overflow-y-auto p-8 lg:p-12 flex items-center justify-center bg-[radial-gradient(circle_at_center,var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black">
         <div className="w-full max-w-5xl flex flex-col gap-6 animate-in fade-in duration-700">
           {!isExportMode && (
             <div className="text-center mb-4">
