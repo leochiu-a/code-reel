@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
+import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
 import type { HighlighterCore } from "shiki/core";
 import { useLocalStorage } from "usehooks-ts";
@@ -14,9 +15,17 @@ import { getHighlighter } from "../services/shiki";
 import useStepState from "../hooks/useStepState";
 import useImageExport from "../hooks/useImageExport";
 import useVideoExport from "../hooks/useVideoExport";
-import CodeEditor from "./CodeEditor";
 import SnippetControls from "./SnippetControls";
 import SettingsPanel from "./SettingsPanel";
+
+const CodeEditor = dynamic(() => import("./CodeEditor"), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full max-w-4xl mx-auto">
+      <div className="rounded-2xl border border-white/10 bg-slate-950/60" />
+    </div>
+  ),
+});
 
 const DEFAULT_CODE = `function helloWorld() {
   console.log("Hello from CodeSnap AI!");
