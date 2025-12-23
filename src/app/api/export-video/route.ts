@@ -201,30 +201,13 @@ export async function POST(request: Request) {
     const frameExtension = captureFormat === "png" ? "png" : "jpg";
 
     const viewport = page.viewport();
-    const viewportWidth = viewport?.width ?? 1600;
-    const viewportHeight = viewport?.height ?? 900;
-    const toEven = (value: number) => (value % 2 === 0 ? value : value - 1);
-    const clamp = (value: number, min: number, max: number) =>
-      Math.min(Math.max(value, min), max);
-    const cropX = clamp(Math.floor(captureClip.x), 0, viewportWidth - 2);
-    const cropY = clamp(Math.floor(captureClip.y), 0, viewportHeight - 2);
-    const maxWidth = Math.max(2, viewportWidth - cropX);
-    const maxHeight = Math.max(2, viewportHeight - cropY);
-    const cropWidth = clamp(Math.floor(captureClip.width), 2, maxWidth);
-    const cropHeight = clamp(Math.floor(captureClip.height), 2, maxHeight);
-    const crop = {
-      x: toEven(cropX),
-      y: toEven(cropY),
-      width: toEven(cropWidth),
-      height: toEven(cropHeight),
-    };
-    if (crop.width <= 0 || crop.height <= 0) {
-      throw new Error("Invalid capture crop size.");
-    }
+    const viewportWidth = viewport?.width ?? EXPORT_VIEWPORT.width;
+    const viewportHeight = viewport?.height ?? EXPORT_VIEWPORT.height;
 
     const framePaths: string[] = [];
     const frameWrites: Promise<void>[] = [];
     const screencastSession = await page.target().createCDPSession();
+    let frameSize: { width: number; height: number } | null = null;
     let capturing = false;
     let playTriggered = false;
     let startTimestamp: number | null = null;
@@ -249,6 +232,13 @@ export async function POST(request: Request) {
       await screencastSession.send("Page.screencastFrameAck", {
         sessionId: event.sessionId,
       });
+      if (!frameSize) {
+        const width = event.metadata?.deviceWidth;
+        const height = event.metadata?.deviceHeight;
+        if (typeof width === "number" && typeof height === "number") {
+          frameSize = { width: Math.floor(width), height: Math.floor(height) };
+        }
+      }
       if (!capturing || stopped || !playTriggered) return;
 
       const timestamp = event.metadata?.timestamp ?? 0;
@@ -281,8 +271,15 @@ export async function POST(request: Request) {
       }
     });
 
-    const screencastOptions: { format: "jpeg" | "png"; quality?: number } = {
+    const screencastOptions: {
+      format: "jpeg" | "png";
+      quality?: number;
+      maxWidth?: number;
+      maxHeight?: number;
+    } = {
       format: captureFormat,
+      maxWidth: viewportWidth,
+      maxHeight: viewportHeight,
     };
     if (captureFormat === "jpeg") {
       screencastOptions.quality = captureQuality;
@@ -328,6 +325,37 @@ export async function POST(request: Request) {
         await copyFile(lastFrame, framePath);
         framePaths.push(framePath);
       }
+    }
+
+    const frameWidth = frameSize?.width ?? viewportWidth;
+    const frameHeight = frameSize?.height ?? viewportHeight;
+    const scaleX = frameWidth / viewportWidth;
+    const scaleY = frameHeight / viewportHeight;
+    const toEven = (value: number) => (value % 2 === 0 ? value : value - 1);
+    const clamp = (value: number, min: number, max: number) =>
+      Math.min(Math.max(value, min), max);
+    const cropX = clamp(Math.floor(captureClip.x * scaleX), 0, frameWidth - 2);
+    const cropY = clamp(Math.floor(captureClip.y * scaleY), 0, frameHeight - 2);
+    const maxWidth = Math.max(2, frameWidth - cropX);
+    const maxHeight = Math.max(2, frameHeight - cropY);
+    const cropWidth = clamp(
+      Math.floor(captureClip.width * scaleX),
+      2,
+      maxWidth
+    );
+    const cropHeight = clamp(
+      Math.floor(captureClip.height * scaleY),
+      2,
+      maxHeight
+    );
+    const crop = {
+      x: toEven(cropX),
+      y: toEven(cropY),
+      width: toEven(cropWidth),
+      height: toEven(cropHeight),
+    };
+    if (crop.width <= 0 || crop.height <= 0) {
+      throw new Error("Invalid capture crop size.");
     }
 
     const outputPath = path.join(
