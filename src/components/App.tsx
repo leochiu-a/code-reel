@@ -2,7 +2,6 @@
 
 import React, { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import { useSearchParams } from "next/navigation";
-import { domToPng } from "modern-screenshot";
 import type { HighlighterCore } from "shiki/core";
 import CodeEditor from "./CodeEditor";
 import SettingsPanel from "./SettingsPanel";
@@ -20,6 +19,7 @@ import {
 } from "../constants";
 import { getHighlighter } from "../services/shiki";
 import useStepState from "../hooks/useStepState";
+import useImageExport from "../hooks/useImageExport";
 import { useLocalStorage } from "usehooks-ts";
 
 const DEFAULT_CODE = `function helloWorld() {
@@ -55,11 +55,6 @@ const App: React.FC = () => {
     intervalMs: PLAY_ANIMATION_INTERVAL_MS,
   });
   const [highlighter, setHighlighter] = useState<HighlighterCore | null>(null);
-  const [isCopying, setIsCopying] = useState(false);
-  const [copyStatus, setCopyStatus] = useState<{
-    tone: "success" | "error";
-    message: string;
-  } | null>(null);
   const [isExportingVideo, setIsExportingVideo] = useState(false);
   const [videoStatus, setVideoStatus] = useState<{
     tone: "success" | "error";
@@ -73,7 +68,8 @@ const App: React.FC = () => {
     DEFAULT_EDITOR_SETTINGS
   );
   const [settings, setSettings] = useState<EditorSettings>(storedSettings);
-  const [isCopySupported, setIsCopySupported] = useState(false);
+  const { onExport, onCopyImage, isCopying, copyStatus, isCopySupported } =
+    useImageExport();
 
   const handleSettingsChange = (newSettings: Partial<EditorSettings>) => {
     setSettings((prev) => ({ ...prev, ...newSettings }));
@@ -105,77 +101,6 @@ const App: React.FC = () => {
     }
     setExportProgress(success ? 1 : 0);
     setExportEtaMs(null);
-  }, []);
-
-  const handleExport = useCallback(() => {
-    const node = document.getElementById("code-capture-area");
-    if (!node) return;
-
-    const exportWidth = Math.ceil(node.scrollWidth);
-    const exportHeight = Math.ceil(node.scrollHeight);
-
-    domToPng(node, {
-      quality: 1,
-      scale: 2,
-      width: exportWidth,
-      height: exportHeight,
-      style: {
-        width: `${exportWidth}px`,
-        height: `${exportHeight}px`,
-      },
-    })
-      .then((dataUrl) => {
-        const link = document.createElement("a");
-        link.download = `codesnap-${Date.now()}.png`;
-        link.href = dataUrl;
-        link.click();
-      })
-      .catch((err) => {
-        console.error("Export failed:", err);
-      });
-  }, []);
-
-  const handleCopyImage = useCallback(async () => {
-    if (!("clipboard" in navigator) || !("ClipboardItem" in window)) {
-      setCopyStatus({
-        tone: "error",
-        message: "Clipboard image copy is not supported in this browser.",
-      });
-      return;
-    }
-    const node = document.getElementById("code-capture-area");
-    if (!node) return;
-
-    setIsCopying(true);
-    const exportWidth = Math.ceil(node.scrollWidth);
-    const exportHeight = Math.ceil(node.scrollHeight);
-
-    try {
-      const dataUrl = await domToPng(node, {
-        quality: 1,
-        scale: 2,
-        width: exportWidth,
-        height: exportHeight,
-        style: {
-          width: `${exportWidth}px`,
-          height: `${exportHeight}px`,
-        },
-      });
-      const response = await fetch(dataUrl);
-      const blob = await response.blob();
-      await navigator.clipboard.write([
-        new ClipboardItem({ "image/png": blob }),
-      ]);
-      setCopyStatus({ tone: "success", message: "Image copied to clipboard." });
-    } catch (err) {
-      console.error("Copy failed:", err);
-      setCopyStatus({
-        tone: "error",
-        message: "Copy failed. Please try again.",
-      });
-    } finally {
-      setIsCopying(false);
-    }
   }, []);
 
   const exportRequestPayload = useMemo(
@@ -238,14 +163,6 @@ const App: React.FC = () => {
   }, [exportRequestPayload, snippets.length, startExportProgress, stopExportProgress]);
 
   useEffect(() => {
-    if (!copyStatus) return;
-    const timer = window.setTimeout(() => {
-      setCopyStatus(null);
-    }, 2200);
-    return () => window.clearTimeout(timer);
-  }, [copyStatus]);
-
-  useEffect(() => {
     setStoredSettings(settings);
   }, [settings, setStoredSettings]);
 
@@ -299,14 +216,6 @@ const App: React.FC = () => {
   }, [previewIndex]);
 
   useEffect(() => {
-    setIsCopySupported(
-      typeof window !== "undefined" &&
-        "clipboard" in navigator &&
-        "ClipboardItem" in window
-    );
-  }, []);
-
-  useEffect(() => {
     let mounted = true;
     getHighlighter().then((loaded) => {
       if (!mounted) return;
@@ -324,17 +233,17 @@ const App: React.FC = () => {
         <SettingsPanel
           settings={settings}
           onSettingsChange={handleSettingsChange}
-          onExport={handleExport}
-        onExportVideo={handleExportVideo}
-        onCopyImage={handleCopyImage}
-        isCopying={isCopying}
-        isExportingVideo={isExportingVideo}
-        exportProgress={exportProgress}
-        exportEtaMs={exportEtaMs}
-        isCopySupported={isCopySupported}
-        copyStatus={copyStatus}
-        videoStatus={videoStatus}
-      />
+          onExport={onExport}
+          onExportVideo={handleExportVideo}
+          onCopyImage={onCopyImage}
+          isCopying={isCopying}
+          isExportingVideo={isExportingVideo}
+          exportProgress={exportProgress}
+          exportEtaMs={exportEtaMs}
+          isCopySupported={isCopySupported}
+          copyStatus={copyStatus}
+          videoStatus={videoStatus}
+        />
       )}
 
       {/* Main Preview Area */}
