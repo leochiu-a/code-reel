@@ -178,21 +178,38 @@ export async function POST(request: Request) {
       }
     );
     await page.waitForSelector("#code-capture-area");
-    const captureClip = await page.evaluate(() => {
+    const captureSize = await page.evaluate(() => {
+      const styleId = "codesnap-export-style";
+      if (!document.getElementById(styleId)) {
+        const style = document.createElement("style");
+        style.id = styleId;
+        style.textContent = `
+          body { margin: 0 !important; }
+          main { padding: 0 !important; align-items: flex-start !important; justify-content: flex-start !important; }
+          #code-capture-area { margin: 0 !important; }
+        `;
+        document.head.appendChild(style);
+      }
       const element = document.getElementById("code-capture-area");
       if (!element) return null;
-      element.scrollIntoView({ block: "center", inline: "center" });
       const rect = element.getBoundingClientRect();
       return {
-        x: rect.x,
-        y: rect.y,
-        width: rect.width,
-        height: rect.height,
+        width: Math.ceil(rect.width),
+        height: Math.ceil(rect.height),
       };
     });
-    if (!captureClip) {
+    if (!captureSize) {
       throw new Error("Failed to find capture area.");
     }
+    const toEven = (value: number) => (value % 2 === 0 ? value : value + 1);
+    const captureWidth = Math.max(2, toEven(captureSize.width));
+    const captureHeight = Math.max(2, toEven(captureSize.height));
+    await page.setViewport({
+      width: captureWidth,
+      height: captureHeight,
+      deviceScaleFactor,
+    });
+    await new Promise((resolve) => setTimeout(resolve, 50));
     const transitionCount = Math.max(body.snippets.length - 1, 0);
     const totalDurationMs = Math.max(1, intervalMs * transitionCount);
     const totalDurationSec = totalDurationMs / 1000;
@@ -200,9 +217,8 @@ export async function POST(request: Request) {
     const frameIntervalSec = 1 / targetFps;
     const frameExtension = captureFormat === "png" ? "png" : "jpg";
 
-    const viewport = page.viewport();
-    const viewportWidth = viewport?.width ?? EXPORT_VIEWPORT.width;
-    const viewportHeight = viewport?.height ?? EXPORT_VIEWPORT.height;
+    const viewportWidth = captureWidth;
+    const viewportHeight = captureHeight;
 
     const framePaths: string[] = [];
     const frameWrites: Promise<void>[] = [];
@@ -327,37 +343,6 @@ export async function POST(request: Request) {
       }
     }
 
-    const frameWidth = frameSize?.width ?? viewportWidth;
-    const frameHeight = frameSize?.height ?? viewportHeight;
-    const scaleX = frameWidth / viewportWidth;
-    const scaleY = frameHeight / viewportHeight;
-    const toEven = (value: number) => (value % 2 === 0 ? value : value - 1);
-    const clamp = (value: number, min: number, max: number) =>
-      Math.min(Math.max(value, min), max);
-    const cropX = clamp(Math.floor(captureClip.x * scaleX), 0, frameWidth - 2);
-    const cropY = clamp(Math.floor(captureClip.y * scaleY), 0, frameHeight - 2);
-    const maxWidth = Math.max(2, frameWidth - cropX);
-    const maxHeight = Math.max(2, frameHeight - cropY);
-    const cropWidth = clamp(
-      Math.floor(captureClip.width * scaleX),
-      2,
-      maxWidth
-    );
-    const cropHeight = clamp(
-      Math.floor(captureClip.height * scaleY),
-      2,
-      maxHeight
-    );
-    const crop = {
-      x: toEven(cropX),
-      y: toEven(cropY),
-      width: toEven(cropWidth),
-      height: toEven(cropHeight),
-    };
-    if (crop.width <= 0 || crop.height <= 0) {
-      throw new Error("Invalid capture crop size.");
-    }
-
     const outputPath = path.join(
       tempDir,
       `codesnap-${Date.now().toString()}.mp4`
@@ -368,8 +353,6 @@ export async function POST(request: Request) {
       targetFps.toString(),
       "-i",
       path.join(framesDir, `frame-%04d.${frameExtension}`),
-      "-vf",
-      `crop=${crop.width}:${crop.height}:${crop.x}:${crop.y}`,
       "-pix_fmt",
       "yuv420p",
       outputPath,
