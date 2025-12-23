@@ -1,7 +1,10 @@
-"use client";
-
+import { Suspense } from "react";
 import App from "@/components/App";
 
 export default function Page() {
-  return <App />;
+  return (
+    <Suspense fallback={null}>
+      <App />
+    </Suspense>
+  );
 }
