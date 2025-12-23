@@ -86,7 +86,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
               <button
                 key={idx}
                 onClick={() => onSettingsChange({ background: g })}
-                className={`w-10 h-10 rounded-full border-2 transition-all ${settings.background === g ? 'border-white scale-110 shadow-lg' : 'border-transparent opacity-70 hover:opacity-100'}`}
+                className={`cursor-pointer w-10 h-10 rounded-full border-2 transition-all ${settings.background === g ? 'border-white scale-110 shadow-lg' : 'border-transparent opacity-70 hover:opacity-100'}`}
                 style={{ background: g }}
               />
             ))}
@@ -193,20 +193,20 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
         <button 
           onClick={onCopyImage}
           disabled={isCopying || !isCopySupported}
-          className="w-full bg-slate-800 hover:bg-slate-700 disabled:opacity-50 text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-slate-900/20 transition-all"
+          className="cursor-pointer w-full bg-slate-800 hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-slate-900/20 transition-all"
         >
           {isCopying ? 'Copying...' : 'Copy Image'}
         </button>
         <button 
           onClick={onExport}
-          className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-blue-900/20 transition-all"
+          className="cursor-pointer w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-blue-900/20 transition-all"
         >
           Export Image
         </button>
         <button 
           onClick={onExportVideo}
           disabled={isExportingVideo}
-          className="w-full bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-emerald-900/20 transition-all"
+          className="cursor-pointer w-full bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-emerald-900/20 transition-all"
         >
           {isExportingVideo ? "Exporting..." : "Export Video"}
         </button>
