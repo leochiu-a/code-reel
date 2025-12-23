@@ -16,10 +16,10 @@
     "@shikijs/monaco": "^3.20.0",
     "modern-screenshot": "^4.6.7",
     "monaco-editor": "^0.55.1",
-    "next": "^15.2.2",
+    "next": "16.1.1",
     "puppeteer": "^22.8.0",
-    "react": "^19.2.3",
-    "react-dom": "^19.2.3",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
     "shiki": "^3.20.0",
     "shiki-magic-move": "^1.2.1",
     "usehooks-ts": "^3.1.1"
@@ -27,11 +27,17 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.13",
     "@types/node": "^22.14.0",
-    "@types/react": "^19.2.7",
-    "@types/react-dom": "^19.2.0",
+    "@types/react": "19.2.7",
+    "@types/react-dom": "19.2.3",
     "eslint": "^9.0.0",
-    "eslint-config-next": "^15.2.2",
+    "eslint-config-next": "16.1.1",
     "tailwindcss": "^4.1.13",
     "typescript": "~5.8.2"
+  },
+  "pnpm": {
+    "overrides": {
+      "@types/react": "19.2.7",
+      "@types/react-dom": "19.2.3"
+    }
   }
 }
