@@ -1,12 +1,6 @@
 "use client";
 
-import React, {
-  useState,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-} from "react";
+import React, { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import type { HighlighterCore } from "shiki/core";
 import CodeEditor from "./CodeEditor";
@@ -14,18 +8,13 @@ import SettingsPanel from "./SettingsPanel";
 import { EditorSettings } from "../types";
 import {
   DEFAULT_EDITOR_SETTINGS,
-  EXPORT_CAPTURE_FORMAT,
-  EXPORT_CAPTURE_QUALITY,
-  EXPORT_DEVICE_SCALE,
-  EXPORT_PAGE_PATH,
-  EXPORT_PROCESSING_BUFFER_MS,
-  EXPORT_VIDEO_FPS,
   PLAY_ANIMATION_INTERVAL_MS,
   THEMES,
 } from "../constants";
 import { getHighlighter } from "../services/shiki";
 import useStepState from "../hooks/useStepState";
 import useImageExport from "../hooks/useImageExport";
+import useVideoExport from "../hooks/useVideoExport";
 import { useLocalStorage } from "usehooks-ts";
 
 const DEFAULT_CODE = `function helloWorld() {
@@ -61,14 +50,6 @@ const App: React.FC = () => {
     intervalMs: PLAY_ANIMATION_INTERVAL_MS,
   });
   const [highlighter, setHighlighter] = useState<HighlighterCore | null>(null);
-  const [isExportingVideo, setIsExportingVideo] = useState(false);
-  const [videoStatus, setVideoStatus] = useState<{
-    tone: "success" | "error";
-    message: string;
-  } | null>(null);
-  const [exportProgress, setExportProgress] = useState(0);
-  const [exportEtaMs, setExportEtaMs] = useState<number | null>(null);
-  const exportTimerRef = useRef<number | null>(null);
   const [storedSettings, setStoredSettings] = useLocalStorage<EditorSettings>(
     "codesnap-settings",
     DEFAULT_EDITOR_SETTINGS
@@ -76,6 +57,17 @@ const App: React.FC = () => {
   const [settings, setSettings] = useState<EditorSettings>(storedSettings);
   const { onExport, onCopyImage, isCopying, copyStatus, isCopySupported } =
     useImageExport();
+  const {
+    handleExportVideo,
+    isExportingVideo,
+    videoStatus,
+    exportProgress,
+    exportEtaMs,
+  } = useVideoExport({
+    snippets,
+    settings,
+    intervalMs: PLAY_ANIMATION_INTERVAL_MS,
+  });
 
   const handleSettingsChange = (newSettings: Partial<EditorSettings>) => {
     setSettings((prev) => ({ ...prev, ...newSettings }));
@@ -84,105 +76,9 @@ const App: React.FC = () => {
   const shikiTheme = THEMES[settings.theme].shikiTheme;
   const shouldShowPreview = Boolean(highlighter) && (isPlaying || isExportMode);
 
-  const startExportProgress = useCallback((estimateMs: number) => {
-    if (exportTimerRef.current) {
-      window.clearInterval(exportTimerRef.current);
-    }
-    const start = window.performance.now();
-    setExportProgress(0);
-    setExportEtaMs(estimateMs);
-    exportTimerRef.current = window.setInterval(() => {
-      const elapsed = window.performance.now() - start;
-      const ratio = Math.min(elapsed / estimateMs, 0.95);
-      setExportProgress(ratio);
-      setExportEtaMs(Math.max(0, estimateMs - elapsed));
-    }, 120);
-  }, []);
-
-  const stopExportProgress = useCallback((success: boolean) => {
-    if (exportTimerRef.current) {
-      window.clearInterval(exportTimerRef.current);
-      exportTimerRef.current = null;
-    }
-    setExportProgress(success ? 1 : 0);
-    setExportEtaMs(null);
-  }, []);
-
-  const exportRequestPayload = useMemo(
-    () => ({
-      snippets: snippets.map((snippet) => ({
-        id: snippet.id,
-        code: snippet.code,
-        title: snippet.title,
-      })),
-      settings,
-      intervalMs: PLAY_ANIMATION_INTERVAL_MS,
-      pagePath: EXPORT_PAGE_PATH,
-      fps: EXPORT_VIDEO_FPS,
-      captureFormat: EXPORT_CAPTURE_FORMAT,
-      captureQuality: EXPORT_CAPTURE_QUALITY,
-      deviceScaleFactor: EXPORT_DEVICE_SCALE,
-    }),
-    [settings, snippets]
-  );
-
-  const handleExportVideo = useCallback(async () => {
-    if (snippets.length === 0) return;
-    setIsExportingVideo(true);
-    setVideoStatus(null);
-    const transitions = Math.max(snippets.length - 1, 0);
-    const estimateMs =
-      transitions * PLAY_ANIMATION_INTERVAL_MS + EXPORT_PROCESSING_BUFFER_MS;
-    startExportProgress(Math.max(1000, estimateMs));
-    try {
-      const response = await fetch("/api/export-video", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(exportRequestPayload),
-      });
-
-      if (!response.ok) {
-        const payload = await response.json().catch(() => null);
-        throw new Error(payload?.error ?? "Video export failed.");
-      }
-
-      const blob = await response.blob();
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `codesnap-${Date.now()}.mp4`;
-      link.click();
-      URL.revokeObjectURL(url);
-      setVideoStatus({ tone: "success", message: "Video exported." });
-      stopExportProgress(true);
-    } catch (err) {
-      console.error("Video export failed:", err);
-      setVideoStatus({
-        tone: "error",
-        message: "Video export failed. Please try again.",
-      });
-      stopExportProgress(false);
-    } finally {
-      setIsExportingVideo(false);
-    }
-  }, [
-    exportRequestPayload,
-    snippets.length,
-    startExportProgress,
-    stopExportProgress,
-  ]);
-
   useEffect(() => {
     setStoredSettings(settings);
   }, [settings, setStoredSettings]);
-
-  useEffect(() => {
-    if (!videoStatus) return;
-    const timer = window.setTimeout(() => {
-      setVideoStatus(null);
-    }, 2200);
-    return () => window.clearTimeout(timer);
-  }, [videoStatus]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -207,15 +103,6 @@ const App: React.FC = () => {
       delete (window as any).__codesnap_playing;
     };
   }, [isPlaying]);
-
-  useEffect(() => {
-    return () => {
-      if (exportTimerRef.current) {
-        window.clearInterval(exportTimerRef.current);
-        exportTimerRef.current = null;
-      }
-    };
-  }, []);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
