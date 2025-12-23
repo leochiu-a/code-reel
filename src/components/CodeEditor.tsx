@@ -26,6 +26,7 @@ interface CodeEditorProps {
     language: string;
     theme: string;
   };
+  minCaptureHeight?: number;
 }
 
 const CodeEditor: React.FC<CodeEditorProps> = ({
@@ -34,6 +35,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   settings,
   showPreview = false,
   preview,
+  minCaptureHeight,
 }) => {
   const editorRef = useRef<Monaco.editor.IStandaloneCodeEditor | null>(null);
   const monacoRef = useRef<typeof Monaco | null>(null);
@@ -80,6 +82,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
         updateEditorHeight();
       });
       updateEditorHeight();
+
     };
 
     void setup();
@@ -104,16 +107,17 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
 
   return (
     <div
-      className="relative w-full max-w-4xl mx-auto shadow-2xl overflow-hidden transition-all duration-300"
+      className="relative w-full max-w-4xl mx-auto shadow-2xl overflow-hidden transition-all duration-300 flex items-center justify-center"
       id="code-capture-area"
       style={{
         padding: `${settings.padding}px`,
         background: settings.background,
         borderRadius: "16px",
+        minHeight: minCaptureHeight,
       }}
     >
       <div
-        className="relative shadow-2xl overflow-hidden flex flex-col"
+        className="relative w-full shadow-2xl overflow-hidden flex flex-col"
         style={{
           backgroundColor: themeBackground,
           borderRadius: `${settings.borderRadius}px`,

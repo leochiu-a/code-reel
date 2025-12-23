@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import type { HighlighterCore } from "shiki/core";
 import { useLocalStorage } from "usehooks-ts";
@@ -28,6 +28,9 @@ const DEFAULT_CODE = `function helloWorld() {
   
   return greeting;
 }`;
+
+const countLines = (code: string) =>
+  (code || "").split(/\r\n|\r|\n/).length || 1;
 
 const App: React.FC = () => {
   const searchParams = useSearchParams();
@@ -58,6 +61,17 @@ const App: React.FC = () => {
   const [settings, setSettings] = useState<EditorSettings>(storedSettings);
   const { onExport, onCopyImage, isCopying, copyStatus, isCopySupported } =
     useImageExport();
+  const maxLineCount = useMemo(
+    () => Math.max(1, ...snippets.map((snippet) => countLines(snippet.code))),
+    [snippets]
+  );
+  const lineHeight = Math.round(settings.fontSize * 1.6);
+  const maxCaptureHeight =
+    settings.padding * 2 +
+    (settings.windowControls ? 48 : 0) +
+    maxLineCount * lineHeight +
+    52;
+
   const {
     handleExportVideo,
     isExportingVideo,
@@ -146,7 +160,7 @@ const App: React.FC = () => {
 
       {/* Main Preview Area */}
       <main className="flex-1 overflow-y-auto p-8 lg:p-12 flex items-center justify-center bg-[radial-gradient(circle_at_center,var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black">
-        <div className="w-full max-w-5xl flex flex-col gap-6 animate-in fade-in duration-700">
+        <div className="relative w-full max-w-5xl flex flex-col gap-6 animate-in fade-in duration-700">
           {!isExportMode && (
             <div className="text-center mb-4">
               <h1 className="text-4xl font-extrabold text-white tracking-tight mb-2">
@@ -163,6 +177,7 @@ const App: React.FC = () => {
             onCodeChange={handleSnippetChange}
             settings={settings}
             showPreview={shouldShowPreview}
+            minCaptureHeight={maxCaptureHeight}
             preview={
               highlighter
                 ? {
