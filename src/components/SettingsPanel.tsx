@@ -3,6 +3,7 @@
 import React from "react";
 import { EditorSettings, Theme, Language } from "../types";
 import { GRADIENTS, LANGUAGES, THEMES } from "../constants";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 interface SettingsPanelProps {
   settings: EditorSettings;
@@ -35,6 +36,9 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
 }) => {
   const etaLabel =
     typeof exportEtaMs === "number" ? `~${(Math.max(exportEtaMs, 0) / 1000).toFixed(1)}s` : null;
+  const paddingOptions = [16, 32, 64, 96];
+  const fontSizeOptions = [12, 14, 16, 20];
+  const radiusOptions = [0, 8, 16, 32];
   return (
     <div className="flex h-full w-80 flex-col gap-8 overflow-y-auto border-r border-slate-800 bg-slate-900 p-6">
       <div>
@@ -88,58 +92,101 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
               <button
                 key={idx}
                 onClick={() => onSettingsChange({ background: g })}
-                className={`h-10 w-10 cursor-pointer rounded-full border-2 transition-all ${settings.background === g ? "scale-110 border-white shadow-lg" : "border-transparent opacity-70 hover:opacity-100"}`}
+                className={`h-10 w-10 cursor-pointer rounded-full border-2 transition-all ${
+                  settings.background === g
+                    ? "scale-110 border-white shadow-lg"
+                    : "border-transparent opacity-70 hover:opacity-100"
+                }`}
                 style={{ background: g }}
               />
             ))}
           </div>
         </div>
 
-        {/* Sliders */}
+        {/* Size Controls */}
         <div className="space-y-6">
           <div>
             <label className="mb-2 flex justify-between text-sm font-medium tracking-wider text-slate-400 uppercase">
-              Padding <span>{settings.padding}px</span>
+              Padding
             </label>
-            <input
-              type="range"
-              min="16"
-              max="128"
-              step="8"
-              value={settings.padding}
-              onChange={(e) => onSettingsChange({ padding: parseInt(e.target.value) })}
-              className="h-1 w-full cursor-pointer appearance-none rounded-lg bg-slate-700 accent-blue-500"
-            />
+            <ToggleGroup
+              type="single"
+              variant="outline"
+              size="sm"
+              value={String(settings.padding)}
+              onValueChange={(value) => {
+                if (!value) return;
+                onSettingsChange({ padding: parseInt(value, 10) });
+              }}
+              spacing={0}
+              className="w-full"
+            >
+              {paddingOptions.map((value) => (
+                <ToggleGroupItem
+                  key={value}
+                  value={String(value)}
+                  className="flex-1 cursor-pointer justify-center border-slate-700/80 text-xs text-slate-300 transition data-[state=on]:border-blue-400/60 data-[state=on]:bg-blue-500/15 data-[state=on]:text-blue-100"
+                >
+                  {value}px
+                </ToggleGroupItem>
+              ))}
+            </ToggleGroup>
           </div>
 
           <div>
             <label className="mb-2 flex justify-between text-sm font-medium tracking-wider text-slate-400 uppercase">
-              Font Size <span>{settings.fontSize}px</span>
+              Font Size
             </label>
-            <input
-              type="range"
-              min="12"
-              max="24"
-              step="1"
-              value={settings.fontSize}
-              onChange={(e) => onSettingsChange({ fontSize: parseInt(e.target.value) })}
-              className="h-1 w-full cursor-pointer appearance-none rounded-lg bg-slate-700 accent-blue-500"
-            />
+            <ToggleGroup
+              type="single"
+              variant="outline"
+              size="sm"
+              value={String(settings.fontSize)}
+              onValueChange={(value) => {
+                if (!value) return;
+                onSettingsChange({ fontSize: parseInt(value, 10) });
+              }}
+              spacing={0}
+              className="w-full"
+            >
+              {fontSizeOptions.map((value) => (
+                <ToggleGroupItem
+                  key={value}
+                  value={String(value)}
+                  className="flex-1 cursor-pointer justify-center border-slate-700/80 text-xs text-slate-300 transition data-[state=on]:border-blue-400/60 data-[state=on]:bg-blue-500/15 data-[state=on]:text-blue-100"
+                >
+                  {value}px
+                </ToggleGroupItem>
+              ))}
+            </ToggleGroup>
           </div>
 
           <div>
             <label className="mb-2 flex justify-between text-sm font-medium tracking-wider text-slate-400 uppercase">
-              Border Radius <span>{settings.borderRadius}px</span>
+              Border Radius
             </label>
-            <input
-              type="range"
-              min="0"
-              max="40"
-              step="4"
-              value={settings.borderRadius}
-              onChange={(e) => onSettingsChange({ borderRadius: parseInt(e.target.value) })}
-              className="h-1 w-full cursor-pointer appearance-none rounded-lg bg-slate-700 accent-blue-500"
-            />
+            <ToggleGroup
+              type="single"
+              variant="outline"
+              size="sm"
+              value={String(settings.borderRadius)}
+              onValueChange={(value) => {
+                if (!value) return;
+                onSettingsChange({ borderRadius: parseInt(value, 10) });
+              }}
+              spacing={0}
+              className="w-full"
+            >
+              {radiusOptions.map((value) => (
+                <ToggleGroupItem
+                  key={value}
+                  value={String(value)}
+                  className="flex-1 cursor-pointer justify-center border-slate-700/80 text-xs text-slate-300 transition data-[state=on]:border-blue-400/60 data-[state=on]:bg-blue-500/15 data-[state=on]:text-blue-100"
+                >
+                  {value}px
+                </ToggleGroupItem>
+              ))}
+            </ToggleGroup>
           </div>
         </div>
 
