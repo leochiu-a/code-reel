@@ -5,6 +5,13 @@ import { EditorSettings, Theme, Language } from "../types";
 import { GRADIENTS, LANGUAGES, THEMES } from "../constants";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface SettingsPanelProps {
   settings: EditorSettings;
@@ -60,17 +67,21 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
           <label className="mb-2 block text-sm font-medium tracking-wider text-slate-400 uppercase">
             Theme
           </label>
-          <select
+          <Select
             value={settings.theme}
-            onChange={(e) => onSettingsChange({ theme: e.target.value as Theme })}
-            className="w-full rounded-lg border border-slate-700 bg-slate-800 p-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+            onValueChange={(value) => onSettingsChange({ theme: value as Theme })}
           >
-            {Object.entries(THEMES).map(([key, theme]) => (
-              <option key={key} value={key}>
-                {theme.label}
-              </option>
-            ))}
-          </select>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select theme" />
+            </SelectTrigger>
+            <SelectContent>
+              {Object.entries(THEMES).map(([key, theme]) => (
+                <SelectItem key={key} value={key}>
+                  {theme.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Language Selection */}
@@ -78,17 +89,21 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
           <label className="mb-2 block text-sm font-medium tracking-wider text-slate-400 uppercase">
             Language
           </label>
-          <select
+          <Select
             value={settings.language}
-            onChange={(e) => onSettingsChange({ language: e.target.value as Language })}
-            className="w-full rounded-lg border border-slate-700 bg-slate-800 p-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+            onValueChange={(value) => onSettingsChange({ language: value as Language })}
           >
-            {Object.entries(LANGUAGES).map(([key, language]) => (
-              <option key={key} value={key}>
-                {language.label}
-              </option>
-            ))}
-          </select>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select language" />
+            </SelectTrigger>
+            <SelectContent>
+              {Object.entries(LANGUAGES).map(([key, language]) => (
+                <SelectItem key={key} value={key}>
+                  {language.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Background Gradients */}
