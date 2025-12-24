@@ -89,7 +89,8 @@ const App: React.FC = () => {
     setSettings((prev) => ({ ...prev, ...newSettings }));
   };
 
-  const shikiTheme = THEMES[settings.theme].shikiTheme;
+  const themeConfig = THEMES[settings.theme] ?? THEMES[DEFAULT_EDITOR_SETTINGS.theme];
+  const shikiTheme = themeConfig.shikiTheme;
   const languageConfig = LANGUAGES[settings.language];
   const shouldShowPreview = Boolean(highlighter) && (isPlaying || isExportMode);
 

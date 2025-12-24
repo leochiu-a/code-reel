@@ -79,7 +79,8 @@ export const MAGIC_MOVE_DURATION_MS = 800;
 export const MAGIC_MOVE_DELAY_MOVE_S = 0.4;
 // Keep the step switch in sync with ShikiMagicMove so the next step starts
 // after the move delay + animation duration finishes.
-export const PLAY_ANIMATION_INTERVAL_MS = MAGIC_MOVE_DURATION_MS + MAGIC_MOVE_DELAY_MOVE_S * 1000;
+export const PLAY_ANIMATION_INTERVAL_MS =
+  MAGIC_MOVE_DURATION_MS + MAGIC_MOVE_DELAY_MOVE_S * 1000;
 
 export const DEFAULT_EDITOR_SETTINGS: EditorSettings = {
   theme: "one-dark",
@@ -90,6 +91,7 @@ export const DEFAULT_EDITOR_SETTINGS: EditorSettings = {
   windowControls: true,
   fontSize: 16,
   borderRadius: 16,
+  borderShadow: "border-none",
 };
 
 export const EXPORT_PAGE_PATH = "/?export=1";

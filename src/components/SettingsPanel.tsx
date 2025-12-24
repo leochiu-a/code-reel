@@ -35,10 +35,20 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
   videoStatus,
 }) => {
   const etaLabel =
-    typeof exportEtaMs === "number" ? `~${(Math.max(exportEtaMs, 0) / 1000).toFixed(1)}s` : null;
+    typeof exportEtaMs === "number"
+      ? `~${(Math.max(exportEtaMs, 0) / 1000).toFixed(1)}s`
+      : null;
   const paddingOptions = [16, 32, 64, 96];
   const fontSizeOptions = [12, 14, 16, 20];
   const radiusOptions = [0, 8, 16, 32];
+  const borderShadowOptions = [
+    { label: "Border None", value: "border-none" },
+    {
+      label: "Glass",
+      value:
+        "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
+    },
+  ];
   return (
     <div className="flex h-full w-80 flex-col gap-8 overflow-y-auto border-r border-slate-800 bg-slate-900 p-6">
       <div>
@@ -53,7 +63,9 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
           </label>
           <select
             value={settings.theme}
-            onChange={(e) => onSettingsChange({ theme: e.target.value as Theme })}
+            onChange={(e) =>
+              onSettingsChange({ theme: e.target.value as Theme })
+            }
             className="w-full rounded-lg border border-slate-700 bg-slate-800 p-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
           >
             {Object.entries(THEMES).map(([key, theme]) => (
@@ -71,7 +83,9 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
           </label>
           <select
             value={settings.language}
-            onChange={(e) => onSettingsChange({ language: e.target.value as Language })}
+            onChange={(e) =>
+              onSettingsChange({ language: e.target.value as Language })
+            }
             className="w-full rounded-lg border border-slate-700 bg-slate-800 p-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
           >
             {Object.entries(LANGUAGES).map(([key, language]) => (
@@ -188,6 +202,34 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
               ))}
             </ToggleGroup>
           </div>
+
+          <div>
+            <label className="mb-2 flex justify-between text-sm font-medium tracking-wider text-slate-400 uppercase">
+              Border
+            </label>
+            <ToggleGroup
+              type="single"
+              variant="outline"
+              size="sm"
+              value={settings.borderShadow ?? "border-none"}
+              onValueChange={(value) => {
+                if (!value) return;
+                onSettingsChange({ borderShadow: value });
+              }}
+              spacing={0}
+              className="w-full"
+            >
+              {borderShadowOptions.map((option) => (
+                <ToggleGroupItem
+                  key={option.value}
+                  value={option.value}
+                  className="flex-1 cursor-pointer justify-center border-slate-700/80 text-xs text-slate-300 transition data-[state=on]:border-blue-400/60 data-[state=on]:bg-blue-500/15 data-[state=on]:text-blue-100"
+                >
+                  {option.label}
+                </ToggleGroupItem>
+              ))}
+            </ToggleGroup>
+          </div>
         </div>
 
         {/* Toggles */}
@@ -199,7 +241,9 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
             <input
               type="checkbox"
               checked={settings.showLineNumbers}
-              onChange={(e) => onSettingsChange({ showLineNumbers: e.target.checked })}
+              onChange={(e) =>
+                onSettingsChange({ showLineNumbers: e.target.checked })
+              }
               className="h-4 w-4 rounded border-slate-700 bg-slate-800 text-blue-500 focus:ring-blue-500"
             />
           </label>
@@ -210,7 +254,9 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
             <input
               type="checkbox"
               checked={settings.windowControls}
-              onChange={(e) => onSettingsChange({ windowControls: e.target.checked })}
+              onChange={(e) =>
+                onSettingsChange({ windowControls: e.target.checked })
+              }
               className="h-4 w-4 rounded border-slate-700 bg-slate-800 text-blue-500 focus:ring-blue-500"
             />
           </label>

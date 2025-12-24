@@ -30,4 +30,5 @@ export interface EditorSettings {
   windowControls: boolean;
   fontSize: number;
   borderRadius: number;
+  borderShadow: string;
 }

@@ -8,7 +8,12 @@ import { ShikiMagicMove } from "shiki-magic-move/react";
 import { shikiToMonaco } from "@shikijs/monaco";
 
 import { EditorSettings } from "../types";
-import { LANGUAGES, MAGIC_MOVE_DELAY_MOVE_S, MAGIC_MOVE_DURATION_MS, THEMES } from "../constants";
+import {
+  LANGUAGES,
+  MAGIC_MOVE_DELAY_MOVE_S,
+  MAGIC_MOVE_DURATION_MS,
+  THEMES,
+} from "../constants";
 import { getHighlighter, getThemeBackground } from "../services/shiki";
 
 interface CodeEditorProps {
@@ -35,7 +40,9 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
 }) => {
   const editorRef = useRef<Monaco.editor.IStandaloneCodeEditor | null>(null);
   const monacoRef = useRef<typeof Monaco | null>(null);
-  const highlighterRef = useRef<Awaited<ReturnType<typeof getHighlighter>> | null>(null);
+  const highlighterRef = useRef<Awaited<
+    ReturnType<typeof getHighlighter>
+  > | null>(null);
   const sizeListenerRef = useRef<Monaco.IDisposable | null>(null);
   const shikiReadyRef = useRef(false);
   const [editorHeight, setEditorHeight] = useState(180);
@@ -103,7 +110,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
 
   return (
     <div
-      className="relative mx-auto flex resize-x items-center justify-center overflow-auto shadow-2xl transition-all duration-300"
+      className="relative mx-auto flex resize-x items-center justify-center overflow-auto transition-all duration-300"
       id="code-capture-area"
       style={{
         padding: `${settings.padding}px`,
@@ -115,11 +122,15 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
       }}
     >
       <div
-        className="relative flex w-full flex-col overflow-hidden shadow-2xl"
+        className="relative flex w-full flex-col overflow-hidden"
         style={{
           backgroundColor: themeBackground,
           borderRadius: `${settings.borderRadius}px`,
           fontSize: `${settings.fontSize}px`,
+          boxShadow:
+            settings.borderShadow === "border-none"
+              ? "none"
+              : settings.borderShadow,
         }}
       >
         {settings.windowControls && (
@@ -133,61 +144,65 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
           </div>
         )}
 
-        <div className="fira-code relative flex min-h-[100px]">
-          <div className="relative flex-1" style={{ backgroundColor: themeBackground }}>
-            {showPreview && preview && (
-              <div
-                style={{
-                  fontSize: settings.fontSize,
-                  lineHeight: `${lineHeight}px`,
-                  padding: "12px 20px",
-                }}
-              >
-                <ShikiMagicMove
-                  className="fira-code"
-                  highlighter={preview.highlighter}
-                  lang={preview.language}
-                  theme={shikiTheme}
-                  code={preview.code}
-                  options={{
-                    duration: MAGIC_MOVE_DURATION_MS,
-                    stagger: 0.2,
-                    lineNumbers: settings.showLineNumbers,
-                    delayMove: MAGIC_MOVE_DELAY_MOVE_S,
-                  }}
-                />
-              </div>
-            )}
-            <div className={showPreview ? "pointer-events-none absolute inset-0 opacity-0" : ""}>
-              <Editor
-                value={code}
-                onChange={(value) => onCodeChange(value ?? "")}
-                language={languageConfig.monaco}
-                theme={themeReady ? shikiTheme : "vs-dark"}
-                onMount={handleMount}
-                height={editorHeight}
+        <div className="fira-code min-h-[100px] p-1">
+          {showPreview && preview && (
+            <div
+              style={{
+                fontSize: settings.fontSize,
+                lineHeight: `${lineHeight}px`,
+                padding: "12px 20px",
+              }}
+            >
+              <ShikiMagicMove
+                className="fira-code"
+                highlighter={preview.highlighter}
+                lang={preview.language}
+                theme={shikiTheme}
+                code={preview.code}
                 options={{
-                  fontFamily: "Fira Code, monospace",
-                  fontSize: settings.fontSize,
-                  fontLigatures: true,
-                  lineHeight,
-                  lineNumbers: settings.showLineNumbers ? "on" : "off",
-                  lineDecorationsWidth: 20,
-                  wordWrap: "on",
-                  guides: { indentation: false },
-                  scrollBeyondLastLine: false,
-                  minimap: { enabled: false },
-                  folding: false,
-                  renderLineHighlight: "none",
-                  overviewRulerLanes: 0,
-                  overviewRulerBorder: false,
-                  scrollbar: { vertical: "hidden", horizontal: "hidden" },
-                  glyphMargin: false,
-                  padding: { top: 12, bottom: 12 },
-                  tabSize: 2,
+                  duration: MAGIC_MOVE_DURATION_MS,
+                  stagger: 0.2,
+                  lineNumbers: settings.showLineNumbers,
+                  delayMove: MAGIC_MOVE_DELAY_MOVE_S,
                 }}
               />
             </div>
+          )}
+          <div
+            className={
+              showPreview
+                ? "pointer-events-none absolute inset-0 opacity-0"
+                : ""
+            }
+          >
+            <Editor
+              value={code}
+              onChange={(value) => onCodeChange(value ?? "")}
+              language={languageConfig.monaco}
+              theme={themeReady ? shikiTheme : "vs-dark"}
+              onMount={handleMount}
+              height={editorHeight}
+              options={{
+                fontFamily: "Fira Code, monospace",
+                fontSize: settings.fontSize,
+                fontLigatures: true,
+                lineHeight,
+                lineNumbers: settings.showLineNumbers ? "on" : "off",
+                lineDecorationsWidth: 20,
+                wordWrap: "on",
+                guides: { indentation: false },
+                scrollBeyondLastLine: false,
+                minimap: { enabled: false },
+                folding: false,
+                renderLineHighlight: "none",
+                overviewRulerLanes: 0,
+                overviewRulerBorder: false,
+                scrollbar: { vertical: "hidden", horizontal: "hidden" },
+                glyphMargin: false,
+                padding: { top: 12, bottom: 12 },
+                tabSize: 2,
+              }}
+            />
           </div>
         </div>
       </div>
