@@ -4,6 +4,7 @@ import React from "react";
 import { EditorSettings, Theme, Language } from "../types";
 import { GRADIENTS, LANGUAGES, THEMES } from "../constants";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Button } from "@/components/ui/button";
 
 interface SettingsPanelProps {
   settings: EditorSettings;
@@ -35,9 +36,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
   videoStatus,
 }) => {
   const etaLabel =
-    typeof exportEtaMs === "number"
-      ? `~${(Math.max(exportEtaMs, 0) / 1000).toFixed(1)}s`
-      : null;
+    typeof exportEtaMs === "number" ? `~${(Math.max(exportEtaMs, 0) / 1000).toFixed(1)}s` : null;
   const paddingOptions = [16, 32, 64, 96];
   const fontSizeOptions = [12, 14, 16, 20];
   const radiusOptions = [0, 8, 16, 32];
@@ -63,9 +62,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
           </label>
           <select
             value={settings.theme}
-            onChange={(e) =>
-              onSettingsChange({ theme: e.target.value as Theme })
-            }
+            onChange={(e) => onSettingsChange({ theme: e.target.value as Theme })}
             className="w-full rounded-lg border border-slate-700 bg-slate-800 p-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
           >
             {Object.entries(THEMES).map(([key, theme]) => (
@@ -83,9 +80,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
           </label>
           <select
             value={settings.language}
-            onChange={(e) =>
-              onSettingsChange({ language: e.target.value as Language })
-            }
+            onChange={(e) => onSettingsChange({ language: e.target.value as Language })}
             className="w-full rounded-lg border border-slate-700 bg-slate-800 p-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
           >
             {Object.entries(LANGUAGES).map(([key, language]) => (
@@ -241,9 +236,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
             <input
               type="checkbox"
               checked={settings.showLineNumbers}
-              onChange={(e) =>
-                onSettingsChange({ showLineNumbers: e.target.checked })
-              }
+              onChange={(e) => onSettingsChange({ showLineNumbers: e.target.checked })}
               className="h-4 w-4 rounded border-slate-700 bg-slate-800 text-blue-500 focus:ring-blue-500"
             />
           </label>
@@ -254,9 +247,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
             <input
               type="checkbox"
               checked={settings.windowControls}
-              onChange={(e) =>
-                onSettingsChange({ windowControls: e.target.checked })
-              }
+              onChange={(e) => onSettingsChange({ windowControls: e.target.checked })}
               className="h-4 w-4 rounded border-slate-700 bg-slate-800 text-blue-500 focus:ring-blue-500"
             />
           </label>
@@ -300,26 +291,24 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
             {copyStatus.message}
           </div>
         )}
-        <button
+        <Button
           onClick={onCopyImage}
           disabled={isCopying || !isCopySupported}
-          className="w-full cursor-pointer rounded-xl bg-slate-800 px-4 py-3 font-bold text-white shadow-lg shadow-slate-900/20 transition-all hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
+          variant="secondary"
+          className="w-full cursor-pointer"
         >
           {isCopying ? "Copying..." : "Copy Image"}
-        </button>
-        <button
-          onClick={onExport}
-          className="w-full cursor-pointer rounded-xl bg-blue-600 px-4 py-3 font-bold text-white shadow-lg shadow-blue-900/20 transition-all hover:bg-blue-500"
-        >
+        </Button>
+        <Button onClick={onExport} className="w-full">
           Export Image
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={onExportVideo}
           disabled={isExportingVideo}
-          className="w-full cursor-pointer rounded-xl bg-emerald-600 px-4 py-3 font-bold text-white shadow-lg shadow-emerald-900/20 transition-all hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-50"
+          className="w-full cursor-pointer bg-emerald-600 text-white hover:bg-emerald-500"
         >
           {isExportingVideo ? "Exporting..." : "Export Video"}
-        </button>
+        </Button>
       </div>
     </div>
   );
