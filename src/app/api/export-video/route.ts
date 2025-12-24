@@ -108,7 +108,6 @@ export async function POST(request: Request) {
       );
     }
 
-    const url = new URL(request.url);
     const debug = process.env.PUPPETEER_DEBUG === "1";
     const targetFps = body.fps && body.fps > 0 ? body.fps : EXPORT_VIDEO_FPS;
     const captureFormat =

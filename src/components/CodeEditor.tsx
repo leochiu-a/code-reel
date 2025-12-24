@@ -107,7 +107,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
 
   return (
     <div
-      className="relative w-full max-w-4xl mx-auto shadow-2xl overflow-hidden transition-all duration-300 flex items-center justify-center"
+      className="relative mx-auto flex w-full max-w-4xl items-center justify-center overflow-hidden shadow-2xl transition-all duration-300"
       id="code-capture-area"
       style={{
         padding: `${settings.padding}px`,
@@ -117,7 +117,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
       }}
     >
       <div
-        className="relative w-full shadow-2xl overflow-hidden flex flex-col"
+        className="relative flex w-full flex-col overflow-hidden shadow-2xl"
         style={{
           backgroundColor: themeBackground,
           borderRadius: `${settings.borderRadius}px`,
@@ -125,17 +125,17 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
         }}
       >
         {settings.windowControls && (
-          <div className="flex items-center gap-2 p-4 border-b border-white/5">
-            <div className="w-3 h-3 rounded-full bg-red-500" />
-            <div className="w-3 h-3 rounded-full bg-yellow-500" />
-            <div className="w-3 h-3 rounded-full bg-green-500" />
-            <div className="ml-2 text-xs opacity-40 font-mono tracking-widest uppercase">
+          <div className="flex items-center gap-2 border-b border-white/5 p-4">
+            <div className="h-3 w-3 rounded-full bg-red-500" />
+            <div className="h-3 w-3 rounded-full bg-yellow-500" />
+            <div className="h-3 w-3 rounded-full bg-green-500" />
+            <div className="ml-2 font-mono text-xs tracking-widest uppercase opacity-40">
               {settings.language}
             </div>
           </div>
         )}
 
-        <div className="relative flex min-h-[100px] fira-code">
+        <div className="fira-code relative flex min-h-[100px]">
           <div
             className="relative flex-1"
             style={{ backgroundColor: themeBackground }}
@@ -166,7 +166,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
             <div
               className={
                 showPreview
-                  ? "absolute inset-0 opacity-0 pointer-events-none"
+                  ? "pointer-events-none absolute inset-0 opacity-0"
                   : ""
               }
             >
