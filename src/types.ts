@@ -1,4 +1,13 @@
-export type Theme = "nord" | "dracula" | "one-dark" | "github-light" | "monokai" | "night-owl";
+export type Theme =
+  | "nord"
+  | "dracula"
+  | "one-dark"
+  | "github-dark"
+  | "monokai"
+  | "night-owl"
+  | "catppuccin-macchiato"
+  | "material-theme-palenight"
+  | "synthwave-84";
 
 export type Language =
   | "javascript"

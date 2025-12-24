@@ -1,17 +1,18 @@
 import type { EditorSettings, Theme } from "./types";
 
 export const GRADIENTS = [
-  "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-  "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
-  "linear-gradient(135deg, #5ee7df 0%, #b490ca 100%)",
-  "linear-gradient(135deg, #c3cfe2 0%, #c3cfe2 100%)",
-  "linear-gradient(to right, #ff8177 0%, #ff867a 0%, #ff8c7f 21%, #f99185 52%, #cf8581 78%, #f8d9d6 100%)",
-  "linear-gradient(to right, #4facfe 0%, #00f2fe 100%)",
-  "linear-gradient(to right, #43e97b 0%, #38f9d7 100%)",
-  "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
-  "#000000",
-  "#ffffff",
-  "transparent",
+  // fleet dark
+  "linear-gradient(152deg, rgb(87% 61% 43%) 0%, rgb(49% 14% 95%) 100%)",
+  // github dark
+  "linear-gradient(135deg, #E233FF 0%, #FF6B00 100%)",
+  // Material Palenight
+  "linear-gradient(135deg, #54D2EF 0%, #2AA6DA 100%)",
+  // dracula
+  "linear-gradient(135deg,  rgba(171,73,222,1) 0%,rgba(73,84,222,1) 100%)",
+  // night owl
+  "linear-gradient(140deg, rgb(9, 171, 241), rgb(5, 105, 148), rgb(4, 84, 118), rgb(6, 119, 167))",
+  // synthwave-84
+  "linear-gradient(to right top, #7f469d, #8242aa, #833db7, #8338c4, #8233d2, #8a35da, #9336e2, #9b38ea, #af41ee, #c24af2, #d554f7, #e65ffb)",
 ];
 
 export const THEMES: Record<Theme, { label: string; shikiTheme: string }> = {
@@ -27,9 +28,9 @@ export const THEMES: Record<Theme, { label: string; shikiTheme: string }> = {
     label: "Nord",
     shikiTheme: "nord",
   },
-  "github-light": {
-    label: "GitHub Light",
-    shikiTheme: "github-light",
+  "github-dark": {
+    label: "GitHub Dark",
+    shikiTheme: "github-dark",
   },
   monokai: {
     label: "Monokai",
@@ -39,11 +40,31 @@ export const THEMES: Record<Theme, { label: string; shikiTheme: string }> = {
     label: "Night Owl",
     shikiTheme: "night-owl",
   },
+  "catppuccin-macchiato": {
+    label: "Catppuccin Macchiato",
+    shikiTheme: "catppuccin-macchiato",
+  },
+  "material-theme-palenight": {
+    label: "Material Theme Palenight",
+    shikiTheme: "material-theme-palenight",
+  },
+  "synthwave-84": {
+    label: "Synthwave 84",
+    shikiTheme: "synthwave-84",
+  },
 };
 
 export const LANGUAGES = {
-  javascript: { label: "JavaScript", monaco: "javascript", shiki: "javascript" },
-  typescript: { label: "TypeScript", monaco: "typescript", shiki: "typescript" },
+  javascript: {
+    label: "JavaScript",
+    monaco: "javascript",
+    shiki: "javascript",
+  },
+  typescript: {
+    label: "TypeScript",
+    monaco: "typescript",
+    shiki: "typescript",
+  },
   react: { label: "React (JSX)", monaco: "javascriptreact", shiki: "jsx" },
   vue: { label: "Vue", monaco: "vue", shiki: "vue" },
   python: { label: "Python", monaco: "python", shiki: "python" },
