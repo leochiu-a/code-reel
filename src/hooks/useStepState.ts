@@ -20,22 +20,25 @@ const useStepState = ({ defaultCode, intervalMs }: UseStepStateOptions) => {
       ...snippet,
       title: `Step ${index + 1}`,
     }));
-  const initialSnippetIdRef = useRef(crypto.randomUUID());
   const [storedSnippets, setStoredSnippets] = useLocalStorage<CodeSnippet[]>(
     "codesnap-snippets",
     []
   );
+  const initialId = useMemo(() => {
+    if (storedSnippets.length > 0) {
+      return storedSnippets[0]?.id ?? crypto.randomUUID();
+    }
+
+    return crypto.randomUUID();
+  }, [storedSnippets]);
+
   const [snippets, setSnippets] = useState<CodeSnippet[]>(() => {
     if (storedSnippets.length > 0) {
       return normalizeStepTitles(storedSnippets);
     }
-    return [
-      { id: initialSnippetIdRef.current, title: "Step 1", code: defaultCode },
-    ];
+    return [{ id: initialId, title: "Step 1", code: defaultCode }];
   });
-  const [activeSnippetId, setActiveSnippetId] = useState(
-    initialSnippetIdRef.current
-  );
+  const [activeSnippetId, setActiveSnippetId] = useState(initialId);
   const [previewIndex, setPreviewIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [storedStepIndex, setStoredStepIndex] = useLocalStorage<number>(
