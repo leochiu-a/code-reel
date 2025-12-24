@@ -137,10 +137,10 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
         <div className="fira-code min-h-[100px] p-1">
           {showPreview && preview && (
             <div
+              className="px-[17px] py-3"
               style={{
                 fontSize: settings.fontSize,
                 lineHeight: `${lineHeight}px`,
-                padding: "12px 20px",
               }}
             >
               <ShikiMagicMove
@@ -173,7 +173,8 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
                 fontLigatures: true,
                 lineHeight,
                 lineNumbers: settings.showLineNumbers ? "on" : "off",
-                lineDecorationsWidth: 20,
+                lineDecorationsWidth: 17,
+                lineNumbersMinChars: 4,
                 wordWrap: "on",
                 guides: { indentation: false },
                 scrollBeyondLastLine: false,
