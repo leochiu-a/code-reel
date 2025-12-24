@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
 import type { HighlighterCore } from "shiki/core";
 import { useLocalStorage } from "usehooks-ts";
@@ -18,28 +17,20 @@ import useImageExport from "../hooks/useImageExport";
 import useVideoExport from "../hooks/useVideoExport";
 import SnippetControls from "./SnippetControls";
 import SettingsPanel from "./SettingsPanel";
-
-const CodeEditor = dynamic(() => import("./CodeEditor"), {
-  ssr: false,
-  loading: () => (
-    <div className="mx-auto w-full max-w-4xl">
-      <div className="rounded-2xl border border-white/10 bg-slate-950/60" />
-    </div>
-  ),
-});
+import CodeEditor from "./CodeEditor";
 
 const DEFAULT_CODE = `function helloWorld() {
-  console.log("Hello from CodeSnap AI!");
+  console.log("Hello from CodeSnap!");
   
   const greeting = {
     message: "Create beautiful snippets",
-    poweredBy: "Gemini 3"
   };
   
   return greeting;
 }`;
 
-const countLines = (code: string) => (code || "").split(/\r\n|\r|\n/).length || 1;
+const countLines = (code: string) =>
+  (code || "").split(/\r\n|\r|\n/).length || 1;
 
 const App: React.FC = () => {
   const searchParams = useSearchParams();
@@ -66,30 +57,40 @@ const App: React.FC = () => {
   const [highlighter, setHighlighter] = useState<HighlighterCore | null>(null);
   const [storedSettings, setStoredSettings] = useLocalStorage<EditorSettings>(
     "codesnap-settings",
-    DEFAULT_EDITOR_SETTINGS,
+    DEFAULT_EDITOR_SETTINGS
   );
   const [settings, setSettings] = useState<EditorSettings>(storedSettings);
-  const { onExport, onCopyImage, isCopying, copyStatus, isCopySupported } = useImageExport();
+  const { onExport, onCopyImage, isCopying, copyStatus, isCopySupported } =
+    useImageExport();
   const maxLineCount = useMemo(
     () => Math.max(1, ...snippets.map((snippet) => countLines(snippet.code))),
-    [snippets],
+    [snippets]
   );
   const lineHeight = Math.round(settings.fontSize * 1.6);
   const maxCaptureHeight =
-    settings.padding * 2 + (settings.windowControls ? 48 : 0) + maxLineCount * lineHeight + 52;
+    settings.padding * 2 +
+    (settings.windowControls ? 48 : 0) +
+    maxLineCount * lineHeight +
+    52;
 
-  const { handleExportVideo, isExportingVideo, videoStatus, exportProgress, exportEtaMs } =
-    useVideoExport({
-      snippets,
-      settings,
-      intervalMs: PLAY_ANIMATION_INTERVAL_MS,
-    });
+  const {
+    handleExportVideo,
+    isExportingVideo,
+    videoStatus,
+    exportProgress,
+    exportEtaMs,
+  } = useVideoExport({
+    snippets,
+    settings,
+    intervalMs: PLAY_ANIMATION_INTERVAL_MS,
+  });
 
   const handleSettingsChange = (newSettings: Partial<EditorSettings>) => {
     setSettings((prev) => ({ ...prev, ...newSettings }));
   };
 
-  const themeConfig = THEMES[settings.theme] ?? THEMES[DEFAULT_EDITOR_SETTINGS.theme];
+  const themeConfig =
+    THEMES[settings.theme] ?? THEMES[DEFAULT_EDITOR_SETTINGS.theme];
   const shikiTheme = themeConfig.shikiTheme;
   const languageConfig = LANGUAGES[settings.language];
   const shouldShowPreview = Boolean(highlighter) && (isPlaying || isExportMode);
@@ -166,7 +167,9 @@ const App: React.FC = () => {
         <div className="relative flex w-full max-w-5xl flex-col gap-6 duration-700">
           {!isExportMode && (
             <div className="mb-4 text-center">
-              <h1 className="mb-2 text-4xl font-extrabold tracking-tight text-white">CodeSnap</h1>
+              <h1 className="mb-2 text-4xl font-extrabold tracking-tight text-white">
+                CodeSnap
+              </h1>
               <p className="text-slate-400">
                 Transform your code into professional sharing-ready images.
               </p>

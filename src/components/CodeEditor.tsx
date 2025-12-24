@@ -182,6 +182,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
               theme={themeReady ? shikiTheme : "vs-dark"}
               onMount={handleMount}
               height={editorHeight}
+              loading={null}
               options={{
                 fontFamily: "Fira Code, monospace",
                 fontSize: settings.fontSize,

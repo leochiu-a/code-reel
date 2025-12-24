@@ -1,10 +1,11 @@
-import { Suspense } from "react";
-import App from "@/components/App";
+"use client";
+
+import dynamic from "next/dynamic";
+
+const App = dynamic(() => import("@/components/App"), {
+  ssr: false,
+});
 
 export default function Page() {
-  return (
-    <Suspense fallback={null}>
-      <App />
-    </Suspense>
-  );
+  return <App />;
 }
