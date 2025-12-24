@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, startTransition } from "react";
 import { useLocalStorage } from "usehooks-ts";
 
 type CodeSnippet = {
@@ -58,7 +58,9 @@ const useStepState = ({ defaultCode, intervalMs }: UseStepStateOptions) => {
   useEffect(() => {
     if (!isPlaying) return;
     if (snippets.length < 2) {
-      setIsPlaying(false);
+      startTransition(() => {
+        setIsPlaying(false);
+      });
       return;
     }
     const timer = window.setTimeout(() => {
@@ -78,15 +80,21 @@ const useStepState = ({ defaultCode, intervalMs }: UseStepStateOptions) => {
   useEffect(() => {
     if (hasAppliedStoredRef.current) return;
     if (snippets.length === 0) return;
+
     const clampedIndex = Math.max(
       0,
       Math.min(storedStepIndex, snippets.length - 1)
     );
     const targetSnippet = snippets[clampedIndex];
+
     if (!targetSnippet) return;
+
     hasAppliedStoredRef.current = true;
-    setActiveSnippetId(targetSnippet.id);
-    setPreviewIndex(clampedIndex);
+
+    startTransition(() => {
+      setActiveSnippetId(targetSnippet.id);
+      setPreviewIndex(clampedIndex);
+    });
   }, [snippets, storedStepIndex]);
 
   useEffect(() => {
