@@ -115,7 +115,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
       }}
     >
       <div
-        className="relative flex w-full flex-col"
+        className="relative flex w-full flex-col overflow-hidden"
         style={{
           backgroundColor: themeBackground,
           borderRadius: `${settings.borderRadius}px`,
@@ -134,7 +134,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
           </div>
         )}
 
-        <div className="fira-code min-h-[100px] p-1">
+        <div className="fira-code min-h-[100px] overflow-hidden rounded-[36px] p-1">
           {showPreview && preview && (
             <div
               className="px-[17px] py-3"
