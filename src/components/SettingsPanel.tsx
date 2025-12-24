@@ -5,6 +5,7 @@ import { EditorSettings, Theme, Language } from "../types";
 import { GRADIENTS, LANGUAGES, THEMES } from "../constants";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -248,22 +249,18 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
             <span className="text-sm text-slate-300 transition-colors group-hover:text-white">
               Line Numbers
             </span>
-            <input
-              type="checkbox"
+            <Checkbox
               checked={settings.showLineNumbers}
-              onChange={(e) => onSettingsChange({ showLineNumbers: e.target.checked })}
-              className="h-4 w-4 rounded border-slate-700 bg-slate-800 text-blue-500 focus:ring-blue-500"
+              onCheckedChange={(checked) => onSettingsChange({ showLineNumbers: Boolean(checked) })}
             />
           </label>
           <label className="group flex cursor-pointer items-center justify-between">
             <span className="text-sm text-slate-300 transition-colors group-hover:text-white">
               Window Controls
             </span>
-            <input
-              type="checkbox"
+            <Checkbox
               checked={settings.windowControls}
-              onChange={(e) => onSettingsChange({ windowControls: e.target.checked })}
-              className="h-4 w-4 rounded border-slate-700 bg-slate-800 text-blue-500 focus:ring-blue-500"
+              onCheckedChange={(checked) => onSettingsChange({ windowControls: Boolean(checked) })}
             />
           </label>
         </div>
