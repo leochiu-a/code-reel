@@ -20,10 +20,12 @@ const useStepState = ({ defaultCode, intervalMs }: UseStepStateOptions) => {
       ...snippet,
       title: `Step ${index + 1}`,
     }));
+
   const [storedSnippets, setStoredSnippets] = useLocalStorage<CodeSnippet[]>(
     "codesnap-snippets",
     []
   );
+
   const initialId = useMemo(() => {
     if (storedSnippets.length > 0) {
       return storedSnippets[0]?.id ?? crypto.randomUUID();
@@ -41,6 +43,7 @@ const useStepState = ({ defaultCode, intervalMs }: UseStepStateOptions) => {
   const [activeSnippetId, setActiveSnippetId] = useState(initialId);
   const [previewIndex, setPreviewIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+
   const [storedStepIndex, setStoredStepIndex] = useLocalStorage<number>(
     "codesnap-current-step",
     0
@@ -52,6 +55,7 @@ const useStepState = ({ defaultCode, intervalMs }: UseStepStateOptions) => {
     () => snippets.findIndex((snippet) => snippet.id === activeSnippetId),
     [snippets, activeSnippetId]
   );
+
   const activeSnippet = snippets[activeSnippetIndex] ?? snippets[0];
   const previewSnippet = snippets[previewIndex] ?? snippets[0];
 
@@ -159,6 +163,36 @@ const useStepState = ({ defaultCode, intervalMs }: UseStepStateOptions) => {
     });
   };
 
+  const handleReorderSnippet = (fromIndex: number, toIndex: number) => {
+    setSnippets((prev) => {
+      if (
+        fromIndex === toIndex ||
+        fromIndex < 0 ||
+        toIndex < 0 ||
+        fromIndex >= prev.length ||
+        toIndex >= prev.length
+      ) {
+        return prev;
+      }
+
+      const next = [...prev];
+      const [moved] = next.splice(fromIndex, 1);
+
+      next.splice(toIndex, 0, moved);
+
+      const normalized = normalizeStepTitles(next);
+      const nextActiveIndex = normalized.findIndex(
+        (snippet) => snippet.id === activeSnippetId
+      );
+
+      if (nextActiveIndex >= 0) {
+        setPreviewIndex(nextActiveIndex);
+      }
+
+      return normalized;
+    });
+  };
+
   const handlePlay = () => {
     if (snippets.length < 2) return;
     setPreviewIndex(0);
@@ -193,6 +227,7 @@ const useStepState = ({ defaultCode, intervalMs }: UseStepStateOptions) => {
     handleSnippetChange,
     handleAddSnippet,
     handleRemoveSnippet,
+    handleReorderSnippet,
     handlePlay,
     handleSelectSnippet,
     handleResetConfirm,

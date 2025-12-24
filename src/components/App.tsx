@@ -56,6 +56,7 @@ const App: React.FC = () => {
     handleSnippetChange,
     handleAddSnippet,
     handleRemoveSnippet,
+    handleReorderSnippet,
     handlePlay,
     handleSelectSnippet,
     handleResetConfirm,
@@ -210,6 +211,7 @@ const App: React.FC = () => {
               onSelectSnippet={handleSelectSnippet}
               onAddSnippet={handleAddSnippet}
               onRemoveSnippet={handleRemoveSnippet}
+              onReorderSnippet={handleReorderSnippet}
               onResetConfirm={handleResetConfirm}
               onPlay={handlePlay}
               isPlaying={isPlaying}

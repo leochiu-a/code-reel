@@ -13,21 +13,46 @@ type SnippetListProps = {
   snippets: CodeSnippet[];
   activeSnippetId: string;
   onSelectSnippet: (id: string, index: number) => void;
+  onReorderSnippet: (fromIndex: number, toIndex: number) => void;
 };
 
 const SnippetList: React.FC<SnippetListProps> = ({
   snippets,
   activeSnippetId,
   onSelectSnippet,
+  onReorderSnippet,
 }) => (
   <>
     {snippets.map((snippet, index) => (
       <button
         key={snippet.id}
+        draggable
         onClick={() => {
           onSelectSnippet(snippet.id, index);
         }}
-        className={`cursor-pointer rounded-full border px-3 py-1 text-xs font-medium transition ${
+        onDragStart={(event) => {
+          event.dataTransfer.effectAllowed = "move";
+          event.dataTransfer.dropEffect = "move";
+          event.dataTransfer.setData("text/plain", String(index));
+          event.currentTarget.style.cursor = "grabbing";
+        }}
+        onDragEnd={(event) => {
+          event.currentTarget.style.cursor = "grab";
+        }}
+        onDragOver={(event) => {
+          event.preventDefault();
+          event.dataTransfer.dropEffect = "move";
+        }}
+        onDrop={(event) => {
+          event.preventDefault();
+          event.currentTarget.style.cursor = "grab";
+          const rawIndex = event.dataTransfer.getData("text/plain");
+          if (!rawIndex) return;
+          const fromIndex = Number(rawIndex);
+          if (Number.isNaN(fromIndex) || fromIndex === index) return;
+          onReorderSnippet(fromIndex, index);
+        }}
+        className={`cursor-grab rounded-full border px-3 py-1 text-xs font-medium transition active:cursor-grabbing ${
           snippet.id === activeSnippetId
             ? "border-blue-400 bg-blue-500/10 text-blue-200"
             : "border-white/10 text-slate-300 hover:border-white/30 hover:text-white"
@@ -73,6 +98,7 @@ type SnippetControlsProps = {
   onSelectSnippet: (id: string, index: number) => void;
   onAddSnippet: () => void;
   onRemoveSnippet: () => void;
+  onReorderSnippet: (fromIndex: number, toIndex: number) => void;
   onResetConfirm: () => void;
   onPlay: () => void;
   isPlaying: boolean;
@@ -87,6 +113,7 @@ const SnippetControls: React.FC<SnippetControlsProps> = ({
   onSelectSnippet,
   onAddSnippet,
   onRemoveSnippet,
+  onReorderSnippet,
   onResetConfirm,
   onPlay,
   isPlaying,
@@ -99,6 +126,7 @@ const SnippetControls: React.FC<SnippetControlsProps> = ({
           snippets={snippets}
           activeSnippetId={activeSnippetId}
           onSelectSnippet={onSelectSnippet}
+          onReorderSnippet={onReorderSnippet}
         />
         <button
           onClick={onAddSnippet}
