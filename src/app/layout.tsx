@@ -17,8 +17,8 @@ const firaCode = Fira_Code({
 });
 
 export const metadata: Metadata = {
-  title: "CodeSnap AI",
-  description: "Create beautiful code snapshots with AI-enhanced themes.",
+  title: "CodeSnap",
+  description: "Create beautiful code snapshots",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
