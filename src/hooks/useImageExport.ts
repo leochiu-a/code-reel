@@ -34,9 +34,7 @@ const buildCapture = (node: HTMLElement) => {
 };
 
 const isClipboardImageSupported = () =>
-  typeof window !== "undefined" &&
-  "clipboard" in navigator &&
-  "ClipboardItem" in window;
+  typeof window !== "undefined" && "clipboard" in navigator && "ClipboardItem" in window;
 
 const useImageExport = () => {
   const [isCopying, setIsCopying] = useState(false);
@@ -80,9 +78,7 @@ const useImageExport = () => {
       const dataUrl = await domToPng(node, captureOptions);
       const response = await fetch(dataUrl);
       const blob = await response.blob();
-      await navigator.clipboard.write([
-        new ClipboardItem({ "image/png": blob }),
-      ]);
+      await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
       setCopyStatus({ tone: "success", message: "Image copied to clipboard." });
     } catch (err) {
       console.error("Copy failed:", err);

@@ -1,17 +1,16 @@
-
-export type Theme = 'nord' | 'dracula' | 'one-dark' | 'github-light' | 'monokai' | 'night-owl';
+export type Theme = "nord" | "dracula" | "one-dark" | "github-light" | "monokai" | "night-owl";
 
 export type Language =
-  | 'javascript'
-  | 'typescript'
-  | 'react'
-  | 'vue'
-  | 'python'
-  | 'html'
-  | 'css'
-  | 'rust'
-  | 'go'
-  | 'cpp';
+  | "javascript"
+  | "typescript"
+  | "react"
+  | "vue"
+  | "python"
+  | "html"
+  | "css"
+  | "rust"
+  | "go"
+  | "cpp";
 
 export interface EditorSettings {
   theme: Theme;

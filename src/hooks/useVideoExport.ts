@@ -77,7 +77,7 @@ const useVideoExport = ({
       captureQuality: EXPORT_CAPTURE_QUALITY,
       deviceScaleFactor: EXPORT_DEVICE_SCALE,
     }),
-    [intervalMs, settings, snippets]
+    [intervalMs, settings, snippets],
   );
 
   const handleExportVideo = useCallback(async () => {
@@ -118,13 +118,7 @@ const useVideoExport = ({
     } finally {
       setIsExportingVideo(false);
     }
-  }, [
-    exportRequestPayload,
-    intervalMs,
-    snippets.length,
-    startExportProgress,
-    stopExportProgress,
-  ]);
+  }, [exportRequestPayload, intervalMs, snippets.length, startExportProgress, stopExportProgress]);
 
   useEffect(() => {
     if (!videoStatus) return;

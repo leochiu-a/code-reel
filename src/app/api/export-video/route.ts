@@ -1,13 +1,5 @@
 import { NextResponse } from "next/server";
-import {
-  access,
-  copyFile,
-  mkdir,
-  mkdtemp,
-  readFile,
-  rm,
-  writeFile,
-} from "node:fs/promises";
+import { access, copyFile, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { spawn } from "node:child_process";
@@ -72,16 +64,16 @@ const resolveChromePath = async () => {
           "/Applications/Chromium.app/Contents/MacOS/Chromium",
         ]
       : process.platform === "win32"
-      ? [
-          "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
-          "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
-        ]
-      : [
-          "/usr/bin/google-chrome",
-          "/usr/bin/google-chrome-stable",
-          "/usr/bin/chromium",
-          "/usr/bin/chromium-browser",
-        ];
+        ? [
+            "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+            "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
+          ]
+        : [
+            "/usr/bin/google-chrome",
+            "/usr/bin/google-chrome-stable",
+            "/usr/bin/chromium",
+            "/usr/bin/chromium-browser",
+          ];
 
   for (const candidate of candidates) {
     try {
@@ -102,10 +94,7 @@ export async function POST(request: Request) {
   try {
     const body = (await request.json()) as ExportVideoRequest;
     if (!body?.snippets?.length || !body.settings) {
-      return NextResponse.json(
-        { error: "Missing snippets or settings." },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Missing snippets or settings." }, { status: 400 });
     }
 
     const debug = process.env.PUPPETEER_DEBUG === "1";
@@ -123,11 +112,9 @@ export async function POST(request: Request) {
         ? body.deviceScaleFactor
         : EXPORT_DEVICE_SCALE;
     const intervalMs =
-      body.intervalMs && body.intervalMs > 0
-        ? body.intervalMs
-        : PLAY_ANIMATION_INTERVAL_MS;
+      body.intervalMs && body.intervalMs > 0 ? body.intervalMs : PLAY_ANIMATION_INTERVAL_MS;
     const pagePath = body.pagePath ?? EXPORT_PAGE_PATH;
-    const headless = debug ? false : body.headless ?? true;
+    const headless = debug ? false : (body.headless ?? true);
     const publicOrigin = process.env.PUBLIC_ORIGIN?.trim();
     let origin: string;
     if (publicOrigin) {
@@ -168,16 +155,13 @@ export async function POST(request: Request) {
         localStorage.setItem("codesnap-current-step", "0");
         localStorage.setItem("codesnap-settings", JSON.stringify(settings));
       },
-      { snippets: hydratedSnippets, settings: body.settings }
+      { snippets: hydratedSnippets, settings: body.settings },
     );
     await page.reload({ waitUntil: "networkidle0" });
 
-    await page.waitForFunction(
-      () => (window as any).__codesnap_ready === true,
-      {
-        timeout: 15000,
-      }
-    );
+    await page.waitForFunction(() => (window as any).__codesnap_ready === true, {
+      timeout: 15000,
+    });
     await page.waitForSelector("#code-capture-area");
     const captureSize = await page.evaluate(() => {
       const styleId = "codesnap-export-style";
@@ -276,7 +260,7 @@ export async function POST(request: Request) {
 
       const framePath = path.join(
         framesDir,
-        `frame-${String(frameIndex).padStart(4, "0")}.${frameExtension}`
+        `frame-${String(frameIndex).padStart(4, "0")}.${frameExtension}`,
       );
       framePaths.push(framePath);
       frameWrites.push(writeFile(framePath, Buffer.from(event.data, "base64")));
@@ -309,10 +293,9 @@ export async function POST(request: Request) {
 
     if (body.snippets.length > 1) {
       try {
-        await page.waitForFunction(
-          () => (window as any).__codesnap_previewIndex >= 1,
-          { timeout: Math.max(intervalMs * 2, 3000) }
-        );
+        await page.waitForFunction(() => (window as any).__codesnap_previewIndex >= 1, {
+          timeout: Math.max(intervalMs * 2, 3000),
+        });
       } catch {
         // Continue even if the transition signal is late.
       }
@@ -335,17 +318,14 @@ export async function POST(request: Request) {
       for (let index = framePaths.length; index < totalFrames; index += 1) {
         const framePath = path.join(
           framesDir,
-          `frame-${String(index).padStart(4, "0")}.${frameExtension}`
+          `frame-${String(index).padStart(4, "0")}.${frameExtension}`,
         );
         await copyFile(lastFrame, framePath);
         framePaths.push(framePath);
       }
     }
 
-    const outputPath = path.join(
-      tempDir,
-      `codesnap-${Date.now().toString()}.mp4`
-    );
+    const outputPath = path.join(tempDir, `codesnap-${Date.now().toString()}.mp4`);
     await runCommand("ffmpeg", [
       "-y",
       "-framerate",
@@ -375,16 +355,14 @@ export async function POST(request: Request) {
       {
         error: error instanceof Error ? error.message : "Video export failed.",
       },
-      { status: 500 }
+      { status: 500 },
     );
   } finally {
     if (browser) {
       await browser.close().catch(() => undefined);
     }
     if (tempDir) {
-      await rm(tempDir, { recursive: true, force: true }).catch(
-        () => undefined
-      );
+      await rm(tempDir, { recursive: true, force: true }).catch(() => undefined);
     }
   }
 }

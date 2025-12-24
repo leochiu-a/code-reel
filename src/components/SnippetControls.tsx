@@ -73,10 +73,7 @@ type RemoveButtonProps = {
   onRemoveSnippet: () => void;
 };
 
-const RemoveButton: React.FC<RemoveButtonProps> = ({
-  snippets,
-  onRemoveSnippet,
-}) => (
+const RemoveButton: React.FC<RemoveButtonProps> = ({ snippets, onRemoveSnippet }) => (
   <button
     onClick={onRemoveSnippet}
     disabled={snippets.length === 1}
@@ -137,10 +134,7 @@ const SnippetControls: React.FC<SnippetControlsProps> = ({
       </div>
 
       <div className="flex items-center gap-2">
-        <ClientOnlyRemoveButton
-          snippets={snippets}
-          onRemoveSnippet={onRemoveSnippet}
-        />
+        <ClientOnlyRemoveButton snippets={snippets} onRemoveSnippet={onRemoveSnippet} />
         <div className="relative">
           <button
             onClick={() => setIsResetOpen((prev) => !prev)}
@@ -150,9 +144,7 @@ const SnippetControls: React.FC<SnippetControlsProps> = ({
           </button>
           {isResetOpen && (
             <div className="absolute right-0 z-10 mt-2 w-56 rounded-xl border border-white/10 bg-slate-950 p-3 text-xs text-slate-200 shadow-2xl">
-              <p className="mb-3 text-slate-300">
-                Reset all steps and start over?
-              </p>
+              <p className="mb-3 text-slate-300">Reset all steps and start over?</p>
               <div className="flex items-center justify-end gap-2">
                 <button
                   onClick={() => setIsResetOpen(false)}

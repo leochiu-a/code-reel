@@ -23,7 +23,7 @@ const useStepState = ({ defaultCode, intervalMs }: UseStepStateOptions) => {
 
   const [storedSnippets, setStoredSnippets] = useLocalStorage<CodeSnippet[]>(
     "codesnap-snippets",
-    []
+    [],
   );
 
   const initialId = useMemo(() => {
@@ -44,16 +44,13 @@ const useStepState = ({ defaultCode, intervalMs }: UseStepStateOptions) => {
   const [previewIndex, setPreviewIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  const [storedStepIndex, setStoredStepIndex] = useLocalStorage<number>(
-    "codesnap-current-step",
-    0
-  );
+  const [storedStepIndex, setStoredStepIndex] = useLocalStorage<number>("codesnap-current-step", 0);
   const [isResetOpen, setIsResetOpen] = useState(false);
   const hasAppliedStoredRef = useRef(false);
 
   const activeSnippetIndex = useMemo(
     () => snippets.findIndex((snippet) => snippet.id === activeSnippetId),
-    [snippets, activeSnippetId]
+    [snippets, activeSnippetId],
   );
 
   const activeSnippet = snippets[activeSnippetIndex] ?? snippets[0];
@@ -85,10 +82,7 @@ const useStepState = ({ defaultCode, intervalMs }: UseStepStateOptions) => {
     if (hasAppliedStoredRef.current) return;
     if (snippets.length === 0) return;
 
-    const clampedIndex = Math.max(
-      0,
-      Math.min(storedStepIndex, snippets.length - 1)
-    );
+    const clampedIndex = Math.max(0, Math.min(storedStepIndex, snippets.length - 1));
     const targetSnippet = snippets[clampedIndex];
 
     if (!targetSnippet) return;
@@ -104,7 +98,7 @@ const useStepState = ({ defaultCode, intervalMs }: UseStepStateOptions) => {
   useEffect(() => {
     const index = Math.max(
       0,
-      snippets.findIndex((snippet) => snippet.id === activeSnippetId)
+      snippets.findIndex((snippet) => snippet.id === activeSnippetId),
     );
     if (index !== storedStepIndex) {
       setStoredStepIndex(index);
@@ -119,10 +113,8 @@ const useStepState = ({ defaultCode, intervalMs }: UseStepStateOptions) => {
   const handleSnippetChange = (nextCode: string) => {
     setSnippets((prev) =>
       prev.map((snippet) =>
-        snippet.id === activeSnippet.id
-          ? { ...snippet, code: nextCode }
-          : snippet
-      )
+        snippet.id === activeSnippet.id ? { ...snippet, code: nextCode } : snippet,
+      ),
     );
   };
 
@@ -147,12 +139,8 @@ const useStepState = ({ defaultCode, intervalMs }: UseStepStateOptions) => {
   const handleRemoveSnippet = () => {
     setSnippets((prev) => {
       if (prev.length === 1) return prev;
-      const currentIndex = prev.findIndex(
-        (snippet) => snippet.id === activeSnippet.id
-      );
-      const next = normalizeStepTitles(
-        prev.filter((snippet) => snippet.id !== activeSnippet.id)
-      );
+      const currentIndex = prev.findIndex((snippet) => snippet.id === activeSnippet.id);
+      const next = normalizeStepTitles(prev.filter((snippet) => snippet.id !== activeSnippet.id));
       const nextIndex = Math.max(0, Math.min(currentIndex, next.length - 1));
       const nextSnippet = next[nextIndex];
       if (nextSnippet) {
@@ -181,9 +169,7 @@ const useStepState = ({ defaultCode, intervalMs }: UseStepStateOptions) => {
       next.splice(toIndex, 0, moved);
 
       const normalized = normalizeStepTitles(next);
-      const nextActiveIndex = normalized.findIndex(
-        (snippet) => snippet.id === activeSnippetId
-      );
+      const nextActiveIndex = normalized.findIndex((snippet) => snippet.id === activeSnippetId);
 
       if (nextActiveIndex >= 0) {
         setPreviewIndex(nextActiveIndex);

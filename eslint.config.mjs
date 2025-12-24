@@ -17,7 +17,7 @@ const eslintConfig = defineConfig(
         config: false,
       },
     },
-  }
+  },
 );
 
 export default eslintConfig;

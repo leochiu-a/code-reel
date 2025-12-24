@@ -8,12 +8,7 @@ import { ShikiMagicMove } from "shiki-magic-move/react";
 import { shikiToMonaco } from "@shikijs/monaco";
 
 import { EditorSettings } from "../types";
-import {
-  LANGUAGES,
-  MAGIC_MOVE_DELAY_MOVE_S,
-  MAGIC_MOVE_DURATION_MS,
-  THEMES,
-} from "../constants";
+import { LANGUAGES, MAGIC_MOVE_DELAY_MOVE_S, MAGIC_MOVE_DURATION_MS, THEMES } from "../constants";
 import { getHighlighter, getThemeBackground } from "../services/shiki";
 
 interface CodeEditorProps {
@@ -40,9 +35,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
 }) => {
   const editorRef = useRef<Monaco.editor.IStandaloneCodeEditor | null>(null);
   const monacoRef = useRef<typeof Monaco | null>(null);
-  const highlighterRef = useRef<Awaited<
-    ReturnType<typeof getHighlighter>
-  > | null>(null);
+  const highlighterRef = useRef<Awaited<ReturnType<typeof getHighlighter>> | null>(null);
   const sizeListenerRef = useRef<Monaco.IDisposable | null>(null);
   const shikiReadyRef = useRef(false);
   const [editorHeight, setEditorHeight] = useState(180);
@@ -141,10 +134,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
         )}
 
         <div className="fira-code relative flex min-h-[100px]">
-          <div
-            className="relative flex-1"
-            style={{ backgroundColor: themeBackground }}
-          >
+          <div className="relative flex-1" style={{ backgroundColor: themeBackground }}>
             {showPreview && preview && (
               <div
                 style={{
@@ -168,13 +158,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
                 />
               </div>
             )}
-            <div
-              className={
-                showPreview
-                  ? "pointer-events-none absolute inset-0 opacity-0"
-                  : ""
-              }
-            >
+            <div className={showPreview ? "pointer-events-none absolute inset-0 opacity-0" : ""}>
               <Editor
                 value={code}
                 onChange={(value) => onCodeChange(value ?? "")}
