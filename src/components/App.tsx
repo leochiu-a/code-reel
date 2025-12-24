@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import type { HighlighterCore } from "shiki/core";
 import { useLocalStorage } from "usehooks-ts";
@@ -18,6 +18,7 @@ import useVideoExport from "../hooks/useVideoExport";
 import SnippetControls from "./SnippetControls";
 import SettingsPanel from "./SettingsPanel";
 import CodeEditor from "./CodeEditor";
+import VideoOnboarding from "./VideoOnboarding";
 
 const DEFAULT_CODE = `function helloWorld() {
   console.log("Hello from CodeSnap!");
@@ -29,8 +30,7 @@ const DEFAULT_CODE = `function helloWorld() {
   return greeting;
 }`;
 
-const countLines = (code: string) =>
-  (code || "").split(/\r\n|\r|\n/).length || 1;
+const countLines = (code: string) => (code || "").split(/\r\n|\r|\n/).length || 1;
 
 const App: React.FC = () => {
   const searchParams = useSearchParams();
@@ -57,29 +57,21 @@ const App: React.FC = () => {
   const [highlighter, setHighlighter] = useState<HighlighterCore | null>(null);
   const [storedSettings, setStoredSettings] = useLocalStorage<EditorSettings>(
     "codesnap-settings",
-    DEFAULT_EDITOR_SETTINGS
+    DEFAULT_EDITOR_SETTINGS,
   );
   const [settings, setSettings] = useState<EditorSettings>(storedSettings);
-  const { onExport, onCopyImage, isCopying, copyStatus, isCopySupported } =
-    useImageExport();
+  const { onExport, onCopyImage, isCopying, copyStatus, isCopySupported } = useImageExport();
+  const [isVideoOnboardingOpen, setIsVideoOnboardingOpen] = useState(false);
+  const mainRef = useRef<HTMLDivElement | null>(null);
   const maxLineCount = useMemo(
     () => Math.max(1, ...snippets.map((snippet) => countLines(snippet.code))),
-    [snippets]
+    [snippets],
   );
   const lineHeight = Math.round(settings.fontSize * 1.6);
   const maxCaptureHeight =
-    settings.padding * 2 +
-    (settings.windowControls ? 48 : 0) +
-    maxLineCount * lineHeight +
-    52;
+    settings.padding * 2 + (settings.windowControls ? 48 : 0) + maxLineCount * lineHeight + 52;
 
-  const {
-    handleExportVideo,
-    isExportingVideo,
-    videoStatus,
-    exportProgress,
-    exportEtaMs,
-  } = useVideoExport({
+  const { isExportingVideo, videoStatus, exportProgress, exportEtaMs } = useVideoExport({
     snippets,
     settings,
     intervalMs: PLAY_ANIMATION_INTERVAL_MS,
@@ -89,15 +81,22 @@ const App: React.FC = () => {
     setSettings((prev) => ({ ...prev, ...newSettings }));
   };
 
-  const themeConfig =
-    THEMES[settings.theme] ?? THEMES[DEFAULT_EDITOR_SETTINGS.theme];
+  const themeConfig = THEMES[settings.theme] ?? THEMES[DEFAULT_EDITOR_SETTINGS.theme];
   const shikiTheme = themeConfig.shikiTheme;
   const languageConfig = LANGUAGES[settings.language];
   const shouldShowPreview = Boolean(highlighter) && (isPlaying || isExportMode);
 
+  const handleOpenVideoOnboarding = useCallback(() => {
+    setIsVideoOnboardingOpen(true);
+  }, []);
+
   useEffect(() => {
     setStoredSettings(settings);
   }, [settings, setStoredSettings]);
+
+  // ================================
+  // Window global variables for video export api
+  // ================================
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -150,7 +149,7 @@ const App: React.FC = () => {
           settings={settings}
           onSettingsChange={handleSettingsChange}
           onExport={onExport}
-          onExportVideo={handleExportVideo}
+          onExportVideo={handleOpenVideoOnboarding}
           onCopyImage={onCopyImage}
           isCopying={isCopying}
           isExportingVideo={isExportingVideo}
@@ -163,55 +162,67 @@ const App: React.FC = () => {
       )}
 
       {/* Main Preview Area */}
-      <main className="flex flex-1 items-center justify-center overflow-y-auto bg-[radial-gradient(circle_at_center,var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black p-8 lg:p-12">
+      <main
+        ref={mainRef}
+        className="flex flex-1 items-center justify-center overflow-y-auto bg-[radial-gradient(circle_at_center,var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black p-8 lg:p-12"
+      >
         <div className="relative flex w-full max-w-5xl flex-col gap-6 duration-700">
           {!isExportMode && (
             <div className="mb-4 text-center">
-              <h1 className="mb-2 text-4xl font-extrabold tracking-tight text-white">
-                CodeSnap
-              </h1>
+              <h1 className="mb-2 text-4xl font-extrabold tracking-tight text-white">CodeSnap</h1>
               <p className="text-slate-400">
                 Transform your code into professional sharing-ready images.
               </p>
             </div>
           )}
 
-          <CodeEditor
-            code={activeSnippet.code}
-            onCodeChange={handleSnippetChange}
-            settings={settings}
-            showPreview={shouldShowPreview}
-            minCaptureHeight={maxCaptureHeight}
-            preview={
-              highlighter
-                ? {
-                    highlighter,
-                    code: previewSnippet.code,
-                    language: languageConfig.shiki,
-                    theme: shikiTheme,
-                  }
-                : undefined
-            }
-          />
-
-          {!isExportMode && (
-            <SnippetControls
-              snippets={snippets}
-              activeSnippetId={activeSnippet.id}
-              isResetOpen={isResetOpen}
-              setIsResetOpen={setIsResetOpen}
-              onSelectSnippet={handleSelectSnippet}
-              onAddSnippet={handleAddSnippet}
-              onRemoveSnippet={handleRemoveSnippet}
-              onReorderSnippet={handleReorderSnippet}
-              onResetConfirm={handleResetConfirm}
-              onPlay={handlePlay}
-              isPlaying={isPlaying}
-              isPlayDisabled={snippets.length < 2 || !highlighter}
+          <div id="onboarding-highlight-area" className="flex flex-col gap-6">
+            <CodeEditor
+              code={activeSnippet.code}
+              onCodeChange={handleSnippetChange}
+              settings={settings}
+              showPreview={shouldShowPreview}
+              minCaptureHeight={maxCaptureHeight}
+              preview={
+                highlighter
+                  ? {
+                      highlighter,
+                      code: previewSnippet.code,
+                      language: languageConfig.shiki,
+                      theme: shikiTheme,
+                    }
+                  : undefined
+              }
             />
-          )}
+
+            {!isExportMode && (
+              <SnippetControls
+                snippets={snippets}
+                activeSnippetId={activeSnippet.id}
+                isResetOpen={isResetOpen}
+                setIsResetOpen={setIsResetOpen}
+                onSelectSnippet={handleSelectSnippet}
+                onAddSnippet={handleAddSnippet}
+                onRemoveSnippet={handleRemoveSnippet}
+                onReorderSnippet={handleReorderSnippet}
+                onResetConfirm={handleResetConfirm}
+                onPlay={handlePlay}
+                isPlaying={isPlaying}
+                isPlayDisabled={snippets.length < 2 || !highlighter}
+              />
+            )}
+          </div>
         </div>
       </main>
+
+      {!isExportMode && (
+        <VideoOnboarding
+          open={isVideoOnboardingOpen}
+          onClose={() => setIsVideoOnboardingOpen(false)}
+          targetId="onboarding-highlight-area"
+          scrollContainerRef={mainRef}
+        />
+      )}
     </div>
   );
 };
