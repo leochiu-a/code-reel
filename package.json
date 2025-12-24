@@ -49,7 +49,10 @@
     "typescript": "~5.8.2"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx}": "pnpm eslint --max-warnings=0 && pnpm oxfmt"
+    "*.{js,jsx,ts,tsx}": [
+      "pnpm eslint --max-warnings=0",
+      "pnpm oxfmt"
+    ]
   },
   "pnpm": {
     "overrides": {
