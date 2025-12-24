@@ -8,7 +8,8 @@
     "dev:debug": "PUPPETEER_DEBUG=1 next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "prepare": "husky"
   },
   "dependencies": {
     "@google/genai": "^1.34.0",
@@ -32,6 +33,8 @@
     "eslint": "^9.39.2",
     "eslint-config-next": "16.1.1",
     "eslint-plugin-tailwindcss": "4.0.0-beta.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
     "tailwindcss": "^4.1.13",
     "typescript": "~5.8.2"
   },
@@ -40,5 +43,8 @@
       "@types/react": "19.2.7",
       "@types/react-dom": "19.2.3"
     }
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": "pnpm eslint --max-warnings=0"
   }
 }
