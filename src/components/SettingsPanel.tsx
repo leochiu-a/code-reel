@@ -3,7 +3,7 @@
 
 import React from 'react';
 import { EditorSettings, Theme, Language } from '../types';
-import { GRADIENTS, THEMES } from '../constants';
+import { GRADIENTS, LANGUAGES, THEMES } from '../constants';
 
 interface SettingsPanelProps {
   settings: EditorSettings;
@@ -67,14 +67,11 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
             onChange={(e) => onSettingsChange({ language: e.target.value as Language })}
             className="w-full rounded-lg border border-slate-700 bg-slate-800 p-2 text-sm outline-none focus:ring-2 focus:ring-blue-500"
           >
-            <option value="javascript">JavaScript</option>
-            <option value="typescript">TypeScript</option>
-            <option value="python">Python</option>
-            <option value="rust">Rust</option>
-            <option value="go">Go</option>
-            <option value="cpp">C++</option>
-            <option value="html">HTML</option>
-            <option value="css">CSS</option>
+            {Object.entries(LANGUAGES).map(([key, language]) => (
+              <option key={key} value={key}>
+                {language.label}
+              </option>
+            ))}
           </select>
         </div>
 

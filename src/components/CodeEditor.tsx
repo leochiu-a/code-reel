@@ -9,6 +9,7 @@ import { shikiToMonaco } from "@shikijs/monaco";
 
 import { EditorSettings } from "../types";
 import {
+  LANGUAGES,
   MAGIC_MOVE_DELAY_MOVE_S,
   MAGIC_MOVE_DURATION_MS,
   THEMES,
@@ -48,6 +49,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   const [themeBackground, setThemeBackground] = useState("#0b0b0b");
   const [themeReady, setThemeReady] = useState(false);
   const shikiTheme = THEMES[settings.theme].shikiTheme;
+  const languageConfig = LANGUAGES[settings.language];
   const lineHeight = Math.round(settings.fontSize * 1.6);
 
   const updateEditorHeight = useCallback(() => {
@@ -63,6 +65,8 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   const handleMount: OnMount = (editor, monaco) => {
     editorRef.current = editor;
     monacoRef.current = monaco;
+
+    monaco.languages.register({ id: "vue" });
 
     const setup = async () => {
       const highlighter = await getHighlighter();
@@ -82,7 +86,6 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
         updateEditorHeight();
       });
       updateEditorHeight();
-
     };
 
     void setup();
@@ -132,7 +135,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
             <div className="h-3 w-3 rounded-full bg-yellow-500" />
             <div className="h-3 w-3 rounded-full bg-green-500" />
             <div className="ml-2 font-mono text-xs tracking-widest uppercase opacity-40">
-              {settings.language}
+              {languageConfig.label}
             </div>
           </div>
         )}
@@ -175,13 +178,14 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
               <Editor
                 value={code}
                 onChange={(value) => onCodeChange(value ?? "")}
-                language={settings.language}
+                language={languageConfig.monaco}
                 theme={themeReady ? shikiTheme : "vs-dark"}
                 onMount={handleMount}
                 height={editorHeight}
                 options={{
                   fontFamily: "Fira Code, monospace",
                   fontSize: settings.fontSize,
+                  fontLigatures: true,
                   lineHeight,
                   lineNumbers: settings.showLineNumbers ? "on" : "off",
                   lineDecorationsWidth: 20,

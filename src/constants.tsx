@@ -42,6 +42,19 @@ export const THEMES: Record<Theme, { label: string; shikiTheme: string }> = {
   }
 };
 
+export const LANGUAGES = {
+  javascript: { label: 'JavaScript', monaco: 'javascript', shiki: 'javascript' },
+  typescript: { label: 'TypeScript', monaco: 'typescript', shiki: 'typescript' },
+  react: { label: 'React (JSX)', monaco: 'javascriptreact', shiki: 'jsx' },
+  vue: { label: 'Vue', monaco: 'vue', shiki: 'vue' },
+  python: { label: 'Python', monaco: 'python', shiki: 'python' },
+  rust: { label: 'Rust', monaco: 'rust', shiki: 'rust' },
+  go: { label: 'Go', monaco: 'go', shiki: 'go' },
+  cpp: { label: 'C++', monaco: 'cpp', shiki: 'cpp' },
+  html: { label: 'HTML', monaco: 'html', shiki: 'html' },
+  css: { label: 'CSS', monaco: 'css', shiki: 'css' }
+} as const;
+
 export const MAGIC_MOVE_DURATION_MS = 800;
 export const MAGIC_MOVE_DELAY_MOVE_S = 0.4;
 // Keep the step switch in sync with ShikiMagicMove so the next step starts

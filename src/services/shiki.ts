@@ -1,16 +1,9 @@
 import { createHighlighter, type Highlighter } from 'shiki';
-import { THEMES } from '../constants';
+import { LANGUAGES, THEMES } from '../constants';
 
-const SHIKI_LANGUAGES = [
-  'javascript',
-  'typescript',
-  'python',
-  'html',
-  'css',
-  'rust',
-  'go',
-  'cpp'
-] as const;
+const SHIKI_LANGUAGES = Array.from(
+  new Set(Object.values(LANGUAGES).map((language) => language.shiki))
+);
 
 let highlighterPromise: Promise<Highlighter> | null = null;
 

@@ -8,6 +8,7 @@ import { useLocalStorage } from "usehooks-ts";
 import { EditorSettings } from "../types";
 import {
   DEFAULT_EDITOR_SETTINGS,
+  LANGUAGES,
   PLAY_ANIMATION_INTERVAL_MS,
   THEMES,
 } from "../constants";
@@ -98,6 +99,7 @@ const App: React.FC = () => {
   };
 
   const shikiTheme = THEMES[settings.theme].shikiTheme;
+  const languageConfig = LANGUAGES[settings.language];
   const shouldShowPreview = Boolean(highlighter) && (isPlaying || isExportMode);
 
   useEffect(() => {
@@ -192,7 +194,7 @@ const App: React.FC = () => {
                 ? {
                     highlighter,
                     code: previewSnippet.code,
-                    language: settings.language,
+                    language: languageConfig.shiki,
                     theme: shikiTheme,
                   }
                 : undefined
