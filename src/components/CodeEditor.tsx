@@ -107,13 +107,15 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
 
   return (
     <div
-      className="relative mx-auto flex w-full max-w-4xl items-center justify-center overflow-hidden shadow-2xl transition-all duration-300"
+      className="relative mx-auto flex resize-x items-center justify-center overflow-auto shadow-2xl transition-all duration-300"
       id="code-capture-area"
       style={{
         padding: `${settings.padding}px`,
         background: settings.background,
         borderRadius: "16px",
         minHeight: minCaptureHeight,
+        width: "min(100%, 64rem)",
+        minWidth: "320px",
       }}
     >
       <div
