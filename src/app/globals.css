@@ -57,6 +57,11 @@ body {
   color: #f8fafc;
 }
 
+/* Fix Monaco Editor font styles, prevent italic text */
+.monaco-editor * {
+  font-style: normal !important;
+}
+
 .fira-code {
   font-family:
     var(--font-fira), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
