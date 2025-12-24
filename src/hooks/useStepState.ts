@@ -15,13 +15,20 @@ type UseStepStateOptions = {
 };
 
 const useStepState = ({ defaultCode, intervalMs }: UseStepStateOptions) => {
+  const normalizeStepTitles = (list: CodeSnippet[]) =>
+    list.map((snippet, index) => ({
+      ...snippet,
+      title: `Step ${index + 1}`,
+    }));
   const initialSnippetIdRef = useRef(crypto.randomUUID());
   const [storedSnippets, setStoredSnippets] = useLocalStorage<CodeSnippet[]>(
     "codesnap-snippets",
     []
   );
   const [snippets, setSnippets] = useState<CodeSnippet[]>(() => {
-    if (storedSnippets.length > 0) return storedSnippets;
+    if (storedSnippets.length > 0) {
+      return normalizeStepTitles(storedSnippets);
+    }
     return [
       { id: initialSnippetIdRef.current, title: "Step 1", code: defaultCode },
     ];
@@ -107,16 +114,15 @@ const useStepState = ({ defaultCode, intervalMs }: UseStepStateOptions) => {
   const handleAddSnippet = () => {
     const id = crypto.randomUUID();
     setSnippets((prev) => {
-      const nextIndex = prev.length + 1;
       const baseCode = prev[prev.length - 1]?.code ?? "";
-      const next = [
+      const next = normalizeStepTitles([
         ...prev,
         {
           id,
-          title: `Step ${nextIndex}`,
+          title: "",
           code: baseCode,
         },
-      ];
+      ]);
       setActiveSnippetId(id);
       setPreviewIndex(next.length - 1);
       return next;
@@ -129,7 +135,9 @@ const useStepState = ({ defaultCode, intervalMs }: UseStepStateOptions) => {
       const currentIndex = prev.findIndex(
         (snippet) => snippet.id === activeSnippet.id
       );
-      const next = prev.filter((snippet) => snippet.id !== activeSnippet.id);
+      const next = normalizeStepTitles(
+        prev.filter((snippet) => snippet.id !== activeSnippet.id)
+      );
       const nextIndex = Math.max(0, Math.min(currentIndex, next.length - 1));
       const nextSnippet = next[nextIndex];
       if (nextSnippet) {
@@ -153,9 +161,7 @@ const useStepState = ({ defaultCode, intervalMs }: UseStepStateOptions) => {
 
   const handleResetConfirm = () => {
     const resetId = crypto.randomUUID();
-    const nextSnippets = [
-      { id: resetId, title: "Step 1", code: defaultCode },
-    ];
+    const nextSnippets = [{ id: resetId, title: "Step 1", code: defaultCode }];
     setSnippets(nextSnippets);
     setStoredSnippets(nextSnippets);
     setActiveSnippetId(resetId);
