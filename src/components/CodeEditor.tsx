@@ -8,12 +8,7 @@ import { ShikiMagicMove } from "shiki-magic-move/react";
 import { shikiToMonaco } from "@shikijs/monaco";
 
 import { EditorSettings } from "../types";
-import {
-  LANGUAGES,
-  MAGIC_MOVE_DELAY_MOVE_S,
-  MAGIC_MOVE_DURATION_MS,
-  THEMES,
-} from "../constants";
+import { LANGUAGES, MAGIC_MOVE_DELAY_MOVE_S, MAGIC_MOVE_DURATION_MS, THEMES } from "../constants";
 import { getHighlighter, getThemeBackground } from "../services/shiki";
 
 interface CodeEditorProps {
@@ -47,13 +42,10 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   const editorRef = useRef<Monaco.editor.IStandaloneCodeEditor | null>(null);
   const monacoRef = useRef<typeof Monaco | null>(null);
 
-  const highlighterRef = useRef<Awaited<
-    ReturnType<typeof getHighlighter>
-  > | null>(null);
+  const highlighterRef = useRef<Awaited<ReturnType<typeof getHighlighter>> | null>(null);
 
   const sizeListenerRef = useRef<Monaco.IDisposable | null>(null);
-  const highlightDecorationsRef =
-    useRef<Monaco.editor.IEditorDecorationsCollection | null>(null);
+  const highlightDecorationsRef = useRef<Monaco.editor.IEditorDecorationsCollection | null>(null);
   const mouseListenerRef = useRef<Monaco.IDisposable | null>(null);
 
   const highlightLineChangeRef = useRef<((line: number) => void) | null>(null);
@@ -66,9 +58,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   const [themeReady, setThemeReady] = useState(false);
 
   const [highlightCycle, setHighlightCycle] = useState(0);
-  const [moveTargets, setMoveTargets] = useState<
-    { id: number; from: number; to: number }[]
-  >([]);
+  const [moveTargets, setMoveTargets] = useState<{ id: number; from: number; to: number }[]>([]);
   const [fadeInLines, setFadeInLines] = useState<number[]>([]);
   const [fadeOutLines, setFadeOutLines] = useState<number[]>([]);
   const [moveActive, setMoveActive] = useState(false);
@@ -87,9 +77,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
     highlightSource.length > 0 ? highlightSource.split(/\r\n|\r|\n/).length : 1;
 
   const highlightLineNumbers = (highlightLines ?? [])
-    .filter(
-      (line) => Number.isFinite(line) && line > 0 && line <= highlightLineCount
-    )
+    .filter((line) => Number.isFinite(line) && line > 0 && line <= highlightLineCount)
     .filter((line, index, list) => list.indexOf(line) === index)
     .sort((a, b) => a - b);
 
@@ -144,10 +132,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
         const handleChange = highlightLineChangeRef.current;
 
         if (!handleChange) return;
-        if (
-          event.target.type !==
-          monaco.editor.MouseTargetType.GUTTER_LINE_NUMBERS
-        ) {
+        if (event.target.type !== monaco.editor.MouseTargetType.GUTTER_LINE_NUMBERS) {
           return;
         }
 
@@ -184,14 +169,27 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
       return;
     }
 
+    // If there are no lines to be highlighted (highlightLineNumbers is empty)
     if (highlightLineNumbers.length === 0) {
+      const prevLines = prevHighlightLinesRef.current;
+
       prevHighlightLinesRef.current = [];
+
       setMoveTargets([]);
       setFadeInLines([]);
-      setFadeOutLines([]);
+      setFadeOutLines(prevLines); // Show fade-out animation for previously highlighted lines
       setMoveActive(false);
       setHighlightCycle((prev) => prev + 1);
-      return;
+
+      // The following timeout clears fadeOutLines after the fade-out animation finishes.
+      // This allows the fade-out effect to play before completely removing the previous highlights.
+      const timeout = window.setTimeout(() => {
+        setFadeOutLines([]);
+      }, highlightDelayMs + 400);
+
+      return () => {
+        window.clearTimeout(timeout);
+      };
     }
 
     const prevLines = prevHighlightLinesRef.current;
@@ -264,10 +262,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
           backgroundColor: themeBackground,
           borderRadius: `${settings.borderRadius}px`,
           fontSize: `${settings.fontSize}px`,
-          boxShadow:
-            settings.borderShadow === "border-none"
-              ? "none"
-              : settings.borderShadow,
+          boxShadow: settings.borderShadow === "border-none" ? "none" : settings.borderShadow,
         }}
       >
         {settings.windowControls && (
@@ -278,10 +273,10 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
               <div className="h-3 w-3 rounded-full bg-[#27c93f] shadow-inner" />
             </div>
             <div className="flex items-center gap-2 opacity-50">
-               {/* Optional File Icon could go here */}
-               <span className="font-mono text-xs font-medium tracking-wide text-white/70">
+              {/* Optional File Icon could go here */}
+              <span className="font-mono text-xs font-medium tracking-wide text-white/70">
                 {languageConfig.label}
-               </span>
+              </span>
             </div>
           </div>
         )}
@@ -372,9 +367,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
           )}
           <div
             className={
-              showPreview
-                ? "pointer-events-none absolute inset-0 z-10 opacity-0"
-                : "relative z-10"
+              showPreview ? "pointer-events-none absolute inset-0 z-10 opacity-0" : "relative z-10"
             }
           >
             <Editor
