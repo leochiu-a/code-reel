@@ -64,6 +64,9 @@ const useStepState = ({ defaultCode, intervalMs }: UseStepStateOptions) => {
       });
       return;
     }
+    const isLastStep = previewIndex >= snippets.length - 1;
+    // Add 1 second to the last step to ensure the last step is displayed for at least 1 second
+    const timerDuration = isLastStep ? intervalMs + 1000 : intervalMs;
     const timer = window.setTimeout(() => {
       setPreviewIndex((prev) => {
         const next = prev + 1;
@@ -73,7 +76,7 @@ const useStepState = ({ defaultCode, intervalMs }: UseStepStateOptions) => {
         }
         return next;
       });
-    }, intervalMs);
+    }, timerDuration);
 
     return () => window.clearTimeout(timer);
   }, [intervalMs, isPlaying, previewIndex, snippets.length]);
