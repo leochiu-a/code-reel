@@ -259,12 +259,17 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
         }}
       >
         {settings.windowControls && (
-          <div className="flex items-center gap-2 border-b border-white/5 p-4">
-            <div className="h-3 w-3 rounded-full bg-red-500" />
-            <div className="h-3 w-3 rounded-full bg-yellow-500" />
-            <div className="h-3 w-3 rounded-full bg-green-500" />
-            <div className="ml-2 font-mono text-xs tracking-widest uppercase opacity-40">
-              {languageConfig.label}
+          <div className="relative flex h-10 items-center justify-center border-b border-white/5 bg-white/[0.02] px-4">
+            <div className="absolute left-4 flex gap-2">
+              <div className="h-3 w-3 rounded-full bg-[#ff5f56] shadow-inner" />
+              <div className="h-3 w-3 rounded-full bg-[#ffbd2e] shadow-inner" />
+              <div className="h-3 w-3 rounded-full bg-[#27c93f] shadow-inner" />
+            </div>
+            <div className="flex items-center gap-2 opacity-50">
+               {/* Optional File Icon could go here */}
+               <span className="font-mono text-xs font-medium tracking-wide text-white/70">
+                {languageConfig.label}
+               </span>
             </div>
           </div>
         )}

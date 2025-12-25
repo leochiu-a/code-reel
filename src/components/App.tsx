@@ -159,7 +159,7 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-[#0f172a]">
+    <div className="flex h-screen w-full overflow-hidden bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-[#0f172a] to-black text-slate-100 selection:bg-blue-500/30 selection:text-blue-200">
       {/* Settings Panel on the Left */}
       {!isExportMode && (
         <SettingsPanel
@@ -181,12 +181,14 @@ const App: React.FC = () => {
       {/* Main Preview Area */}
       <main
         ref={mainRef}
-        className="flex flex-1 items-center justify-center overflow-y-auto bg-[radial-gradient(circle_at_center,var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black p-8 lg:p-12"
+        className="flex flex-1 items-center justify-center overflow-y-auto p-8 lg:p-12"
       >
         <div className="relative flex w-full max-w-5xl flex-col gap-6 duration-700">
           {!isExportMode && (
             <div className="mb-4 text-center">
-              <h1 className="mb-2 text-4xl font-extrabold tracking-tight text-white">CodeSnap</h1>
+              <h1 className="mb-2 bg-gradient-to-r from-white to-slate-400 bg-clip-text text-4xl font-extrabold tracking-tight text-transparent drop-shadow-sm">
+                CodeSnap
+              </h1>
               <p className="text-slate-400">
                 Transform your code into professional sharing-ready images.
               </p>
