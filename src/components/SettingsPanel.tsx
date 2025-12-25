@@ -143,7 +143,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
                 if (!value) return;
                 onSettingsChange({ padding: parseInt(value, 10) });
               }}
-              spacing={0}
+              spacing={2}
               className="w-full"
             >
               {paddingOptions.map((value) => (
@@ -171,7 +171,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
                 if (!value) return;
                 onSettingsChange({ fontSize: parseInt(value, 10) });
               }}
-              spacing={0}
+              spacing={2}
               className="w-full"
             >
               {fontSizeOptions.map((value) => (
@@ -199,7 +199,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
                 if (!value) return;
                 onSettingsChange({ borderRadius: parseInt(value, 10) });
               }}
-              spacing={0}
+              spacing={2}
               className="w-full"
             >
               {radiusOptions.map((value) => (
@@ -227,7 +227,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
                 if (!value) return;
                 onSettingsChange({ borderShadow: value });
               }}
-              spacing={0}
+              spacing={2}
               className="w-full"
             >
               {borderShadowOptions.map((option) => (
