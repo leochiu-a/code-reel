@@ -8,7 +8,12 @@ import { ShikiMagicMove } from "shiki-magic-move/react";
 import { shikiToMonaco } from "@shikijs/monaco";
 
 import { EditorSettings } from "../types";
-import { LANGUAGES, MAGIC_MOVE_DELAY_MOVE_S, MAGIC_MOVE_DURATION_MS, THEMES } from "../constants";
+import {
+  LANGUAGES,
+  MAGIC_MOVE_DELAY_MOVE_S,
+  MAGIC_MOVE_DURATION_MS,
+  THEMES,
+} from "../constants";
 import { getHighlighter, getThemeBackground } from "../services/shiki";
 
 interface CodeEditorProps {
@@ -16,6 +21,8 @@ interface CodeEditorProps {
   onCodeChange: (code: string) => void;
   settings: EditorSettings;
   showPreview?: boolean;
+  highlightLines?: number[];
+  onHighlightLineChange?: (line: number) => void;
   preview?: {
     highlighter: HighlighterCore;
     code: string;
@@ -30,13 +37,23 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   onCodeChange,
   settings,
   showPreview = false,
+  highlightLines,
+  onHighlightLineChange,
   preview,
   minCaptureHeight,
 }) => {
   const editorRef = useRef<Monaco.editor.IStandaloneCodeEditor | null>(null);
   const monacoRef = useRef<typeof Monaco | null>(null);
-  const highlighterRef = useRef<Awaited<ReturnType<typeof getHighlighter>> | null>(null);
+  const highlighterRef = useRef<Awaited<
+    ReturnType<typeof getHighlighter>
+  > | null>(null);
   const sizeListenerRef = useRef<Monaco.IDisposable | null>(null);
+  const highlightDecorationsRef =
+    useRef<Monaco.editor.IEditorDecorationsCollection | null>(null);
+  const mouseListenerRef = useRef<Monaco.IDisposable | null>(null);
+  const highlightLineChangeRef = useRef<((line: number) => void) | null>(
+    null
+  );
   const shikiReadyRef = useRef(false);
   const [editorHeight, setEditorHeight] = useState(180);
   const [themeBackground, setThemeBackground] = useState("#0b0b0b");
@@ -44,11 +61,30 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   const shikiTheme = THEMES[settings.theme].shikiTheme;
   const languageConfig = LANGUAGES[settings.language];
   const lineHeight = Math.round(settings.fontSize * 1.6);
+  const editorPadding = { top: 12, bottom: 12 };
+  const previewPaddingY = 12;
+  const previewOuterPadding = 4;
+  const highlightSource = showPreview && preview ? preview.code : code;
+  const highlightLineCount =
+    highlightSource.length > 0 ? highlightSource.split(/\r\n|\r|\n/).length : 1;
+  const highlightLineNumbers = (highlightLines ?? [])
+    .filter(
+      (line) => Number.isFinite(line) && line > 0 && line <= highlightLineCount
+    )
+    .filter((line, index, list) => list.indexOf(line) === index)
+    .sort((a, b) => a - b);
+
+  useEffect(() => {
+    highlightLineChangeRef.current = onHighlightLineChange ?? null;
+  }, [onHighlightLineChange]);
 
   const updateEditorHeight = useCallback(() => {
     if (!editorRef.current) return;
-    const height = Math.max(120, editorRef.current.getContentHeight());
+
+    const height = Math.max(24, editorRef.current.getContentHeight());
+
     setEditorHeight(height);
+
     editorRef.current.layout({
       width: editorRef.current.getLayoutInfo().width,
       height,
@@ -78,6 +114,28 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
       sizeListenerRef.current = editor.onDidContentSizeChange(() => {
         updateEditorHeight();
       });
+
+      highlightDecorationsRef.current?.clear();
+      highlightDecorationsRef.current = editor.createDecorationsCollection();
+
+      mouseListenerRef.current?.dispose();
+      mouseListenerRef.current = editor.onMouseDown((event) => {
+        const handleChange = highlightLineChangeRef.current;
+
+        if (!handleChange) return;
+        if (
+          event.target.type !==
+          monaco.editor.MouseTargetType.GUTTER_LINE_NUMBERS
+        ) {
+          return;
+        }
+
+        const lineNumber = event.target.position?.lineNumber;
+
+        if (!lineNumber) return;
+
+        handleChange(lineNumber);
+      });
       updateEditorHeight();
     };
 
@@ -96,8 +154,28 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   }, [code, settings.fontSize, settings.showLineNumbers, updateEditorHeight]);
 
   useEffect(() => {
+    if (!editorRef.current || !monacoRef.current) return;
+    const monaco = monacoRef.current;
+    const decorationsCollection = highlightDecorationsRef.current;
+    if (!decorationsCollection) return;
+
+    const decorations = highlightLineNumbers.map((line) => ({
+      range: new monaco.Range(line, 1, line, 1),
+      options: {
+        isWholeLine: true,
+        className: "my-line-highlight",
+        linesDecorationsClassName: "my-line-number-highlight",
+      },
+    }));
+
+    decorationsCollection.set(decorations);
+  }, [highlightLineNumbers]);
+
+  useEffect(() => {
     return () => {
       sizeListenerRef.current?.dispose();
+      mouseListenerRef.current?.dispose();
+      highlightDecorationsRef.current?.clear();
     };
   }, []);
 
@@ -120,7 +198,10 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
           backgroundColor: themeBackground,
           borderRadius: `${settings.borderRadius}px`,
           fontSize: `${settings.fontSize}px`,
-          boxShadow: settings.borderShadow === "border-none" ? "none" : settings.borderShadow,
+          boxShadow:
+            settings.borderShadow === "border-none"
+              ? "none"
+              : settings.borderShadow,
         }}
       >
         {settings.windowControls && (
@@ -134,10 +215,30 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
           </div>
         )}
 
-        <div className="fira-code min-h-[100px] overflow-hidden rounded-[36px] p-1">
+        <div
+          className="relative overflow-hidden p-1"
+          style={{ borderRadius: `${settings.borderRadius * 1.5}px` }}
+        >
+          {showPreview &&
+            highlightLineNumbers.map((line) => (
+              <div
+                key={`highlight-line-${line}`}
+                className="pointer-events-none absolute right-0 left-0 z-20"
+                style={{
+                  top: `${
+                    previewOuterPadding +
+                    previewPaddingY +
+                    (line - 1) * lineHeight
+                  }px`,
+                  height: `${lineHeight}px`,
+                  backgroundColor: "rgba(59, 130, 246, 0.2)",
+                }}
+              />
+            ))}
+
           {showPreview && preview && (
             <div
-              className="px-[17px] py-3"
+              className="relative z-10 px-[28.5px] py-3"
               style={{
                 fontSize: settings.fontSize,
                 lineHeight: `${lineHeight}px`,
@@ -158,7 +259,13 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
               />
             </div>
           )}
-          <div className={showPreview ? "pointer-events-none absolute inset-0 opacity-0" : ""}>
+          <div
+            className={
+              showPreview
+                ? "pointer-events-none absolute inset-0 z-10 opacity-0"
+                : "relative z-10"
+            }
+          >
             <Editor
               value={code}
               onChange={(value) => onCodeChange(value ?? "")}
@@ -173,7 +280,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
                 fontLigatures: true,
                 lineHeight,
                 lineNumbers: settings.showLineNumbers ? "on" : "off",
-                lineDecorationsWidth: 17,
+                lineDecorationsWidth: settings.showLineNumbers ? 18 : 28,
                 lineNumbersMinChars: 4,
                 wordWrap: "on",
                 guides: { indentation: false },
@@ -185,7 +292,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
                 overviewRulerBorder: false,
                 scrollbar: { vertical: "hidden", horizontal: "hidden" },
                 glyphMargin: false,
-                padding: { top: 12, bottom: 12 },
+                padding: editorPadding,
                 tabSize: 2,
               }}
             />

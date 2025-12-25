@@ -60,6 +60,7 @@ const App: React.FC = () => {
     DEFAULT_EDITOR_SETTINGS,
   );
   const [settings, setSettings] = useState<EditorSettings>(storedSettings);
+  const [highlightLines, setHighlightLines] = useState<number[]>([]);
   const { onExport, onCopyImage, isCopying, copyStatus, isCopySupported } = useImageExport();
   const [isVideoOnboardingOpen, setIsVideoOnboardingOpen] = useState(false);
   const mainRef = useRef<HTMLDivElement | null>(null);
@@ -88,6 +89,12 @@ const App: React.FC = () => {
 
   const handleOpenVideoOnboarding = useCallback(() => {
     setIsVideoOnboardingOpen(true);
+  }, []);
+
+  const handleHighlightLineChange = useCallback((line: number) => {
+    setHighlightLines((prev) =>
+      prev.includes(line) ? prev.filter((item) => item !== line) : [...prev, line],
+    );
   }, []);
 
   useEffect(() => {
@@ -182,6 +189,8 @@ const App: React.FC = () => {
               onCodeChange={handleSnippetChange}
               settings={settings}
               showPreview={shouldShowPreview}
+              highlightLines={highlightLines}
+              onHighlightLineChange={handleHighlightLineChange}
               minCaptureHeight={maxCaptureHeight}
               preview={
                 highlighter

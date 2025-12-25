@@ -45,14 +45,8 @@
 
 body {
   margin: 0;
-  font-family:
-    var(--font-inter),
-    ui-sans-serif,
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    sans-serif;
+  font-family: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", sans-serif;
   background-color: #0f172a;
   color: #f8fafc;
 }
@@ -63,9 +57,21 @@ body {
 }
 
 .fira-code {
-  font-family:
-    var(--font-fira), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
-    "Courier New", monospace;
+  font-family: var(--font-fira), ui-monospace, SFMono-Regular, Menlo, Monaco,
+    Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+.monaco-editor .my-line-highlight {
+  background: rgba(59, 130, 246, 0.2);
+}
+
+.margin-view-overlays > div:has(.my-line-number-highlight) {
+  background: rgba(59, 130, 246, 0.2);
+  width: 100%;
+}
+
+.monaco-editor .margin-view-overlays .line-numbers {
+  cursor: pointer !important;
 }
 
 /* Hide scrollbars but keep functionality */
