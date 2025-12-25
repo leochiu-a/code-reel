@@ -175,13 +175,28 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   }, [code, settings.fontSize, settings.showLineNumbers, updateEditorHeight]);
 
   useEffect(() => {
-    if (!showPreview || highlightLineNumbers.length === 0) return;
+    if (!showPreview) {
+      prevHighlightLinesRef.current = [];
+      setMoveTargets([]);
+      setFadeInLines([]);
+      setFadeOutLines([]);
+      setMoveActive(false);
+      return;
+    }
+
+    if (highlightLineNumbers.length === 0) {
+      prevHighlightLinesRef.current = [];
+      setMoveTargets([]);
+      setFadeInLines([]);
+      setFadeOutLines([]);
+      setMoveActive(false);
+      setHighlightCycle((prev) => prev + 1);
+      return;
+    }
 
     const prevLines = prevHighlightLinesRef.current;
     const nextLines = highlightLineNumbers;
-
     const pairCount = Math.min(prevLines.length, nextLines.length);
-
     const nextMoveTargets = prevLines.slice(0, pairCount).map((from, index) => ({
       id: index,
       from,
@@ -189,12 +204,9 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
     }));
 
     setMoveTargets(nextMoveTargets);
-
     setFadeInLines(nextLines.slice(pairCount));
     setFadeOutLines(prevLines.slice(pairCount));
-
     prevHighlightLinesRef.current = nextLines;
-
     setMoveActive(false);
     setHighlightCycle((prev) => prev + 1);
 
