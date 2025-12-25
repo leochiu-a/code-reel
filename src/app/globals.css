@@ -62,16 +62,34 @@ body {
 }
 
 .monaco-editor .my-line-highlight {
-  background: rgba(59, 130, 246, 0.2);
+  background: rgba(148, 163, 184, 0.28);
 }
 
 .margin-view-overlays > div:has(.my-line-number-highlight) {
-  background: rgba(59, 130, 246, 0.2);
+  background: rgba(148, 163, 184, 0.28);
   width: 100%;
 }
 
 .monaco-editor .margin-view-overlays .line-numbers {
   cursor: pointer !important;
+}
+
+@keyframes codesnap-highlight-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes codesnap-highlight-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }
 
 /* Hide scrollbars but keep functionality */

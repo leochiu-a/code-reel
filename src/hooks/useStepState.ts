@@ -7,6 +7,7 @@ type CodeSnippet = {
   id: string;
   title: string;
   code: string;
+  highlightLines?: number[];
 };
 
 type UseStepStateOptions = {
@@ -38,7 +39,7 @@ const useStepState = ({ defaultCode, intervalMs }: UseStepStateOptions) => {
     if (storedSnippets.length > 0) {
       return normalizeStepTitles(storedSnippets);
     }
-    return [{ id: initialId, title: "Step 1", code: defaultCode }];
+    return [{ id: initialId, title: "Step 1", code: defaultCode, highlightLines: [] }];
   });
   const [activeSnippetId, setActiveSnippetId] = useState(initialId);
   const [previewIndex, setPreviewIndex] = useState(0);
@@ -121,6 +122,16 @@ const useStepState = ({ defaultCode, intervalMs }: UseStepStateOptions) => {
     );
   };
 
+  const handleHighlightLinesChange = (nextLines: number[]) => {
+    setSnippets((prev) =>
+      prev.map((snippet) =>
+        snippet.id === activeSnippet.id
+          ? { ...snippet, highlightLines: nextLines }
+          : snippet,
+      ),
+    );
+  };
+
   const handleAddSnippet = () => {
     const id = crypto.randomUUID();
     setSnippets((prev) => {
@@ -131,6 +142,7 @@ const useStepState = ({ defaultCode, intervalMs }: UseStepStateOptions) => {
           id,
           title: "",
           code: baseCode,
+          highlightLines: [],
         },
       ]);
       setActiveSnippetId(id);
@@ -195,7 +207,9 @@ const useStepState = ({ defaultCode, intervalMs }: UseStepStateOptions) => {
 
   const handleResetConfirm = () => {
     const resetId = crypto.randomUUID();
-    const nextSnippets = [{ id: resetId, title: "Step 1", code: defaultCode }];
+    const nextSnippets = [
+      { id: resetId, title: "Step 1", code: defaultCode, highlightLines: [] },
+    ];
     setSnippets(nextSnippets);
     setStoredSnippets(nextSnippets);
     setActiveSnippetId(resetId);
@@ -214,6 +228,7 @@ const useStepState = ({ defaultCode, intervalMs }: UseStepStateOptions) => {
     isResetOpen,
     setIsResetOpen,
     handleSnippetChange,
+    handleHighlightLinesChange,
     handleAddSnippet,
     handleRemoveSnippet,
     handleReorderSnippet,

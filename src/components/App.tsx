@@ -7,6 +7,7 @@ import { useLocalStorage } from "usehooks-ts";
 import { EditorSettings } from "../types";
 import {
   DEFAULT_EDITOR_SETTINGS,
+  HIGHLIGHT_STEP_DELAY_MS,
   LANGUAGES,
   PLAY_ANIMATION_INTERVAL_MS,
   THEMES,
@@ -44,6 +45,7 @@ const App: React.FC = () => {
     isResetOpen,
     setIsResetOpen,
     handleSnippetChange,
+    handleHighlightLinesChange,
     handleAddSnippet,
     handleRemoveSnippet,
     handleReorderSnippet,
@@ -60,7 +62,6 @@ const App: React.FC = () => {
     DEFAULT_EDITOR_SETTINGS,
   );
   const [settings, setSettings] = useState<EditorSettings>(storedSettings);
-  const [highlightLines, setHighlightLines] = useState<number[]>([]);
   const { onExport, onCopyImage, isCopying, copyStatus, isCopySupported } = useImageExport();
   const [isVideoOnboardingOpen, setIsVideoOnboardingOpen] = useState(false);
   const mainRef = useRef<HTMLDivElement | null>(null);
@@ -91,11 +92,20 @@ const App: React.FC = () => {
     setIsVideoOnboardingOpen(true);
   }, []);
 
-  const handleHighlightLineChange = useCallback((line: number) => {
-    setHighlightLines((prev) =>
-      prev.includes(line) ? prev.filter((item) => item !== line) : [...prev, line],
-    );
-  }, []);
+  const handleHighlightLineChange = useCallback(
+    (line: number) => {
+      const currentLines = activeSnippet.highlightLines ?? [];
+      const nextLines = currentLines.includes(line)
+        ? currentLines.filter((item) => item !== line)
+        : [...currentLines, line];
+      handleHighlightLinesChange(nextLines);
+    },
+    [activeSnippet.highlightLines, handleHighlightLinesChange],
+  );
+
+  const currentHighlightLines =
+    (shouldShowPreview ? previewSnippet.highlightLines : activeSnippet.highlightLines) ?? [];
+  const highlightDelayMs = previewIndex * HIGHLIGHT_STEP_DELAY_MS;
 
   useEffect(() => {
     setStoredSettings(settings);
@@ -189,7 +199,8 @@ const App: React.FC = () => {
               onCodeChange={handleSnippetChange}
               settings={settings}
               showPreview={shouldShowPreview}
-              highlightLines={highlightLines}
+              highlightLines={currentHighlightLines}
+              highlightDelayMs={highlightDelayMs}
               onHighlightLineChange={handleHighlightLineChange}
               minCaptureHeight={maxCaptureHeight}
               preview={
