@@ -2,6 +2,7 @@
 
 import React from "react";
 import dynamic from "next/dynamic";
+import { Plus, Trash2, Play } from "lucide-react";
 
 type CodeSnippet = {
   id: string;
@@ -73,28 +74,14 @@ type RemoveButtonProps = {
   onRemoveSnippet: () => void;
 };
 
-const RemoveButton: React.FC<RemoveButtonProps> = ({
-  snippets,
-  onRemoveSnippet,
-}) => (
+const RemoveButton: React.FC<RemoveButtonProps> = ({ snippets, onRemoveSnippet }) => (
   <button
     onClick={onRemoveSnippet}
     disabled={snippets.length === 1}
     className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-white/10 bg-[#222] text-slate-300 transition-colors hover:bg-white/10 hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-30"
     title="Remove Step"
   >
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 20 20"
-      fill="currentColor"
-      className="h-4 w-4"
-    >
-      <path
-        fillRule="evenodd"
-        d="M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.52.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 4.193V3.75A2.75 2.75 0 0011.25 1h-2.5zM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4zM8.58 7.72a.75.75 0 00-1.5.06l.3 7.5a.75.75 0 101.5-.06l-.3-7.5zm4.34.06a.75.75 0 10-1.5-.06l-.3 7.5a.75.75 0 101.5.06l.3-7.5z"
-        clipRule="evenodd"
-      />
-    </svg>
+    <Trash2 className="h-4 w-4" />
   </button>
 );
 
@@ -145,24 +132,14 @@ const SnippetControls: React.FC<SnippetControlsProps> = ({
           className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-white/10 bg-[#222] text-slate-300 transition-colors hover:bg-white/10 hover:text-white"
           title="Add Step"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-            className="h-5 w-5"
-          >
-            <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
-          </svg>
+          <Plus className="h-5 w-5" />
         </button>
       </div>
 
       <div className="h-6 w-px bg-white/10" />
 
       <div className="flex items-center gap-2">
-        <ClientOnlyRemoveButton
-          snippets={snippets}
-          onRemoveSnippet={onRemoveSnippet}
-        />
+        <ClientOnlyRemoveButton snippets={snippets} onRemoveSnippet={onRemoveSnippet} />
 
         <div className="relative">
           <button
@@ -207,14 +184,7 @@ const SnippetControls: React.FC<SnippetControlsProps> = ({
             </>
           ) : (
             <>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                className="h-3 w-3"
-              >
-                <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
-              </svg>
+              <Play className="h-3 w-3" />
               Play
             </>
           )}
