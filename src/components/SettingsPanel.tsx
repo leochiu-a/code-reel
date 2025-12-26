@@ -61,7 +61,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
   ];
 
   return (
-    <div className="scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent flex h-full w-80 flex-col gap-6 overflow-y-auto border-r border-slate-800 bg-slate-900/50 p-5 backdrop-blur-xl">
+    <div className="flex h-full w-80 flex-col gap-6 overflow-y-auto border-r border-white/10 bg-[#181818] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_20px_40px_-20px_rgba(0,0,0,0.9)]">
       {/* Header */}
       <div className="flex items-center justify-between pb-2">
         <h2 className="text-lg font-semibold tracking-tight text-slate-100">
@@ -73,7 +73,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
         {/* Core Settings */}
         <div className="space-y-4">
           <div className="grid gap-2">
-            <Label className="text-xs font-medium text-slate-400">
+            <Label className="text-xs font-medium text-white/90">
               THEME & LANGUAGE
             </Label>
             <div className="grid grid-cols-1 gap-3">
@@ -83,10 +83,10 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
                   onSettingsChange({ theme: value as Theme })
                 }
               >
-                <SelectTrigger className="w-full border-slate-700 bg-slate-800/50 text-slate-200 transition-colors hover:bg-slate-800 focus:ring-slate-700">
+                <SelectTrigger className="w-full border-white/10 bg-white/5 text-slate-100 transition-colors hover:bg-white/10 focus:ring-emerald-500/40">
                   <SelectValue placeholder="Select theme" />
                 </SelectTrigger>
-                <SelectContent className="border-slate-700 bg-slate-900 text-slate-200">
+                <SelectContent className="border-white/10 bg-[#141414] text-slate-100">
                   {Object.entries(THEMES).map(([key, theme]) => (
                     <SelectItem
                       key={key}
@@ -105,10 +105,10 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
                   onSettingsChange({ language: value as Language })
                 }
               >
-                <SelectTrigger className="w-full border-slate-700 bg-slate-800/50 text-slate-200 transition-colors hover:bg-slate-800 focus:ring-slate-700">
+                <SelectTrigger className="w-full border-white/10 bg-white/5 text-slate-100 transition-colors hover:bg-white/10 focus:ring-emerald-500/40">
                   <SelectValue placeholder="Select language" />
                 </SelectTrigger>
-                <SelectContent className="border-slate-700 bg-slate-900 text-slate-200">
+                <SelectContent className="border-white/10 bg-[#141414] text-slate-100">
                   {Object.entries(LANGUAGES).map(([key, language]) => (
                     <SelectItem
                       key={key}
@@ -124,7 +124,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
           </div>
 
           <div className="grid gap-2">
-            <Label className="text-xs font-medium text-slate-400">
+            <Label className="text-xs font-medium text-white/90">
               BACKGROUND
             </Label>
             <div className="grid grid-cols-5 gap-2">
@@ -149,11 +149,11 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
 
         {/* Layout Settings */}
         <div className="space-y-4">
-          <Label className="text-xs font-medium text-slate-400">LAYOUT</Label>
+          <Label className="text-xs font-medium text-white/90">LAYOUT</Label>
 
           <div className="space-y-3">
             <div className="flex flex-col gap-1.5">
-              <span className="text-xs text-slate-500">Padding</span>
+              <span className="text-xs text-white/80">Padding</span>
               <ToggleGroup
                 type="single"
                 value={String(settings.padding)}
@@ -175,7 +175,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <span className="text-xs text-slate-500">Font Size</span>
+              <span className="text-xs text-white/80">Font Size</span>
               <ToggleGroup
                 type="single"
                 value={String(settings.fontSize)}
@@ -197,7 +197,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <span className="text-xs text-slate-500">Radius</span>
+              <span className="text-xs text-white/80">Radius</span>
               <ToggleGroup
                 type="single"
                 value={String(settings.borderRadius)}
@@ -220,7 +220,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <span className="text-xs text-slate-500">Shadow</span>
+              <span className="text-xs text-white/80">Shadow</span>
               <ToggleGroup
                 type="single"
                 value={settings.borderShadow ?? "border-none"}
@@ -247,25 +247,25 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
 
         {/* Visibility */}
         <div className="space-y-3">
-          <Label className="text-xs font-medium text-slate-400">WINDOW</Label>
-          <div className="flex items-center justify-between rounded-md border border-slate-800 bg-slate-800/20 p-3 transition-colors hover:border-slate-700">
-            <span className="text-sm text-slate-300">Line Numbers</span>
+          <Label className="text-xs font-medium text-white/90">WINDOW</Label>
+          <div className="flex items-center justify-between rounded-md border border-white/10 bg-white/5 p-3 transition-colors hover:border-white/20">
+            <span className="text-sm text-slate-200">Line Numbers</span>
             <Checkbox
               checked={settings.showLineNumbers}
               onCheckedChange={(checked) =>
                 onSettingsChange({ showLineNumbers: Boolean(checked) })
               }
-              className="border-slate-600 data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600"
+              className="border-white/20 data-[state=checked]:border-emerald-500 data-[state=checked]:bg-emerald-500"
             />
           </div>
-          <div className="flex items-center justify-between rounded-md border border-slate-800 bg-slate-800/20 p-3 transition-colors hover:border-slate-700">
-            <span className="text-sm text-slate-300">Window Controls</span>
+          <div className="flex items-center justify-between rounded-md border border-white/10 bg-white/5 p-3 transition-colors hover:border-white/20">
+            <span className="text-sm text-slate-200">Window Controls</span>
             <Checkbox
               checked={settings.windowControls}
               onCheckedChange={(checked) =>
                 onSettingsChange({ windowControls: Boolean(checked) })
               }
-              className="border-slate-600 data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600"
+              className="border-white/20 data-[state=checked]:border-emerald-500 data-[state=checked]:bg-emerald-500"
             />
           </div>
         </div>
@@ -320,13 +320,13 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
             onClick={onCopyImage}
             disabled={isCopying || !isCopySupported}
             variant="secondary"
-            className="w-full cursor-pointer border border-slate-700 bg-slate-800 text-slate-200 hover:bg-slate-700 hover:text-white"
+            className="w-full cursor-pointer border border-white/10 bg-white/5 text-slate-100 hover:bg-white/10 hover:text-white"
           >
             {isCopying ? "Copying..." : "Copy"}
           </Button>
           <Button
             onClick={onExport}
-            className="w-full cursor-pointer bg-blue-600 text-white shadow-lg shadow-blue-900/20 hover:bg-blue-500"
+            className="w-full cursor-pointer bg-emerald-500 text-white shadow-lg shadow-emerald-900/25 hover:bg-emerald-400"
           >
             Export
           </Button>

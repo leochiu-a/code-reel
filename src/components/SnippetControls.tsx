@@ -22,7 +22,7 @@ const SnippetList: React.FC<SnippetListProps> = ({
   onSelectSnippet,
   onReorderSnippet,
 }) => (
-  <div className="flex items-center gap-1 rounded-full bg-slate-800/50 p-1">
+  <div className="flex items-center gap-1 rounded-full border border-white/10 bg-[#222] p-1">
     {snippets.map((snippet, index) => (
       <button
         key={snippet.id}
@@ -54,8 +54,8 @@ const SnippetList: React.FC<SnippetListProps> = ({
         }}
         className={`relative cursor-pointer rounded-full px-3 py-1.5 text-xs font-medium transition-all duration-200 active:cursor-grabbing ${
           snippet.id === activeSnippetId
-            ? "bg-slate-700 text-white shadow-sm"
-            : "text-slate-400 hover:bg-slate-700/50 hover:text-slate-200"
+            ? "bg-white/15 text-white shadow-sm"
+            : "text-slate-300 hover:bg-white/10 hover:text-white"
         }`}
       >
         {snippet.title}
@@ -80,7 +80,7 @@ const RemoveButton: React.FC<RemoveButtonProps> = ({
   <button
     onClick={onRemoveSnippet}
     disabled={snippets.length === 1}
-    className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-slate-700 bg-slate-800/50 text-slate-400 transition-colors hover:bg-slate-800 hover:text-red-400 disabled:cursor-not-allowed disabled:opacity-30"
+    className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-white/10 bg-[#222] text-slate-300 transition-colors hover:bg-white/10 hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-30"
     title="Remove Step"
   >
     <svg
@@ -131,7 +131,7 @@ const SnippetControls: React.FC<SnippetControlsProps> = ({
   isPlaying,
   isPlayDisabled,
 }) => (
-  <section className="mx-auto max-w-fit rounded-2xl border border-white/10 bg-black/60 p-2 shadow-2xl backdrop-blur-xl">
+  <section className="mx-auto max-w-fit rounded-2xl border border-white/10 bg-[#1c1c1c] p-2 shadow-[0_18px_40px_-20px_rgba(0,0,0,0.9)]">
     <div className="flex flex-wrap items-center gap-4">
       <div className="flex items-center gap-2">
         <ClientOnlySnippetList
@@ -142,7 +142,7 @@ const SnippetControls: React.FC<SnippetControlsProps> = ({
         />
         <button
           onClick={onAddSnippet}
-          className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-slate-700 bg-slate-800/50 text-slate-400 transition-colors hover:bg-slate-800 hover:text-white"
+          className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-white/10 bg-[#222] text-slate-300 transition-colors hover:bg-white/10 hover:text-white"
           title="Add Step"
         >
           <svg
@@ -167,12 +167,12 @@ const SnippetControls: React.FC<SnippetControlsProps> = ({
         <div className="relative">
           <button
             onClick={() => setIsResetOpen((prev) => !prev)}
-            className="flex h-8 cursor-pointer items-center gap-1.5 rounded-full border border-slate-700 bg-slate-800/50 px-3 text-xs font-medium text-slate-400 transition-colors hover:bg-slate-800 hover:text-white"
+            className="flex h-8 cursor-pointer items-center gap-1.5 rounded-full border border-white/10 bg-[#222] px-3 text-xs font-medium text-slate-300 transition-colors hover:bg-white/10 hover:text-white"
           >
             Reset
           </button>
           {isResetOpen && (
-            <div className="absolute right-0 bottom-full z-10 mb-2 w-56 rounded-xl border border-white/10 bg-slate-900/95 p-4 shadow-2xl backdrop-blur-md">
+            <div className="absolute right-0 bottom-full z-10 mb-2 w-56 rounded-xl border border-white/10 bg-[#1b1b1b] p-4 shadow-2xl">
               <p className="mb-4 text-sm text-slate-300">
                 Are you sure you want to reset all steps?
               </p>
@@ -198,7 +198,7 @@ const SnippetControls: React.FC<SnippetControlsProps> = ({
           data-testid="play-animation"
           onClick={onPlay}
           disabled={isPlayDisabled}
-          className="flex h-8 cursor-pointer items-center gap-1.5 rounded-full bg-blue-600 px-4 text-xs font-bold text-white shadow-lg shadow-blue-500/25 transition-all hover:bg-blue-500 hover:shadow-blue-500/40 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none"
+          className="flex h-8 cursor-pointer items-center gap-1.5 rounded-full bg-emerald-500 px-4 text-xs font-bold text-white shadow-lg shadow-emerald-900/30 transition-all hover:bg-emerald-400 hover:shadow-emerald-900/45 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none"
         >
           {isPlaying ? (
             <>
