@@ -8,7 +8,12 @@ import { ShikiMagicMove } from "shiki-magic-move/react";
 import { shikiToMonaco } from "@shikijs/monaco";
 
 import { EditorSettings } from "../types";
-import { LANGUAGES, MAGIC_MOVE_DELAY_MOVE_S, MAGIC_MOVE_DURATION_MS, THEMES } from "../constants";
+import {
+  LANGUAGES,
+  MAGIC_MOVE_DELAY_MOVE_S,
+  MAGIC_MOVE_DURATION_MS,
+  THEMES,
+} from "../constants";
 import { getHighlighter, getThemeBackground } from "../services/shiki";
 
 interface CodeEditorProps {
@@ -42,10 +47,13 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   const editorRef = useRef<Monaco.editor.IStandaloneCodeEditor | null>(null);
   const monacoRef = useRef<typeof Monaco | null>(null);
 
-  const highlighterRef = useRef<Awaited<ReturnType<typeof getHighlighter>> | null>(null);
+  const highlighterRef = useRef<Awaited<
+    ReturnType<typeof getHighlighter>
+  > | null>(null);
 
   const sizeListenerRef = useRef<Monaco.IDisposable | null>(null);
-  const highlightDecorationsRef = useRef<Monaco.editor.IEditorDecorationsCollection | null>(null);
+  const highlightDecorationsRef =
+    useRef<Monaco.editor.IEditorDecorationsCollection | null>(null);
   const mouseListenerRef = useRef<Monaco.IDisposable | null>(null);
 
   const highlightLineChangeRef = useRef<((line: number) => void) | null>(null);
@@ -58,7 +66,9 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   const [themeReady, setThemeReady] = useState(false);
 
   const [highlightCycle, setHighlightCycle] = useState(0);
-  const [moveTargets, setMoveTargets] = useState<{ id: number; from: number; to: number }[]>([]);
+  const [moveTargets, setMoveTargets] = useState<
+    { id: number; from: number; to: number }[]
+  >([]);
   const [fadeInLines, setFadeInLines] = useState<number[]>([]);
   const [fadeOutLines, setFadeOutLines] = useState<number[]>([]);
   const [moveActive, setMoveActive] = useState(false);
@@ -77,7 +87,9 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
     highlightSource.length > 0 ? highlightSource.split(/\r\n|\r|\n/).length : 1;
 
   const highlightLineNumbers = (highlightLines ?? [])
-    .filter((line) => Number.isFinite(line) && line > 0 && line <= highlightLineCount)
+    .filter(
+      (line) => Number.isFinite(line) && line > 0 && line <= highlightLineCount
+    )
     .filter((line, index, list) => list.indexOf(line) === index)
     .sort((a, b) => a - b);
 
@@ -132,7 +144,10 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
         const handleChange = highlightLineChangeRef.current;
 
         if (!handleChange) return;
-        if (event.target.type !== monaco.editor.MouseTargetType.GUTTER_LINE_NUMBERS) {
+        if (
+          event.target.type !==
+          monaco.editor.MouseTargetType.GUTTER_LINE_NUMBERS
+        ) {
           return;
         }
 
@@ -195,11 +210,13 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
     const prevLines = prevHighlightLinesRef.current;
     const nextLines = highlightLineNumbers;
     const pairCount = Math.min(prevLines.length, nextLines.length);
-    const nextMoveTargets = prevLines.slice(0, pairCount).map((from, index) => ({
-      id: index,
-      from,
-      to: nextLines[index],
-    }));
+    const nextMoveTargets = prevLines
+      .slice(0, pairCount)
+      .map((from, index) => ({
+        id: index,
+        from,
+        to: nextLines[index],
+      }));
 
     setMoveTargets(nextMoveTargets);
     setFadeInLines(nextLines.slice(pairCount));
@@ -252,7 +269,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
         background: settings.background,
         borderRadius: "16px",
         minHeight: minCaptureHeight,
-        width: "600px",
+        width: "650px",
         maxWidth: "100%",
         minWidth: "320px",
       }}
@@ -263,11 +280,14 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
           backgroundColor: themeBackground,
           borderRadius: `${settings.borderRadius}px`,
           fontSize: `${settings.fontSize}px`,
-          boxShadow: settings.borderShadow === "border-none" ? "none" : settings.borderShadow,
+          boxShadow:
+            settings.borderShadow === "border-none"
+              ? "none"
+              : settings.borderShadow,
         }}
       >
         {settings.windowControls && (
-          <div className="relative flex h-10 items-center justify-center border-b border-white/5 bg-white/[0.02] px-4">
+          <div className="relative flex h-10 items-center justify-center border-b border-white/5 bg-white/2 px-4">
             <div className="absolute left-4 flex gap-2">
               <div className="h-3 w-3 rounded-full bg-[#ff5f56] shadow-inner" />
               <div className="h-3 w-3 rounded-full bg-[#ffbd2e] shadow-inner" />
@@ -314,7 +334,11 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
                 key={`highlight-fade-in-${line}-${highlightCycle}`}
                 className="pointer-events-none absolute right-0 left-0 z-20"
                 style={{
-                  top: `${previewOuterPadding + previewPaddingY + (line - 1) * lineHeight}px`,
+                  top: `${
+                    previewOuterPadding +
+                    previewPaddingY +
+                    (line - 1) * lineHeight
+                  }px`,
                   height: `${lineHeight}px`,
                   backgroundColor: "rgba(148, 163, 184, 0.18)",
                   animationName: "codesnap-highlight-fade",
@@ -331,7 +355,11 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
                 key={`highlight-fade-out-${line}-${highlightCycle}`}
                 className="pointer-events-none absolute right-0 left-0 z-20"
                 style={{
-                  top: `${previewOuterPadding + previewPaddingY + (line - 1) * lineHeight}px`,
+                  top: `${
+                    previewOuterPadding +
+                    previewPaddingY +
+                    (line - 1) * lineHeight
+                  }px`,
                   height: `${lineHeight}px`,
                   backgroundColor: "rgba(148, 163, 184, 0.18)",
                   animationName: "codesnap-highlight-fade-out",
@@ -368,7 +396,9 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
           )}
           <div
             className={
-              showPreview ? "pointer-events-none absolute inset-0 z-10 opacity-0" : "relative z-10"
+              showPreview
+                ? "pointer-events-none absolute inset-0 z-10 opacity-0"
+                : "relative z-10"
             }
           >
             <Editor
