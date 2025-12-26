@@ -1,12 +1,6 @@
 "use client";
 
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import type { HighlighterCore } from "shiki/core";
 import { useLocalStorage } from "usehooks-ts";
@@ -39,8 +33,7 @@ const DEFAULT_CODE = `function helloWorld() {
   return greeting;
 }`;
 
-const countLines = (code: string) =>
-  (code || "").split(/\r\n|\r|\n/).length || 1;
+const countLines = (code: string) => (code || "").split(/\r\n|\r|\n/).length || 1;
 
 const App: React.FC = () => {
   const searchParams = useSearchParams();
@@ -68,37 +61,32 @@ const App: React.FC = () => {
   const [highlighter, setHighlighter] = useState<HighlighterCore | null>(null);
   const [storedSettings, setStoredSettings] = useLocalStorage<EditorSettings>(
     "codesnap-settings",
-    DEFAULT_EDITOR_SETTINGS
+    DEFAULT_EDITOR_SETTINGS,
   );
   const [settings, setSettings] = useState<EditorSettings>(storedSettings);
-  const { onExport, onCopyImage, isCopying, copyStatus, isCopySupported } =
+  const { onExport, onCopyImage, isCopying, isExporting, copyStatus, isCopySupported } =
     useImageExport();
   const [isVideoOnboardingOpen, setIsVideoOnboardingOpen] = useState(false);
   const mainRef = useRef<HTMLDivElement | null>(null);
   const maxLineCount = useMemo(
     () => Math.max(1, ...snippets.map((snippet) => countLines(snippet.code))),
-    [snippets]
+    [snippets],
   );
   const lineHeight = Math.round(settings.fontSize * 1.6);
   const maxCaptureHeight =
-    settings.padding * 2 +
-    (settings.windowControls ? 48 : 0) +
-    maxLineCount * lineHeight +
-    52;
+    settings.padding * 2 + (settings.windowControls ? 48 : 0) + maxLineCount * lineHeight + 52;
 
-  const { isExportingVideo, videoStatus, exportProgress, exportEtaMs } =
-    useVideoExport({
-      snippets,
-      settings,
-      intervalMs: PLAY_ANIMATION_INTERVAL_MS,
-    });
+  const { isExportingVideo, videoStatus, exportProgress, exportEtaMs } = useVideoExport({
+    snippets,
+    settings,
+    intervalMs: PLAY_ANIMATION_INTERVAL_MS,
+  });
 
   const handleSettingsChange = (newSettings: Partial<EditorSettings>) => {
     setSettings((prev) => ({ ...prev, ...newSettings }));
   };
 
-  const themeConfig =
-    THEMES[settings.theme] ?? THEMES[DEFAULT_EDITOR_SETTINGS.theme];
+  const themeConfig = THEMES[settings.theme] ?? THEMES[DEFAULT_EDITOR_SETTINGS.theme];
   const shikiTheme = themeConfig.shikiTheme;
   const languageConfig = LANGUAGES[settings.language];
   const shouldShowPreview = Boolean(highlighter) && (isPlaying || isExportMode);
@@ -115,13 +103,11 @@ const App: React.FC = () => {
         : [...currentLines, line];
       handleHighlightLinesChange(nextLines);
     },
-    [activeSnippet.highlightLines, handleHighlightLinesChange]
+    [activeSnippet.highlightLines, handleHighlightLinesChange],
   );
 
   const currentHighlightLines =
-    (shouldShowPreview
-      ? previewSnippet.highlightLines
-      : activeSnippet.highlightLines) ?? [];
+    (shouldShowPreview ? previewSnippet.highlightLines : activeSnippet.highlightLines) ?? [];
   const highlightDelayMs = previewIndex * HIGHLIGHT_STEP_DELAY_MS;
 
   useEffect(() => {
@@ -150,9 +136,7 @@ const App: React.FC = () => {
     <div className="flex h-screen w-full flex-col overflow-hidden bg-[#181818] text-neutral-100 selection:bg-emerald-400/30 selection:text-emerald-100">
       {!isExportMode && (
         <header className="flex items-center justify-between bg-[#212121] px-6 py-4">
-          <h1 className="text-lg font-semibold tracking-tight text-[#f5f5f5]">
-            CodeSnap
-          </h1>
+          <h1 className="text-lg font-semibold tracking-tight text-[#f5f5f5]">CodeSnap</h1>
           <div className="flex items-center gap-2">
             <Button
               onClick={onCopyImage}
@@ -164,9 +148,10 @@ const App: React.FC = () => {
             </Button>
             <Button
               onClick={onExport}
+              disabled={isExporting}
               className="h-8 cursor-pointer bg-emerald-500 px-3 text-xs text-white shadow-lg shadow-emerald-900/25 hover:bg-emerald-400"
             >
-              Export
+              {isExporting ? "Exporting..." : "Export"}
             </Button>
             <Button
               onClick={handleOpenVideoOnboarding}
