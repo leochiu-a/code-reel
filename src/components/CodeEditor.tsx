@@ -252,7 +252,8 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
         background: settings.background,
         borderRadius: "16px",
         minHeight: minCaptureHeight,
-        width: "min(100%, 50rem)",
+        width: "600px",
+        maxWidth: "100%",
         minWidth: "320px",
       }}
     >

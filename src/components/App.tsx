@@ -27,6 +27,7 @@ import SnippetControls from "./SnippetControls";
 import SettingsPanel from "./SettingsPanel";
 import CodeEditor from "./CodeEditor";
 import VideoOnboarding from "./VideoOnboarding";
+import { Button } from "@/components/ui/button";
 
 const DEFAULT_CODE = `function helloWorld() {
   console.log("Hello from CodeSnap!");
@@ -146,83 +147,100 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-[#0f0f0f] text-neutral-100 selection:bg-emerald-400/30 selection:text-emerald-100">
-      {/* Settings Panel on the Left */}
+    <div className="flex h-screen w-full flex-col overflow-hidden bg-[#181818] text-neutral-100 selection:bg-emerald-400/30 selection:text-emerald-100">
       {!isExportMode && (
-        <SettingsPanel
-          settings={settings}
-          onSettingsChange={handleSettingsChange}
-          onExport={onExport}
-          onExportVideo={handleOpenVideoOnboarding}
-          onCopyImage={onCopyImage}
-          isCopying={isCopying}
-          isExportingVideo={isExportingVideo}
-          exportProgress={exportProgress}
-          exportEtaMs={exportEtaMs}
-          isCopySupported={isCopySupported}
-          copyStatus={copyStatus}
-          videoStatus={videoStatus}
-        />
+        <header className="flex items-center justify-between bg-[#212121] px-6 py-4">
+          <h1 className="text-lg font-semibold tracking-tight text-[#f5f5f5]">
+            CodeSnap
+          </h1>
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={onCopyImage}
+              disabled={isCopying || !isCopySupported}
+              variant="secondary"
+              className="h-8 cursor-pointer border border-white/10 bg-white/5 px-3 text-xs text-slate-100 hover:bg-white/10 hover:text-white"
+            >
+              {isCopying ? "Copying..." : "Copy"}
+            </Button>
+            <Button
+              onClick={onExport}
+              className="h-8 cursor-pointer bg-emerald-500 px-3 text-xs text-white shadow-lg shadow-emerald-900/25 hover:bg-emerald-400"
+            >
+              Export
+            </Button>
+            <Button
+              onClick={handleOpenVideoOnboarding}
+              disabled={isExportingVideo}
+              className="h-8 cursor-pointer border border-emerald-600/30 bg-emerald-600/10 px-3 text-xs text-emerald-300 transition-all duration-300 hover:bg-emerald-600 hover:text-white"
+            >
+              {isExportingVideo ? "Exporting..." : "Export Video"}
+            </Button>
+          </div>
+        </header>
       )}
 
-      {/* Main Preview Area */}
-      <main
-        ref={mainRef}
-        className="flex flex-1 items-center justify-center overflow-y-auto bg-[#212121] p-8 lg:p-12"
-      >
-        <div className="relative flex w-full max-w-5xl flex-col gap-6 duration-700">
-          {!isExportMode && (
-            <div className="mb-4 text-center">
-              <h1 className="mb-2 text-4xl font-extrabold tracking-tight text-[#f5f5f5] drop-shadow-sm">
-                CodeSnap
-              </h1>
-              <p className="text-[#b3b3b3]">
-                Transform your code into professional sharing-ready images.
-              </p>
-            </div>
-          )}
+      <div className="flex min-h-0 flex-1 overflow-hidden">
+        {/* Settings Panel on the Left */}
+        {!isExportMode && (
+          <SettingsPanel
+            settings={settings}
+            onSettingsChange={handleSettingsChange}
+            isExportingVideo={isExportingVideo}
+            exportProgress={exportProgress}
+            exportEtaMs={exportEtaMs}
+            copyStatus={copyStatus}
+            videoStatus={videoStatus}
+          />
+        )}
 
-          <div id="onboarding-highlight-area" className="flex flex-col gap-6">
-            <CodeEditor
-              code={activeSnippet.code}
-              onCodeChange={handleSnippetChange}
-              settings={settings}
-              showPreview={shouldShowPreview}
-              highlightLines={currentHighlightLines}
-              highlightDelayMs={highlightDelayMs}
-              onHighlightLineChange={handleHighlightLineChange}
-              minCaptureHeight={maxCaptureHeight}
-              preview={
-                highlighter
-                  ? {
-                      highlighter,
-                      code: previewSnippet.code,
-                      language: languageConfig.shiki,
-                      theme: shikiTheme,
-                    }
-                  : undefined
-              }
-            />
-
-            {!isExportMode && (
-              <SnippetControls
-                snippets={snippets}
-                activeSnippetId={activeSnippet.id}
-                isResetOpen={isResetOpen}
-                setIsResetOpen={setIsResetOpen}
-                onSelectSnippet={handleSelectSnippet}
-                onAddSnippet={handleAddSnippet}
-                onRemoveSnippet={handleRemoveSnippet}
-                onReorderSnippet={handleReorderSnippet}
-                onResetConfirm={handleResetConfirm}
-                onPlay={handlePlay}
-                isPlaying={isPlaying}
-                isPlayDisabled={snippets.length < 2 || !highlighter}
+        {/* Main Preview Area */}
+        <main
+          ref={mainRef}
+          className="flex flex-1 items-center justify-center overflow-y-auto bg-[#212121] px-3"
+        >
+          <div className="relative flex min-h-full w-full flex-col items-center justify-center gap-6 rounded-t-2xl border border-white/10 bg-[#181818] p-8 duration-700 lg:p-12">
+            <div id="onboarding-highlight-area" className="flex flex-col gap-6">
+              <CodeEditor
+                code={activeSnippet.code}
+                onCodeChange={handleSnippetChange}
+                settings={settings}
+                showPreview={shouldShowPreview}
+                highlightLines={currentHighlightLines}
+                highlightDelayMs={highlightDelayMs}
+                onHighlightLineChange={handleHighlightLineChange}
+                minCaptureHeight={maxCaptureHeight}
+                preview={
+                  highlighter
+                    ? {
+                        highlighter,
+                        code: previewSnippet.code,
+                        language: languageConfig.shiki,
+                        theme: shikiTheme,
+                      }
+                    : undefined
+                }
               />
-            )}
+
+              {!isExportMode && (
+                <SnippetControls
+                  snippets={snippets}
+                  activeSnippetId={activeSnippet.id}
+                  isResetOpen={isResetOpen}
+                  setIsResetOpen={setIsResetOpen}
+                  onSelectSnippet={handleSelectSnippet}
+                  onAddSnippet={handleAddSnippet}
+                  onRemoveSnippet={handleRemoveSnippet}
+                  onReorderSnippet={handleReorderSnippet}
+                  onResetConfirm={handleResetConfirm}
+                  onPlay={handlePlay}
+                  isPlaying={isPlaying}
+                  isPlayDisabled={snippets.length < 2 || !highlighter}
+                />
+              )}
+            </div>
           </div>
-        </div>
-      </main>
+        </main>
+      </div>
 
       {!isExportMode && (
         <VideoOnboarding

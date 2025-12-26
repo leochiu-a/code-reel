@@ -4,7 +4,6 @@ import React from "react";
 import { EditorSettings, Theme, Language } from "../types";
 import { GRADIENTS, LANGUAGES, THEMES } from "../constants";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
@@ -18,12 +17,7 @@ import { Label } from "@/components/ui/label";
 interface SettingsPanelProps {
   settings: EditorSettings;
   onSettingsChange: (settings: Partial<EditorSettings>) => void;
-  onExport: () => void;
-  onExportVideo: () => void;
-  onCopyImage: () => void;
-  isCopying: boolean;
   isExportingVideo: boolean;
-  isCopySupported: boolean;
   exportProgress: number;
   exportEtaMs?: number | null;
   copyStatus?: { tone: "success" | "error"; message: string } | null;
@@ -33,12 +27,7 @@ interface SettingsPanelProps {
 const SettingsPanel: React.FC<SettingsPanelProps> = ({
   settings,
   onSettingsChange,
-  onExport,
-  onExportVideo,
-  onCopyImage,
-  isCopying,
   isExportingVideo,
-  isCopySupported,
   exportProgress,
   exportEtaMs,
   copyStatus,
@@ -61,14 +50,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
   ];
 
   return (
-    <div className="flex h-full w-80 flex-col gap-6 overflow-y-auto border-r border-white/10 bg-[#181818] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_20px_40px_-20px_rgba(0,0,0,0.9)]">
-      {/* Header */}
-      <div className="flex items-center justify-between pb-2">
-        <h2 className="text-lg font-semibold tracking-tight text-slate-100">
-          Settings
-        </h2>
-      </div>
-
+    <div className="flex h-full w-80 flex-col gap-6 overflow-y-auto bg-[#212121] p-5 shadow-[0_20px_40px_-20px_rgba(0,0,0,0.9)]">
       <div className="space-y-6">
         {/* Core Settings */}
         <div className="space-y-4">
@@ -315,30 +297,6 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
           </div>
         )}
 
-        <div className="grid grid-cols-2 gap-2">
-          <Button
-            onClick={onCopyImage}
-            disabled={isCopying || !isCopySupported}
-            variant="secondary"
-            className="w-full cursor-pointer border border-white/10 bg-white/5 text-slate-100 hover:bg-white/10 hover:text-white"
-          >
-            {isCopying ? "Copying..." : "Copy"}
-          </Button>
-          <Button
-            onClick={onExport}
-            className="w-full cursor-pointer bg-emerald-500 text-white shadow-lg shadow-emerald-900/25 hover:bg-emerald-400"
-          >
-            Export
-          </Button>
-        </div>
-
-        <Button
-          onClick={onExportVideo}
-          disabled={isExportingVideo}
-          className="w-full cursor-pointer border border-emerald-600/30 bg-emerald-600/10 text-emerald-400 transition-all duration-300 hover:bg-emerald-600 hover:text-white"
-        >
-          {isExportingVideo ? "Exporting..." : "Export Video"}
-        </Button>
       </div>
     </div>
   );
