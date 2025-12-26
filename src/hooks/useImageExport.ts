@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { domToPng } from "modern-screenshot";
+import { toast } from "sonner";
 
 type CopyStatus = {
   tone: "success" | "error";
@@ -95,6 +96,7 @@ const useImageExport = () => {
       const response = await fetch(dataUrl);
       const blob = await response.blob();
       await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
+      toast.success("Image copied to clipboard.");
       setCopyStatus({ tone: "success", message: "Image copied to clipboard." });
     } catch (err) {
       console.error("Copy failed:", err);
