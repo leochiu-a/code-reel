@@ -52,7 +52,7 @@ const SnippetList: React.FC<SnippetListProps> = ({
           if (Number.isNaN(fromIndex) || fromIndex === index) return;
           onReorderSnippet(fromIndex, index);
         }}
-        className={`relative cursor-grab rounded-full px-3 py-1.5 text-xs font-medium transition-all duration-200 active:cursor-grabbing ${
+        className={`relative cursor-pointer rounded-full px-3 py-1.5 text-xs font-medium transition-all duration-200 active:cursor-grabbing ${
           snippet.id === activeSnippetId
             ? "bg-slate-700 text-white shadow-sm"
             : "text-slate-400 hover:bg-slate-700/50 hover:text-slate-200"
@@ -80,7 +80,7 @@ const RemoveButton: React.FC<RemoveButtonProps> = ({
   <button
     onClick={onRemoveSnippet}
     disabled={snippets.length === 1}
-    className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-700 bg-slate-800/50 text-slate-400 transition-colors hover:bg-slate-800 hover:text-red-400 disabled:cursor-not-allowed disabled:opacity-30"
+    className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-slate-700 bg-slate-800/50 text-slate-400 transition-colors hover:bg-slate-800 hover:text-red-400 disabled:cursor-not-allowed disabled:opacity-30"
     title="Remove Step"
   >
     <svg
@@ -142,7 +142,7 @@ const SnippetControls: React.FC<SnippetControlsProps> = ({
         />
         <button
           onClick={onAddSnippet}
-          className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-700 bg-slate-800/50 text-slate-400 transition-colors hover:bg-slate-800 hover:text-white"
+          className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-slate-700 bg-slate-800/50 text-slate-400 transition-colors hover:bg-slate-800 hover:text-white"
           title="Add Step"
         >
           <svg
@@ -167,7 +167,7 @@ const SnippetControls: React.FC<SnippetControlsProps> = ({
         <div className="relative">
           <button
             onClick={() => setIsResetOpen((prev) => !prev)}
-            className="flex h-8 items-center gap-1.5 rounded-full border border-slate-700 bg-slate-800/50 px-3 text-xs font-medium text-slate-400 transition-colors hover:bg-slate-800 hover:text-white"
+            className="flex h-8 cursor-pointer items-center gap-1.5 rounded-full border border-slate-700 bg-slate-800/50 px-3 text-xs font-medium text-slate-400 transition-colors hover:bg-slate-800 hover:text-white"
           >
             Reset
           </button>
@@ -179,13 +179,13 @@ const SnippetControls: React.FC<SnippetControlsProps> = ({
               <div className="flex items-center justify-end gap-2">
                 <button
                   onClick={() => setIsResetOpen(false)}
-                  className="rounded-lg px-3 py-1.5 text-xs font-medium text-slate-400 transition-colors hover:text-white"
+                  className="cursor-pointer rounded-lg px-3 py-1.5 text-xs font-medium text-slate-400 transition-colors hover:text-white"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={onResetConfirm}
-                  className="rounded-lg bg-rose-500/90 px-3 py-1.5 text-xs font-medium text-white shadow-sm transition-colors hover:bg-rose-500"
+                  className="cursor-pointer rounded-lg bg-rose-500/90 px-3 py-1.5 text-xs font-medium text-white shadow-sm transition-colors hover:bg-rose-500"
                 >
                   Reset All
                 </button>
@@ -198,7 +198,7 @@ const SnippetControls: React.FC<SnippetControlsProps> = ({
           data-testid="play-animation"
           onClick={onPlay}
           disabled={isPlayDisabled}
-          className="flex h-8 items-center gap-1.5 rounded-full bg-blue-600 px-4 text-xs font-bold text-white shadow-lg shadow-blue-500/25 transition-all hover:bg-blue-500 hover:shadow-blue-500/40 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none"
+          className="flex h-8 cursor-pointer items-center gap-1.5 rounded-full bg-blue-600 px-4 text-xs font-bold text-white shadow-lg shadow-blue-500/25 transition-all hover:bg-blue-500 hover:shadow-blue-500/40 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none"
         >
           {isPlaying ? (
             <>
