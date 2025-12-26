@@ -10,11 +10,16 @@ import { toggleVariants } from "@/components/ui/toggle"
 const ToggleGroupContext = React.createContext<
   VariantProps<typeof toggleVariants> & {
     spacing?: number
+    activeValue?: string
+    lastValue?: string
+    itemOrder?: Map<string, number>
   }
 >({
   size: "default",
   variant: "default",
   spacing: 0,
+  activeValue: undefined,
+  lastValue: undefined,
 })
 
 function ToggleGroup({
@@ -23,11 +28,47 @@ function ToggleGroup({
   size,
   spacing = 0,
   children,
+  onValueChange,
+  value,
   ...props
 }: React.ComponentProps<typeof ToggleGroupPrimitive.Root> &
   VariantProps<typeof toggleVariants> & {
     spacing?: number
   }) {
+  const [activeValue, setActiveValue] = React.useState<string | undefined>(
+    typeof value === "string" ? value : undefined
+  )
+  const lastValueRef = React.useRef<string | undefined>(activeValue)
+
+  const itemOrder = React.useMemo(() => {
+    const order = new Map<string, number>()
+    React.Children.forEach(children, (child, index) => {
+      if (!React.isValidElement(child)) return
+      const childValue = child.props?.value
+      if (typeof childValue === "string") {
+        order.set(childValue, index)
+      }
+    })
+    return order
+  }, [children])
+
+  const handleValueChange = React.useCallback(
+    (nextValue: string | string[]) => {
+      if (typeof nextValue === "string") {
+        lastValueRef.current = activeValue
+        setActiveValue(nextValue)
+      }
+      onValueChange?.(nextValue)
+    },
+    [activeValue, onValueChange]
+  )
+
+  React.useEffect(() => {
+    if (typeof value !== "string" || value === activeValue) return
+    lastValueRef.current = activeValue
+    setActiveValue(value)
+  }, [activeValue, value])
+
   return (
     <ToggleGroupPrimitive.Root
       data-slot="toggle-group"
@@ -36,12 +77,23 @@ function ToggleGroup({
       data-spacing={spacing}
       style={{ "--gap": spacing } as React.CSSProperties}
       className={cn(
-        "group/toggle-group flex w-fit items-center gap-[--spacing(var(--gap))] rounded-md data-[spacing=default]:data-[variant=outline]:shadow-xs",
+        "toggle-group group/toggle-group relative flex w-fit items-center gap-[--spacing(var(--gap))] rounded-md data-[spacing=default]:data-[variant=outline]:shadow-xs",
         className
       )}
+      onValueChange={handleValueChange}
+      value={value}
       {...props}
     >
-      <ToggleGroupContext.Provider value={{ variant, size, spacing }}>
+      <ToggleGroupContext.Provider
+        value={{
+          variant,
+          size,
+          spacing,
+          activeValue,
+          lastValue: lastValueRef.current,
+          itemOrder,
+        }}
+      >
         {children}
       </ToggleGroupContext.Provider>
     </ToggleGroupPrimitive.Root>
@@ -57,6 +109,20 @@ function ToggleGroupItem({
 }: React.ComponentProps<typeof ToggleGroupPrimitive.Item> &
   VariantProps<typeof toggleVariants>) {
   const context = React.useContext(ToggleGroupContext)
+  const itemValue = props.value
+  let direction: "left" | "right" | undefined
+
+  if (
+    typeof itemValue === "string" &&
+    context.lastValue &&
+    context.itemOrder
+  ) {
+    const currentIndex = context.itemOrder.get(itemValue)
+    const lastIndex = context.itemOrder.get(context.lastValue)
+    if (currentIndex != null && lastIndex != null && currentIndex !== lastIndex) {
+      direction = currentIndex > lastIndex ? "right" : "left"
+    }
+  }
 
   return (
     <ToggleGroupPrimitive.Item
@@ -64,18 +130,20 @@ function ToggleGroupItem({
       data-variant={context.variant || variant}
       data-size={context.size || size}
       data-spacing={context.spacing}
+      data-direction={direction}
       className={cn(
         toggleVariants({
           variant: context.variant || variant,
           size: context.size || size,
         }),
-        "w-auto min-w-0 shrink-0 px-3 focus:z-10 focus-visible:z-10",
-        "data-[spacing=0]:rounded-none data-[spacing=0]:shadow-none data-[spacing=0]:first:rounded-l-md data-[spacing=0]:last:rounded-r-md data-[spacing=0]:data-[variant=outline]:border-l-0 data-[spacing=0]:data-[variant=outline]:first:border-l",
+        "toggle-group-item relative w-auto min-w-0 shrink-0 overflow-hidden rounded-[inherit] px-3 focus:z-10 focus-visible:z-10",
+        "data-[spacing=0]:shadow-none data-[spacing=0]:data-[variant=outline]:border-l-0 data-[spacing=0]:data-[variant=outline]:first:border-l",
         className
       )}
       {...props}
     >
-      {children}
+      <span aria-hidden="true" className="toggle-group-item-indicator" />
+      <span className="relative z-10">{children}</span>
     </ToggleGroupPrimitive.Item>
   )
 }

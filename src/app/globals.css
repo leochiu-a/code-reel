@@ -74,6 +74,58 @@ body {
   cursor: pointer !important;
 }
 
+.toggle-group {
+  --toggle-indicator-bg: #2563eb;
+}
+
+.toggle-group-item-indicator {
+  position: absolute;
+  inset: 0;
+  background: var(--toggle-indicator-bg);
+  pointer-events: none;
+  opacity: 0;
+  transform: translateX(0);
+  transition: opacity 160ms ease;
+  z-index: 0;
+}
+
+.toggle-group-item[data-state="on"] .toggle-group-item-indicator {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.toggle-group-item[data-state="on"][data-direction="right"]
+  .toggle-group-item-indicator {
+  animation: toggle-group-sweep-right 160ms ease;
+}
+
+.toggle-group-item[data-state="on"][data-direction="left"]
+  .toggle-group-item-indicator {
+  animation: toggle-group-sweep-left 160ms ease;
+}
+
+@keyframes toggle-group-sweep-right {
+  from {
+    transform: translateX(-6px);
+    opacity: 0.5;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes toggle-group-sweep-left {
+  from {
+    transform: translateX(6px);
+    opacity: 0.5;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
 @keyframes codesnap-highlight-fade {
   from {
     opacity: 0;
