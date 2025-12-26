@@ -150,9 +150,9 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
         {/* Layout Settings */}
         <div className="space-y-4">
           <Label className="text-xs font-medium text-slate-400">LAYOUT</Label>
-          
+
           <div className="space-y-3">
-             <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-1.5">
               <span className="text-xs text-slate-500">Padding</span>
               <ToggleGroup
                 type="single"
@@ -166,7 +166,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
                   <ToggleGroupItem
                     key={value}
                     value={String(value)}
-                    className="h-8 flex-1 rounded-md border border-slate-700 bg-slate-800/30 text-xs text-slate-400 hover:bg-slate-800 hover:text-slate-200 data-[state=on]:border-blue-500/50 data-[state=on]:bg-blue-500/20 data-[state=on]:text-blue-100"
+                    className="h-8 flex-1"
                   >
                     {value}
                   </ToggleGroupItem>
@@ -174,7 +174,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
               </ToggleGroup>
             </div>
 
-             <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-1.5">
               <span className="text-xs text-slate-500">Font Size</span>
               <ToggleGroup
                 type="single"
@@ -188,7 +188,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
                   <ToggleGroupItem
                     key={value}
                     value={String(value)}
-                    className="h-8 flex-1 rounded-md border border-slate-700 bg-slate-800/30 text-xs text-slate-400 hover:bg-slate-800 hover:text-slate-200 data-[state=on]:border-blue-500/50 data-[state=on]:bg-blue-500/20 data-[state=on]:text-blue-100"
+                    className="h-8 flex-1"
                   >
                     {value}
                   </ToggleGroupItem>
@@ -196,13 +196,14 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
               </ToggleGroup>
             </div>
 
-             <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-1.5">
               <span className="text-xs text-slate-500">Radius</span>
               <ToggleGroup
                 type="single"
                 value={String(settings.borderRadius)}
                 onValueChange={(value) =>
-                  value && onSettingsChange({ borderRadius: parseInt(value, 10) })
+                  value &&
+                  onSettingsChange({ borderRadius: parseInt(value, 10) })
                 }
                 className="w-full justify-start gap-1"
               >
@@ -210,7 +211,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
                   <ToggleGroupItem
                     key={value}
                     value={String(value)}
-                    className="h-8 flex-1 rounded-md border border-slate-700 bg-slate-800/30 text-xs text-slate-400 hover:bg-slate-800 hover:text-slate-200 data-[state=on]:border-blue-500/50 data-[state=on]:bg-blue-500/20 data-[state=on]:text-blue-100"
+                    className="h-8 flex-1"
                   >
                     {value}
                   </ToggleGroupItem>
@@ -232,7 +233,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
                   <ToggleGroupItem
                     key={option.value}
                     value={option.value}
-                    className="h-8 flex-1 rounded-md border border-slate-700 bg-slate-800/30 text-xs text-slate-400 hover:bg-slate-800 hover:text-slate-200 data-[state=on]:border-blue-500/50 data-[state=on]:bg-blue-500/20 data-[state=on]:text-blue-100"
+                    className="h-8 flex-1"
                   >
                     {option.label}
                   </ToggleGroupItem>
@@ -264,7 +265,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
               onCheckedChange={(checked) =>
                 onSettingsChange({ windowControls: Boolean(checked) })
               }
-               className="border-slate-600 data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600"
+              className="border-slate-600 data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600"
             />
           </div>
         </div>
@@ -286,47 +287,51 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
             </div>
           </div>
         )}
-        
+
         {(videoStatus || copyStatus) && (
           <div className="space-y-2">
-             {videoStatus && (
-               <div className={`rounded-lg border px-3 py-2 text-xs font-medium ${
-                 videoStatus.tone === "success" 
-                   ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300"
-                   : "border-rose-500/30 bg-rose-500/10 text-rose-300"
-               }`}>
-                 {videoStatus.message}
-               </div>
-             )}
-             {copyStatus && (
-               <div className={`rounded-lg border px-3 py-2 text-xs font-medium ${
-                 copyStatus.tone === "success" 
-                   ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300"
-                   : "border-rose-500/30 bg-rose-500/10 text-rose-300"
-               }`}>
-                 {copyStatus.message}
-               </div>
-             )}
+            {videoStatus && (
+              <div
+                className={`rounded-lg border px-3 py-2 text-xs font-medium ${
+                  videoStatus.tone === "success"
+                    ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300"
+                    : "border-rose-500/30 bg-rose-500/10 text-rose-300"
+                }`}
+              >
+                {videoStatus.message}
+              </div>
+            )}
+            {copyStatus && (
+              <div
+                className={`rounded-lg border px-3 py-2 text-xs font-medium ${
+                  copyStatus.tone === "success"
+                    ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300"
+                    : "border-rose-500/30 bg-rose-500/10 text-rose-300"
+                }`}
+              >
+                {copyStatus.message}
+              </div>
+            )}
           </div>
         )}
 
         <div className="grid grid-cols-2 gap-2">
-            <Button
+          <Button
             onClick={onCopyImage}
             disabled={isCopying || !isCopySupported}
             variant="secondary"
             className="w-full cursor-pointer border border-slate-700 bg-slate-800 text-slate-200 hover:bg-slate-700 hover:text-white"
-            >
+          >
             {isCopying ? "Copying..." : "Copy"}
-            </Button>
-            <Button 
-                onClick={onExport} 
-                className="w-full cursor-pointer bg-blue-600 text-white shadow-lg shadow-blue-900/20 hover:bg-blue-500"
-            >
+          </Button>
+          <Button
+            onClick={onExport}
+            className="w-full cursor-pointer bg-blue-600 text-white shadow-lg shadow-blue-900/20 hover:bg-blue-500"
+          >
             Export
-            </Button>
+          </Button>
         </div>
-        
+
         <Button
           onClick={onExportVideo}
           disabled={isExportingVideo}

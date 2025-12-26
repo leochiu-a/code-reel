@@ -39,7 +39,6 @@ function ToggleGroup({
     typeof value === "string" ? value : undefined
   )
   const lastValueRef = React.useRef<string | undefined>(activeValue)
-
   const itemOrder = React.useMemo(() => {
     const order = new Map<string, number>()
     React.Children.forEach(children, (child, index) => {
@@ -77,7 +76,7 @@ function ToggleGroup({
       data-spacing={spacing}
       style={{ "--gap": spacing } as React.CSSProperties}
       className={cn(
-        "toggle-group group/toggle-group relative flex w-fit items-center gap-[--spacing(var(--gap))] rounded-md data-[spacing=default]:data-[variant=outline]:shadow-xs",
+        "toggle-group group/toggle-group relative flex w-fit items-center gap-[--spacing(var(--gap))] rounded-full bg-slate-800/50 p-1 data-[spacing=default]:data-[variant=outline]:shadow-xs",
         className
       )}
       onValueChange={handleValueChange}
@@ -136,13 +135,12 @@ function ToggleGroupItem({
           variant: context.variant || variant,
           size: context.size || size,
         }),
-        "toggle-group-item relative w-auto min-w-0 shrink-0 overflow-hidden rounded-[inherit] px-3 focus:z-10 focus-visible:z-10",
+        "toggle-group-item relative w-auto min-w-0 shrink-0 overflow-hidden rounded-full px-3 text-xs font-medium text-slate-400 transition-all duration-200 hover:bg-slate-700/50 hover:text-slate-200 data-[state=on]:bg-slate-700 data-[state=on]:text-white data-[state=on]:shadow-sm focus:z-10 focus-visible:z-10",
         "data-[spacing=0]:shadow-none data-[spacing=0]:data-[variant=outline]:border-l-0 data-[spacing=0]:data-[variant=outline]:first:border-l",
         className
       )}
       {...props}
     >
-      <span aria-hidden="true" className="toggle-group-item-indicator" />
       <span className="relative z-10">{children}</span>
     </ToggleGroupPrimitive.Item>
   )
