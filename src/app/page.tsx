@@ -1,20 +1,23 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { motion } from "motion/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowRight, Palette, Sparkles, Video } from "lucide-react";
 import type { HighlighterCore } from "shiki/core";
 
-import CodeEditor from "@/components/CodeEditor";
 import { Button } from "@/components/animate-ui/components/buttons/button";
 import {
   DEFAULT_EDITOR_SETTINGS,
-  GRADIENTS,
   HIGHLIGHT_STEP_DELAY_MS,
   PLAY_ANIMATION_INTERVAL_MS,
 } from "@/constants";
 import { getHighlighter } from "@/services/shiki";
+
+const CodeEditor = dynamic(() => import("@/components/CodeEditor"), {
+  ssr: false,
+});
 
 const LOGO_WRAPPER_VARIANTS = {
   center: {
@@ -156,18 +159,6 @@ export default function Page() {
   const [previewHighlighter, setPreviewHighlighter] =
     useState<HighlighterCore | null>(null);
   const prevPreviewIndexRef = useRef<number | null>(null);
-
-  const previewSettings = {
-    ...DEFAULT_EDITOR_SETTINGS,
-    background: GRADIENTS[7],
-    theme: "one-dark",
-    language: "typescript",
-    showLineNumbers: true,
-    padding: 48,
-    borderRadius: 18,
-    borderShadow:
-      "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
-  };
 
   const previewCode = PREVIEW_STEPS[previewIndex].code;
   const previewHighlightLines = PREVIEW_STEPS[previewIndex].highlightLines;
@@ -354,11 +345,11 @@ export default function Page() {
             </motion.section>
 
             <section className="mx-auto w-full max-w-6xl px-6 pb-16">
-              <div className="flex justify-center">
+              <div className="flex min-h-[420px] justify-center">
                 <CodeEditor
                   code={previewCode}
                   onCodeChange={() => {}}
-                  settings={previewSettings}
+                  settings={DEFAULT_EDITOR_SETTINGS}
                   showPreview={shouldShowPreview}
                   preview={shouldShowPreview ? preview : undefined}
                   highlightLines={previewHighlightLines}
