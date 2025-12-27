@@ -4,6 +4,7 @@ import "monaco-editor/min/vs/editor/editor.main.css";
 import "shiki-magic-move/dist/style.css";
 
 import { Toaster } from "@/components/ui/sonner";
+import { GoogleAnalytics } from "@next/third-parties/google";
 
 import "./globals.css";
 
@@ -34,6 +35,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body suppressHydrationWarning>
         {children}
         <Toaster richColors position="top-center" />
+        <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID ?? ""} />
       </body>
     </html>
   );
