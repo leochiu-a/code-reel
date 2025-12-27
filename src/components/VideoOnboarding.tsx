@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { startTransition, useCallback, useEffect, useState } from "react";
 import { Popover, PopoverAnchor, PopoverContent } from "./ui/popover";
 import { Button } from "./ui/button";
 
@@ -24,9 +24,7 @@ const VideoOnboarding: React.FC<VideoOnboardingProps> = ({
   targetId,
   scrollContainerRef,
 }) => {
-  const [onboardingRect, setOnboardingRect] = useState<OnboardingRect | null>(
-    null
-  );
+  const [onboardingRect, setOnboardingRect] = useState<OnboardingRect | null>(null);
 
   const updateOnboardingRect = useCallback(() => {
     if (typeof window === "undefined") return;
@@ -48,7 +46,9 @@ const VideoOnboarding: React.FC<VideoOnboardingProps> = ({
   useEffect(() => {
     if (!open) return;
 
-    updateOnboardingRect();
+    startTransition(() => {
+      updateOnboardingRect();
+    });
 
     const handleResize = () => updateOnboardingRect();
     const scrollContainer = scrollContainerRef.current;
@@ -107,15 +107,13 @@ const VideoOnboarding: React.FC<VideoOnboardingProps> = ({
         <PopoverContent
           side="top"
           align="end"
-          className="w-80 border-emerald-300/30 bg-slate-900/95 text-slate-100 shadow-xl"
+          className="w-80 border-white/10 bg-[#1b1b1b] text-slate-100 shadow-xl"
         >
           <div className="flex flex-col gap-3 text-sm">
-            <div className="text-base font-semibold text-emerald-200">
-              Recording Guide
-            </div>
+            <div className="text-base font-semibold text-emerald-200">Recording Guide</div>
             <div className="text-slate-300">
-              This highlighted area is your CodeSnap capture region. Play the
-              animation, then record it with your screen capture tool.
+              This highlighted area is your CodeSnap capture region. Play the animation, then record
+              it with your screen capture tool.
             </div>
             <div className="flex flex-col gap-2 text-xs text-slate-400">
               <div>1. Click Play Animation.</div>

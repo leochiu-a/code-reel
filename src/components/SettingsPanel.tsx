@@ -34,9 +34,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
   videoStatus,
 }) => {
   const etaLabel =
-    typeof exportEtaMs === "number"
-      ? `~${(Math.max(exportEtaMs, 0) / 1000).toFixed(1)}s`
-      : null;
+    typeof exportEtaMs === "number" ? `~${(Math.max(exportEtaMs, 0) / 1000).toFixed(1)}s` : null;
   const paddingOptions = [16, 32, 64, 96];
   const fontSizeOptions = [12, 14, 16, 20];
   const radiusOptions = [0, 8, 16, 32];
@@ -55,15 +53,11 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
         {/* Core Settings */}
         <div className="space-y-4">
           <div className="grid gap-2">
-            <Label className="text-xs font-medium text-white/90">
-              THEME & LANGUAGE
-            </Label>
+            <Label className="text-xs font-medium text-white/90">THEME & LANGUAGE</Label>
             <div className="grid grid-cols-1 gap-3">
               <Select
                 value={settings.theme}
-                onValueChange={(value) =>
-                  onSettingsChange({ theme: value as Theme })
-                }
+                onValueChange={(value) => onSettingsChange({ theme: value as Theme })}
               >
                 <SelectTrigger className="w-full border-white/10 bg-white/5 text-slate-100 transition-colors hover:bg-white/10 focus:ring-emerald-500/40">
                   <SelectValue placeholder="Select theme" />
@@ -73,7 +67,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
                     <SelectItem
                       key={key}
                       value={key}
-                      className="focus:bg-slate-800 focus:text-slate-100"
+                      className="focus:bg-white/10 focus:text-white"
                     >
                       {theme.label}
                     </SelectItem>
@@ -83,9 +77,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
 
               <Select
                 value={settings.language}
-                onValueChange={(value) =>
-                  onSettingsChange({ language: value as Language })
-                }
+                onValueChange={(value) => onSettingsChange({ language: value as Language })}
               >
                 <SelectTrigger className="w-full border-white/10 bg-white/5 text-slate-100 transition-colors hover:bg-white/10 focus:ring-emerald-500/40">
                   <SelectValue placeholder="Select language" />
@@ -95,7 +87,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
                     <SelectItem
                       key={key}
                       value={key}
-                      className="focus:bg-slate-800 focus:text-slate-100"
+                      className="focus:bg-white/10 focus:text-white"
                     >
                       {language.label}
                     </SelectItem>
@@ -106,9 +98,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
           </div>
 
           <div className="grid gap-2">
-            <Label className="text-xs font-medium text-white/90">
-              BACKGROUND
-            </Label>
+            <Label className="text-xs font-medium text-white/90">BACKGROUND</Label>
             <div className="grid grid-cols-5 gap-2">
               {GRADIENTS.map((g, idx) => (
                 <button
@@ -145,11 +135,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
                 className="w-full justify-start gap-1"
               >
                 {paddingOptions.map((value) => (
-                  <ToggleGroupItem
-                    key={value}
-                    value={String(value)}
-                    className="h-8 flex-1"
-                  >
+                  <ToggleGroupItem key={value} value={String(value)} className="h-8 flex-1">
                     {value}
                   </ToggleGroupItem>
                 ))}
@@ -167,11 +153,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
                 className="w-full justify-start gap-1"
               >
                 {fontSizeOptions.map((value) => (
-                  <ToggleGroupItem
-                    key={value}
-                    value={String(value)}
-                    className="h-8 flex-1"
-                  >
+                  <ToggleGroupItem key={value} value={String(value)} className="h-8 flex-1">
                     {value}
                   </ToggleGroupItem>
                 ))}
@@ -184,17 +166,12 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
                 type="single"
                 value={String(settings.borderRadius)}
                 onValueChange={(value) =>
-                  value &&
-                  onSettingsChange({ borderRadius: parseInt(value, 10) })
+                  value && onSettingsChange({ borderRadius: parseInt(value, 10) })
                 }
                 className="w-full justify-start gap-1"
               >
                 {radiusOptions.map((value) => (
-                  <ToggleGroupItem
-                    key={value}
-                    value={String(value)}
-                    className="h-8 flex-1"
-                  >
+                  <ToggleGroupItem key={value} value={String(value)} className="h-8 flex-1">
                     {value}
                   </ToggleGroupItem>
                 ))}
@@ -206,17 +183,11 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
               <ToggleGroup
                 type="single"
                 value={settings.borderShadow ?? "border-none"}
-                onValueChange={(value) =>
-                  value && onSettingsChange({ borderShadow: value })
-                }
+                onValueChange={(value) => value && onSettingsChange({ borderShadow: value })}
                 className="w-full justify-start gap-1"
               >
                 {borderShadowOptions.map((option) => (
-                  <ToggleGroupItem
-                    key={option.value}
-                    value={option.value}
-                    className="h-8 flex-1"
-                  >
+                  <ToggleGroupItem key={option.value} value={option.value} className="h-8 flex-1">
                     {option.label}
                   </ToggleGroupItem>
                 ))}
@@ -234,9 +205,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
             <span className="text-sm text-slate-200">Line Numbers</span>
             <Checkbox
               checked={settings.showLineNumbers}
-              onCheckedChange={(checked) =>
-                onSettingsChange({ showLineNumbers: Boolean(checked) })
-              }
+              onCheckedChange={(checked) => onSettingsChange({ showLineNumbers: Boolean(checked) })}
               className="border-white/20 data-[state=checked]:border-emerald-500 data-[state=checked]:bg-emerald-500"
             />
           </div>
@@ -244,9 +213,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
             <span className="text-sm text-slate-200">Window Controls</span>
             <Checkbox
               checked={settings.windowControls}
-              onCheckedChange={(checked) =>
-                onSettingsChange({ windowControls: Boolean(checked) })
-              }
+              onCheckedChange={(checked) => onSettingsChange({ windowControls: Boolean(checked) })}
               className="border-white/20 data-[state=checked]:border-emerald-500 data-[state=checked]:bg-emerald-500"
             />
           </div>
@@ -296,7 +263,6 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
             )}
           </div>
         )}
-
       </div>
     </div>
   );
