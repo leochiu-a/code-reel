@@ -20,8 +20,8 @@ const firaCode = Fira_Code({
 });
 
 export const metadata: Metadata = {
-  title: "CodeReel",
-  description: "Create beautiful code reels",
+  title: "CodeReel — Animate your code. Share your story.",
+  description: "Animate your code. Share your story.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
