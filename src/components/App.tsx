@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import type { HighlighterCore } from "shiki/core";
 import { useLocalStorage } from "usehooks-ts";
@@ -136,7 +137,11 @@ const App: React.FC = () => {
     <div className="flex h-screen w-full flex-col overflow-hidden bg-[#181818] text-neutral-100 selection:bg-emerald-400/30 selection:text-emerald-100">
       {!isExportMode && (
         <header className="flex items-center justify-between bg-[#212121] px-6 py-4">
-          <h1 className="text-lg font-semibold tracking-tight text-[#f5f5f5]">CodeReel</h1>
+          <h1 className="text-lg font-semibold tracking-tight text-[#f5f5f5]">
+            <Link href="/" className="transition hover:text-white">
+              CodeReel
+            </Link>
+          </h1>
           <div className="flex items-center gap-2">
             <Button
               onClick={onCopyImage}
