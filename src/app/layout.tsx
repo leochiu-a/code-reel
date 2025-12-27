@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import { Inter, Fira_Code } from "next/font/google";
-import "./globals.css";
 import "monaco-editor/min/vs/editor/editor.main.css";
 import "shiki-magic-move/dist/style.css";
+
 import { Toaster } from "@/components/ui/sonner";
+
+import "./globals.css";
 
 const inter = Inter({
   subsets: ["latin"],
