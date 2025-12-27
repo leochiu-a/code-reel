@@ -1,18 +1,18 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import * as ToggleGroupPrimitive from "@radix-ui/react-toggle-group"
-import { type VariantProps } from "class-variance-authority"
+import * as React from "react";
+import * as ToggleGroupPrimitive from "@radix-ui/react-toggle-group";
+import { type VariantProps } from "class-variance-authority";
 
-import { cn } from "@/lib/utils"
-import { toggleVariants } from "@/components/ui/toggle"
+import { cn } from "@/lib/utils";
+import { toggleVariants } from "@/components/ui/toggle";
 
 const ToggleGroupContext = React.createContext<
   VariantProps<typeof toggleVariants> & {
-    spacing?: number
-    activeValue?: string
-    lastValue?: string
-    itemOrder?: Map<string, number>
+    spacing?: number;
+    activeValue?: string;
+    lastValue?: string;
+    itemOrder?: Map<string, number>;
   }
 >({
   size: "default",
@@ -20,7 +20,14 @@ const ToggleGroupContext = React.createContext<
   spacing: 0,
   activeValue: undefined,
   lastValue: undefined,
-})
+});
+
+type ToggleGroupProps = React.ComponentProps<typeof ToggleGroupPrimitive.Root> &
+  VariantProps<typeof toggleVariants> & {
+    spacing?: number;
+    value: string;
+    onValueChange: (value: string) => void;
+  };
 
 function ToggleGroup({
   className,
@@ -31,44 +38,42 @@ function ToggleGroup({
   onValueChange,
   value,
   ...props
-}: React.ComponentProps<typeof ToggleGroupPrimitive.Root> &
-  VariantProps<typeof toggleVariants> & {
-    spacing?: number
-  }) {
+}: ToggleGroupProps) {
   const [activeValue, setActiveValue] = React.useState<string | undefined>(
     typeof value === "string" ? value : undefined
-  )
-  const lastValueRef = React.useRef<string | undefined>(activeValue)
+  );
+  const lastValueRef = React.useRef<string | undefined>(activeValue);
   const itemOrder = React.useMemo(() => {
-    const order = new Map<string, number>()
+    const order = new Map<string, number>();
     React.Children.forEach(children, (child, index) => {
-      if (!React.isValidElement(child)) return
-      const childValue = child.props?.value
+      if (!React.isValidElement(child)) return;
+      const childValue = (child.props as { value?: string })?.value;
       if (typeof childValue === "string") {
-        order.set(childValue, index)
+        order.set(childValue, index);
       }
-    })
-    return order
-  }, [children])
+    });
+    return order;
+  }, [children]);
 
   const handleValueChange = React.useCallback(
-    (nextValue: string | string[]) => {
+    (nextValue: string) => {
       if (typeof nextValue === "string") {
-        lastValueRef.current = activeValue
-        setActiveValue(nextValue)
+        lastValueRef.current = activeValue;
+        setActiveValue(nextValue);
       }
-      onValueChange?.(nextValue)
+      onValueChange?.(nextValue);
     },
     [activeValue, onValueChange]
-  )
+  );
 
   React.useEffect(() => {
-    if (typeof value !== "string" || value === activeValue) return
-    lastValueRef.current = activeValue
-    setActiveValue(value)
-  }, [activeValue, value])
+    if (typeof value !== "string" || value === activeValue) return;
+    lastValueRef.current = activeValue;
+    setActiveValue(value);
+  }, [activeValue, value]);
 
   return (
+    // @ts-expect-error - onValueChange is not typed correctly
     <ToggleGroupPrimitive.Root
       data-slot="toggle-group"
       data-variant={variant}
@@ -96,7 +101,7 @@ function ToggleGroup({
         {children}
       </ToggleGroupContext.Provider>
     </ToggleGroupPrimitive.Root>
-  )
+  );
 }
 
 function ToggleGroupItem({
@@ -107,19 +112,19 @@ function ToggleGroupItem({
   ...props
 }: React.ComponentProps<typeof ToggleGroupPrimitive.Item> &
   VariantProps<typeof toggleVariants>) {
-  const context = React.useContext(ToggleGroupContext)
-  const itemValue = props.value
-  let direction: "left" | "right" | undefined
+  const context = React.useContext(ToggleGroupContext);
+  const itemValue = props.value;
+  let direction: "left" | "right" | undefined;
 
-  if (
-    typeof itemValue === "string" &&
-    context.lastValue &&
-    context.itemOrder
-  ) {
-    const currentIndex = context.itemOrder.get(itemValue)
-    const lastIndex = context.itemOrder.get(context.lastValue)
-    if (currentIndex != null && lastIndex != null && currentIndex !== lastIndex) {
-      direction = currentIndex > lastIndex ? "right" : "left"
+  if (typeof itemValue === "string" && context.lastValue && context.itemOrder) {
+    const currentIndex = context.itemOrder.get(itemValue);
+    const lastIndex = context.itemOrder.get(context.lastValue);
+    if (
+      currentIndex != null &&
+      lastIndex != null &&
+      currentIndex !== lastIndex
+    ) {
+      direction = currentIndex > lastIndex ? "right" : "left";
     }
   }
 
@@ -143,7 +148,7 @@ function ToggleGroupItem({
     >
       <span className="relative z-10">{children}</span>
     </ToggleGroupPrimitive.Item>
-  )
+  );
 }
 
-export { ToggleGroup, ToggleGroupItem }
+export { ToggleGroup, ToggleGroupItem };
