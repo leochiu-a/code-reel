@@ -126,12 +126,12 @@ export const DEFAULT_EDITOR_SETTINGS: EditorSettings = {
   theme: "one-dark",
   language: "javascript",
   padding: 64,
-  background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+  background: "linear-gradient(152deg, rgb(87% 61% 43%) 0%, rgb(49% 14% 95%) 100%)",
   showLineNumbers: false,
   windowControls: true,
   fontSize: 16,
   borderRadius: 16,
-  borderShadow: "border-none",
+  borderShadow: "glass",
 };
 
 export const EXPORT_PAGE_PATH = "/?export=1";
