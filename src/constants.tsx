@@ -127,7 +127,7 @@ export const DEFAULT_EDITOR_SETTINGS: EditorSettings = {
   language: "javascript",
   padding: 64,
   background: "linear-gradient(152deg, rgb(87% 61% 43%) 0%, rgb(49% 14% 95%) 100%)",
-  showLineNumbers: false,
+  showLineNumbers: true,
   windowControls: true,
   fontSize: 16,
   borderRadius: 16,
