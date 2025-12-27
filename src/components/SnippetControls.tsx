@@ -7,6 +7,11 @@ import {
   ToggleGroup,
   ToggleGroupItem,
 } from "@/components/animate-ui/components/radix/toggle-group";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/animate-ui/components/radix/popover";
 
 type CodeSnippet = {
   id: string;
@@ -154,35 +159,38 @@ const SnippetControls: React.FC<SnippetControlsProps> = ({
       <div className="flex items-center gap-2">
         <ClientOnlyRemoveButton snippets={snippets} onRemoveSnippet={onRemoveSnippet} />
 
-        <div className="relative">
-          <button
-            onClick={() => setIsResetOpen((prev) => !prev)}
-            className="flex h-8 cursor-pointer items-center gap-1.5 rounded-full border border-white/10 bg-[#222] px-3 text-xs font-medium text-slate-300 transition-colors hover:bg-white/10 hover:text-white"
+        <Popover open={isResetOpen} onOpenChange={setIsResetOpen}>
+          <PopoverTrigger asChild>
+            <button className="flex h-8 cursor-pointer items-center gap-1.5 rounded-full border border-white/10 bg-[#222] px-3 text-xs font-medium text-slate-300 transition-colors hover:bg-white/10 hover:text-white">
+              Reset
+            </button>
+          </PopoverTrigger>
+          <PopoverContent
+            align="end"
+            side="top"
+            sideOffset={8}
+            className="w-56 rounded-xl border border-white/10 bg-[#1b1b1b] p-4 shadow-2xl"
           >
-            Reset
-          </button>
-          {isResetOpen && (
-            <div className="absolute right-0 bottom-full z-10 mb-2 w-56 rounded-xl border border-white/10 bg-[#1b1b1b] p-4 shadow-2xl">
-              <p className="mb-4 text-sm text-slate-300">
-                Are you sure you want to reset all steps?
-              </p>
-              <div className="flex items-center justify-end gap-2">
-                <button
-                  onClick={() => setIsResetOpen(false)}
-                  className="cursor-pointer rounded-lg px-3 py-1.5 text-xs font-medium text-slate-400 transition-colors hover:text-white"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={onResetConfirm}
-                  className="cursor-pointer rounded-lg bg-rose-500/90 px-3 py-1.5 text-xs font-medium text-white shadow-sm transition-colors hover:bg-rose-500"
-                >
-                  Reset All
-                </button>
-              </div>
+            <p className="mb-4 text-sm text-slate-300">Are you sure you want to reset all steps?</p>
+            <div className="flex items-center justify-end gap-2">
+              <button
+                onClick={() => setIsResetOpen(false)}
+                className="cursor-pointer rounded-lg px-3 py-1.5 text-xs font-medium text-slate-400 transition-colors hover:text-white"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  onResetConfirm();
+                  setIsResetOpen(false);
+                }}
+                className="cursor-pointer rounded-lg bg-rose-500/90 px-3 py-1.5 text-xs font-medium text-white shadow-sm transition-colors hover:bg-rose-500"
+              >
+                Reset All
+              </button>
             </div>
-          )}
-        </div>
+          </PopoverContent>
+        </Popover>
 
         <button
           data-testid="play-animation"

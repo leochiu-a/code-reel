@@ -1,7 +1,11 @@
 "use client";
 
 import React, { startTransition, useCallback, useEffect, useState } from "react";
-import { Popover, PopoverAnchor, PopoverContent } from "./ui/popover";
+import {
+  Popover,
+  PopoverAnchor,
+  PopoverContent,
+} from "@/components/animate-ui/components/radix/popover";
 import { Button } from "./ui/button";
 
 type OnboardingRect = {
