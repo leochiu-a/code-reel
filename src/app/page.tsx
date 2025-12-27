@@ -11,6 +11,7 @@ import { Button } from "@/components/animate-ui/components/buttons/button";
 import {
   DEFAULT_EDITOR_SETTINGS,
   HIGHLIGHT_STEP_DELAY_MS,
+  PREVIEW_STEPS,
   PLAY_ANIMATION_INTERVAL_MS,
 } from "@/constants";
 import { getHighlighter } from "@/services/shiki";
@@ -121,37 +122,6 @@ const LogoText = ({
     </motion.svg>
   );
 };
-const PREVIEW_STEPS = [
-  {
-    code: `export default function ProductPage({ productId, referrer, theme }) {
-  const handleSubmit = (orderDetails) => {
-    post("/product/" + productId + "/buy", {
-      referrer,
-      orderDetails,
-    });
-  };
-
-  return <Checkout onSubmit={handleSubmit} theme={theme} />;
-}`,
-    highlightLines: [2],
-  },
-  {
-    code: `import { useCallback } from "react";
-
-export default function ProductPage({ productId, referrer, theme }) {
-  const handleSubmit = useCallback((orderDetails) => {
-    post("/product/" + productId + "/buy", {
-      referrer,
-      orderDetails,
-    });
-  }, [productId, referrer]);
-
-  return <Checkout onSubmit={handleSubmit} theme={theme} />;
-}`,
-    highlightLines: [4, 9],
-  },
-];
-
 export default function Page() {
   const [transition, setTransition] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);

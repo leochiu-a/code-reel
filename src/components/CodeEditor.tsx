@@ -43,7 +43,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   onHighlightLineChange,
   preview,
   minCaptureHeight,
-  containerWidth = 650,
+  containerWidth = 860,
   containerHeight,
   resizable = true,
   debugHighlight = false,

@@ -115,6 +115,36 @@ export const LANGUAGES = {
   css: { label: "CSS", monaco: "css", shiki: "css" },
 } as const;
 
+type PreviewStep = {
+  code: string;
+  highlightLines?: number[];
+};
+
+export const PREVIEW_STEPS: PreviewStep[] = [
+  {
+    code: `export default function ProductPage({ productId, referrer }) {
+  const handleSubmit = (orderDetails) => {
+    post("/product/" + productId + "/buy", {
+      referrer,
+      orderDetails,
+    });
+  };`,
+    highlightLines: [2],
+  },
+  {
+    code: `import { useCallback } from "react";
+
+export default function ProductPage({ productId, referrer }) {
+  const handleSubmit = useCallback((orderDetails) => {
+    post("/product/" + productId + "/buy", {
+      referrer,
+      orderDetails,
+    });
+  }, [productId, referrer]);`,
+    highlightLines: [4, 9],
+  },
+];
+
 export const MAGIC_MOVE_DURATION_MS = 800;
 export const MAGIC_MOVE_DELAY_MOVE_S = 0.4;
 export const HIGHLIGHT_STEP_DELAY_MS = 300;

@@ -11,6 +11,7 @@ import {
   HIGHLIGHT_STEP_DELAY_MS,
   LANGUAGES,
   PLAY_ANIMATION_INTERVAL_MS,
+  PREVIEW_STEPS,
   THEMES,
 } from "../constants";
 import { getHighlighter } from "../services/shiki";
@@ -57,6 +58,7 @@ const App: React.FC = () => {
     handleResetConfirm,
   } = useStepState({
     defaultCode: DEFAULT_CODE,
+    defaultSnippets: PREVIEW_STEPS,
     intervalMs: PLAY_ANIMATION_INTERVAL_MS,
   });
   const [highlighter, setHighlighter] = useState<HighlighterCore | null>(null);

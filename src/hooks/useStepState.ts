@@ -12,10 +12,14 @@ type CodeSnippet = {
 
 type UseStepStateOptions = {
   defaultCode: string;
+  defaultSnippets?: Array<{
+    code: string;
+    highlightLines?: number[];
+  }>;
   intervalMs: number;
 };
 
-const useStepState = ({ defaultCode, intervalMs }: UseStepStateOptions) => {
+const useStepState = ({ defaultCode, defaultSnippets, intervalMs }: UseStepStateOptions) => {
   const normalizeStepTitles = (list: CodeSnippet[]) =>
     list.map((snippet, index) => ({
       ...snippet,
@@ -39,7 +43,18 @@ const useStepState = ({ defaultCode, intervalMs }: UseStepStateOptions) => {
     if (storedSnippets.length > 0) {
       return normalizeStepTitles(storedSnippets);
     }
-    return [{ id: initialId, title: "Step 1", code: defaultCode, highlightLines: [] }];
+    const baseSnippets =
+      defaultSnippets && defaultSnippets.length > 0
+        ? defaultSnippets
+        : [{ code: defaultCode, highlightLines: [] }];
+    return normalizeStepTitles(
+      baseSnippets.map((snippet, index) => ({
+        id: index === 0 ? initialId : crypto.randomUUID(),
+        title: "",
+        code: snippet.code,
+        highlightLines: snippet.highlightLines ?? [],
+      })),
+    );
   });
   const [activeSnippetId, setActiveSnippetId] = useState(initialId);
   const [previewIndex, setPreviewIndex] = useState(0);
