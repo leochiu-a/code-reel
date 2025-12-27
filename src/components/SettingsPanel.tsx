@@ -4,7 +4,7 @@ import React from "react";
 import { EditorSettings, Theme, Language } from "../types";
 import { GRADIENTS, LANGUAGES, THEMES } from "../constants";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Checkbox } from "@/components/animate-ui/components/radix/checkbox";
 import {
   Select,
   SelectContent,
