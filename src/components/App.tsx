@@ -142,12 +142,24 @@ const App: React.FC = () => {
     <div className="flex h-screen w-full flex-col overflow-hidden bg-[#181818] text-neutral-100 selection:bg-emerald-400/30 selection:text-emerald-100">
       {!isExportMode && (
         <header className="flex items-center justify-between bg-[#212121] px-6 py-4">
-          <h1 className="text-lg font-semibold tracking-tight text-[#f5f5f5]">
-            <Link href="/" className="transition hover:text-white">
-              CodeReel
-            </Link>
-          </h1>
+          <div className="flex items-center gap-3">
+            <h1 className="text-lg font-semibold tracking-tight text-[#f5f5f5]">
+              <Link href="/" className="transition hover:text-white">
+                CodeReel
+              </Link>
+            </h1>
+          </div>
           <div className="flex items-center gap-2">
+            <Button size="sm" variant="outline" asChild>
+              <a
+                href="https://forms.gle/KJSCGjiNPxRqjbrg6"
+                target="_blank"
+                rel="noreferrer"
+                className="h-8 cursor-pointer border border-white/10 bg-white/5 px-3 text-xs text-slate-100 hover:bg-white/10 hover:text-white"
+              >
+                Feedback
+              </a>
+            </Button>
             <Button
               onClick={onCopyImage}
               disabled={isCopying || !isCopySupported}
@@ -161,7 +173,7 @@ const App: React.FC = () => {
               disabled={isExporting}
               className="h-8 cursor-pointer bg-emerald-500 px-3 text-xs text-white shadow-lg shadow-emerald-900/25 hover:bg-emerald-400"
             >
-              {isExporting ? "Exporting..." : "Export"}
+              {isExporting ? "Exporting..." : "Export Image"}
             </Button>
             <Button
               onClick={handleOpenVideoOnboarding}
