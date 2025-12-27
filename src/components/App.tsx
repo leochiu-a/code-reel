@@ -64,7 +64,10 @@ const App: React.FC = () => {
     "codesnap-settings",
     DEFAULT_EDITOR_SETTINGS,
   );
-  const [settings, setSettings] = useState<EditorSettings>(storedSettings);
+  const [settings, setSettings] = useState<EditorSettings>({
+    ...DEFAULT_EDITOR_SETTINGS,
+    ...storedSettings,
+  });
   const { onExport, onCopyImage, isCopying, isExporting, copyStatus, isCopySupported } =
     useImageExport();
   const [isVideoOnboardingOpen, setIsVideoOnboardingOpen] = useState(false);

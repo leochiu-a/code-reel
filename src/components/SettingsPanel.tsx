@@ -2,8 +2,11 @@
 
 import React from "react";
 import { EditorSettings, Theme, Language } from "../types";
-import { GRADIENTS, LANGUAGES, THEMES } from "../constants";
-import { ToggleGroup, ToggleGroupItem } from "@/components/animate-ui/components/radix/toggle-group";
+import { DEFAULT_EDITOR_SETTINGS, GRADIENTS, LANGUAGES, THEMES } from "../constants";
+import {
+  ToggleGroup,
+  ToggleGroupItem,
+} from "@/components/animate-ui/components/radix/toggle-group";
 import { Checkbox } from "@/components/animate-ui/components/radix/checkbox";
 import {
   Select,
@@ -182,7 +185,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
               <span className="text-xs text-white/80">Shadow</span>
               <ToggleGroup
                 type="single"
-                value={settings.borderShadow ?? "border-none"}
+                value={settings.borderShadow ?? DEFAULT_EDITOR_SETTINGS.borderShadow}
                 onValueChange={(value) => value && onSettingsChange({ borderShadow: value })}
                 className="w-full justify-start gap-1"
               >
