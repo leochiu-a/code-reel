@@ -405,7 +405,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
               value={code}
               onChange={(value) => onCodeChange(value ?? "")}
               language={languageConfig.monaco}
-              theme={themeReady ? shikiTheme : "vs-dark"}
+              theme={themeReady ? shikiTheme : undefined}
               onMount={handleMount}
               height={editorHeight}
               loading={null}
