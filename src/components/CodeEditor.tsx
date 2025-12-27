@@ -65,7 +65,6 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
 
   const [editorHeight, setEditorHeight] = useState(180);
   const [themeBackground, setThemeBackground] = useState("#0b0b0b");
-  const [themeReady, setThemeReady] = useState(false);
 
   const [highlightCycle, setHighlightCycle] = useState(0);
   const [moveTargets, setMoveTargets] = useState<{ id: number; from: number; to: number }[]>([]);
@@ -73,7 +72,9 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   const [fadeOutLines, setFadeOutLines] = useState<number[]>([]);
   const [moveActive, setMoveActive] = useState(false);
 
-  const shikiTheme = THEMES[settings.theme].shikiTheme;
+  const themeConfig = THEMES[settings.theme];
+  const shikiTheme = themeConfig.shikiTheme;
+
   const languageConfig = LANGUAGES[settings.language];
 
   const lineHeight = Math.round(settings.fontSize * 1.6);
@@ -147,7 +148,6 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
       if (!shikiReadyRef.current) {
         shikiToMonaco(highlighter, monaco);
         shikiReadyRef.current = true;
-        setThemeReady(true);
       }
 
       monaco.editor.setTheme(shikiTheme);
@@ -186,7 +186,6 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
     if (!monacoRef.current || !highlighterRef.current) return;
     monacoRef.current.editor.setTheme(shikiTheme);
     setThemeBackground(getThemeBackground(highlighterRef.current, shikiTheme));
-    setThemeReady(true);
   }, [shikiTheme]);
 
   useEffect(() => {
@@ -448,7 +447,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
               value={code}
               onChange={(value) => onCodeChange(value ?? "")}
               language={languageConfig.monaco}
-              theme={themeReady ? shikiTheme : undefined}
+              theme={shikiTheme}
               onMount={handleMount}
               height={editorHeight}
               loading={null}
