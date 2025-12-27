@@ -8,12 +8,7 @@ import { ShikiMagicMove } from "shiki-magic-move/react";
 import { shikiToMonaco } from "@shikijs/monaco";
 
 import { EditorSettings } from "../types";
-import {
-  LANGUAGES,
-  MAGIC_MOVE_DELAY_MOVE_S,
-  MAGIC_MOVE_DURATION_MS,
-  THEMES,
-} from "../constants";
+import { LANGUAGES, MAGIC_MOVE_DELAY_MOVE_S, MAGIC_MOVE_DURATION_MS, THEMES } from "../constants";
 import { getHighlighter, getThemeBackground } from "../services/shiki";
 
 interface CodeEditorProps {
@@ -31,6 +26,11 @@ interface CodeEditorProps {
     theme: string;
   };
   minCaptureHeight?: number;
+  containerWidth?: number | string;
+  containerHeight?: number;
+  resizable?: boolean;
+  debugHighlight?: boolean;
+  highlightMoveDurationMs?: number;
 }
 
 const CodeEditor: React.FC<CodeEditorProps> = ({
@@ -43,17 +43,19 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   onHighlightLineChange,
   preview,
   minCaptureHeight,
+  containerWidth = 650,
+  containerHeight,
+  resizable = true,
+  debugHighlight = false,
+  highlightMoveDurationMs,
 }) => {
   const editorRef = useRef<Monaco.editor.IStandaloneCodeEditor | null>(null);
   const monacoRef = useRef<typeof Monaco | null>(null);
 
-  const highlighterRef = useRef<Awaited<
-    ReturnType<typeof getHighlighter>
-  > | null>(null);
+  const highlighterRef = useRef<Awaited<ReturnType<typeof getHighlighter>> | null>(null);
 
   const sizeListenerRef = useRef<Monaco.IDisposable | null>(null);
-  const highlightDecorationsRef =
-    useRef<Monaco.editor.IEditorDecorationsCollection | null>(null);
+  const highlightDecorationsRef = useRef<Monaco.editor.IEditorDecorationsCollection | null>(null);
   const mouseListenerRef = useRef<Monaco.IDisposable | null>(null);
 
   const highlightLineChangeRef = useRef<((line: number) => void) | null>(null);
@@ -66,9 +68,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   const [themeReady, setThemeReady] = useState(false);
 
   const [highlightCycle, setHighlightCycle] = useState(0);
-  const [moveTargets, setMoveTargets] = useState<
-    { id: number; from: number; to: number }[]
-  >([]);
+  const [moveTargets, setMoveTargets] = useState<{ id: number; from: number; to: number }[]>([]);
   const [fadeInLines, setFadeInLines] = useState<number[]>([]);
   const [fadeOutLines, setFadeOutLines] = useState<number[]>([]);
   const [moveActive, setMoveActive] = useState(false);
@@ -86,14 +86,22 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   const highlightLineCount =
     highlightSource.length > 0 ? highlightSource.split(/\r\n|\r|\n/).length : 1;
 
-  const highlightLineNumbers = (highlightLines ?? [])
-    .filter(
-      (line) => Number.isFinite(line) && line > 0 && line <= highlightLineCount
-    )
+  const rawHighlightLineNumbers = (highlightLines ?? [])
+    .filter((line) => Number.isFinite(line) && line > 0 && line <= highlightLineCount)
     .filter((line, index, list) => list.indexOf(line) === index)
     .sort((a, b) => a - b);
 
-  const highlightMoveDurationMs = MAGIC_MOVE_DURATION_MS + 100;
+  const highlightLineNumbers = rawHighlightLineNumbers;
+
+  const [debugSnapshot, setDebugSnapshot] = useState<{
+    prev: number[];
+    next: number[];
+    move: { from: number; to: number }[];
+    fadeIn: number[];
+    fadeOut: number[];
+  } | null>(null);
+
+  const computedHighlightMoveDurationMs = highlightMoveDurationMs ?? MAGIC_MOVE_DURATION_MS + 100;
 
   useEffect(() => {
     highlightLineChangeRef.current = onHighlightLineChange ?? null;
@@ -101,6 +109,20 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
 
   const updateEditorHeight = useCallback(() => {
     if (!editorRef.current) return;
+
+    if (containerHeight) {
+      const chromeHeight = settings.windowControls ? 40 : 0;
+      const padding = settings.padding * 2;
+      const height = Math.max(120, containerHeight - chromeHeight - padding);
+
+      setEditorHeight(height);
+
+      editorRef.current.layout({
+        width: editorRef.current.getLayoutInfo().width,
+        height,
+      });
+      return;
+    }
 
     const height = Math.max(24, editorRef.current.getContentHeight());
 
@@ -110,7 +132,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
       width: editorRef.current.getLayoutInfo().width,
       height,
     });
-  }, []);
+  }, [containerHeight, settings.padding, settings.windowControls]);
 
   const handleMount: OnMount = (editor, monaco) => {
     editorRef.current = editor;
@@ -144,10 +166,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
         const handleChange = highlightLineChangeRef.current;
 
         if (!handleChange) return;
-        if (
-          event.target.type !==
-          monaco.editor.MouseTargetType.GUTTER_LINE_NUMBERS
-        ) {
+        if (event.target.type !== monaco.editor.MouseTargetType.GUTTER_LINE_NUMBERS) {
           return;
         }
 
@@ -172,7 +191,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
 
   useEffect(() => {
     updateEditorHeight();
-  }, [code, settings.fontSize, settings.showLineNumbers, updateEditorHeight]);
+  }, [code, settings.fontSize, settings.showLineNumbers, containerHeight, updateEditorHeight]);
 
   useEffect(() => {
     if (!showPreview) {
@@ -210,13 +229,11 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
     const prevLines = prevHighlightLinesRef.current;
     const nextLines = highlightLineNumbers;
     const pairCount = Math.min(prevLines.length, nextLines.length);
-    const nextMoveTargets = prevLines
-      .slice(0, pairCount)
-      .map((from, index) => ({
-        id: index,
-        from,
-        to: nextLines[index],
-      }));
+    const nextMoveTargets = prevLines.slice(0, pairCount).map((from, index) => ({
+      id: index,
+      from,
+      to: nextLines[index],
+    }));
 
     setMoveTargets(nextMoveTargets);
     setFadeInLines(nextLines.slice(pairCount));
@@ -224,15 +241,34 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
     prevHighlightLinesRef.current = nextLines;
     setMoveActive(false);
     setHighlightCycle((prev) => prev + 1);
+    if (debugHighlight) {
+      setDebugSnapshot({
+        prev: prevLines,
+        next: nextLines,
+        move: nextMoveTargets.map((target) => ({
+          from: target.from,
+          to: target.to,
+        })),
+        fadeIn: nextLines.slice(pairCount),
+        fadeOut: prevLines.slice(pairCount),
+      });
+    }
 
+    let frame2 = 0;
     const frame = window.requestAnimationFrame(() => {
-      setMoveActive(true);
+      frame2 = window.requestAnimationFrame(() => {
+        setMoveActive(true);
+      });
     });
 
     return () => {
       window.cancelAnimationFrame(frame);
+
+      if (frame2) {
+        window.cancelAnimationFrame(frame2);
+      }
     };
-  }, [showPreview, highlightDelayMs, highlightLineNumbers.join(",")]);
+  }, [debugHighlight, showPreview, highlightDelayMs, highlightLineNumbers.join(",")]);
 
   useEffect(() => {
     if (!editorRef.current || !monacoRef.current) return;
@@ -262,28 +298,42 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
 
   return (
     <div
-      className="relative mx-auto flex resize-x items-center justify-center overflow-auto"
+      className={`relative mx-auto flex items-center justify-center overflow-hidden ${
+        resizable ? "resize-x" : ""
+      }`}
       id="code-capture-area"
       style={{
         padding: `${settings.padding}px`,
         background: settings.background,
         borderRadius: "16px",
         minHeight: minCaptureHeight,
-        width: "650px",
+        height: containerHeight ? `${containerHeight}px` : undefined,
+        width: typeof containerWidth === "number" ? `${containerWidth}px` : containerWidth,
         maxWidth: "100%",
         minWidth: "320px",
       }}
     >
+      {debugHighlight && debugSnapshot && (
+        <div className="pointer-events-none absolute top-3 left-3 z-50 rounded-xl bg-black/70 px-3 py-2 text-[11px] text-white/80">
+          <div>prev: {debugSnapshot.prev.join(",") || "-"}</div>
+          <div>next: {debugSnapshot.next.join(",") || "-"}</div>
+          <div>
+            move:{" "}
+            {debugSnapshot.move.length
+              ? debugSnapshot.move.map((item) => `${item.from}->${item.to}`).join(", ")
+              : "-"}
+          </div>
+          <div>fadeIn: {debugSnapshot.fadeIn.join(",") || "-"}</div>
+          <div>fadeOut: {debugSnapshot.fadeOut.join(",") || "-"}</div>
+        </div>
+      )}
       <div
         className="relative flex w-full flex-col overflow-hidden"
         style={{
           backgroundColor: themeBackground,
           borderRadius: `${settings.borderRadius}px`,
           fontSize: `${settings.fontSize}px`,
-          boxShadow:
-            settings.borderShadow === "border-none"
-              ? "none"
-              : settings.borderShadow,
+          boxShadow: settings.borderShadow === "border-none" ? "none" : settings.borderShadow,
         }}
       >
         {settings.windowControls && (
@@ -314,17 +364,20 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
                 key={`highlight-move-${target.id}-${highlightCycle}`}
                 className="pointer-events-none absolute right-0 left-0 z-20"
                 style={{
-                  top: `${
-                    previewOuterPadding +
-                    previewPaddingY +
+                  top: `${previewOuterPadding + previewPaddingY}px`,
+                  transform: `translate3d(0, ${
                     ((moveActive ? target.to : target.from) - 1) * lineHeight
-                  }px`,
+                  }px, 0)`,
                   height: `${lineHeight}px`,
-                  backgroundColor: "rgba(148, 163, 184, 0.18)",
-                  transitionProperty: "top",
-                  transitionDuration: `${highlightMoveDurationMs}ms`,
+                  backgroundColor: debugHighlight
+                    ? "rgba(255, 90, 90, 0.35)"
+                    : "rgba(148, 163, 184, 0.18)",
+                  outline: debugHighlight ? "1px dashed rgba(255, 90, 90, 0.7)" : undefined,
+                  transitionProperty: "transform",
+                  transitionDuration: `${computedHighlightMoveDurationMs}ms`,
                   transitionTimingFunction: "ease",
                   transitionDelay: `${highlightDelayMs}ms`,
+                  willChange: "transform",
                 }}
               />
             ))}
@@ -334,11 +387,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
                 key={`highlight-fade-in-${line}-${highlightCycle}`}
                 className="pointer-events-none absolute right-0 left-0 z-20"
                 style={{
-                  top: `${
-                    previewOuterPadding +
-                    previewPaddingY +
-                    (line - 1) * lineHeight
-                  }px`,
+                  top: `${previewOuterPadding + previewPaddingY + (line - 1) * lineHeight}px`,
                   height: `${lineHeight}px`,
                   backgroundColor: "rgba(148, 163, 184, 0.18)",
                   animationName: "codesnap-highlight-fade",
@@ -355,11 +404,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
                 key={`highlight-fade-out-${line}-${highlightCycle}`}
                 className="pointer-events-none absolute right-0 left-0 z-20"
                 style={{
-                  top: `${
-                    previewOuterPadding +
-                    previewPaddingY +
-                    (line - 1) * lineHeight
-                  }px`,
+                  top: `${previewOuterPadding + previewPaddingY + (line - 1) * lineHeight}px`,
                   height: `${lineHeight}px`,
                   backgroundColor: "rgba(148, 163, 184, 0.18)",
                   animationName: "codesnap-highlight-fade-out",
@@ -396,9 +441,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
           )}
           <div
             className={
-              showPreview
-                ? "pointer-events-none absolute inset-0 z-10 opacity-0"
-                : "relative z-10"
+              showPreview ? "pointer-events-none absolute inset-0 z-10 opacity-0" : "relative z-10"
             }
           >
             <Editor
