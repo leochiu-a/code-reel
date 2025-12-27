@@ -3,6 +3,10 @@
 import React from "react";
 import dynamic from "next/dynamic";
 import { Plus, Trash2, Play } from "lucide-react";
+import {
+  ToggleGroup,
+  ToggleGroupItem,
+} from "@/components/animate-ui/components/radix/toggle-group";
 
 type CodeSnippet = {
   id: string;
@@ -22,48 +26,57 @@ const SnippetList: React.FC<SnippetListProps> = ({
   activeSnippetId,
   onSelectSnippet,
   onReorderSnippet,
-}) => (
-  <div className="flex items-center gap-1 rounded-full border border-white/10 bg-[#222] p-1">
-    {snippets.map((snippet, index) => (
-      <button
-        key={snippet.id}
-        draggable
-        onClick={() => {
-          onSelectSnippet(snippet.id, index);
-        }}
-        onDragStart={(event) => {
-          event.dataTransfer.effectAllowed = "move";
-          event.dataTransfer.dropEffect = "move";
-          event.dataTransfer.setData("text/plain", String(index));
-          event.currentTarget.style.cursor = "grabbing";
-        }}
-        onDragEnd={(event) => {
-          event.currentTarget.style.cursor = "grab";
-        }}
-        onDragOver={(event) => {
-          event.preventDefault();
-          event.dataTransfer.dropEffect = "move";
-        }}
-        onDrop={(event) => {
-          event.preventDefault();
-          event.currentTarget.style.cursor = "grab";
-          const rawIndex = event.dataTransfer.getData("text/plain");
-          if (!rawIndex) return;
-          const fromIndex = Number(rawIndex);
-          if (Number.isNaN(fromIndex) || fromIndex === index) return;
-          onReorderSnippet(fromIndex, index);
-        }}
-        className={`relative cursor-pointer rounded-full px-3 py-1.5 text-xs font-medium transition-all duration-200 active:cursor-grabbing ${
-          snippet.id === activeSnippetId
-            ? "bg-white/15 text-white shadow-sm"
-            : "text-slate-300 hover:bg-white/10 hover:text-white"
-        }`}
-      >
-        {snippet.title}
-      </button>
-    ))}
-  </div>
-);
+}) => {
+  const snippetIndex = React.useMemo(
+    () => new Map(snippets.map((snippet, index) => [snippet.id, index])),
+    [snippets],
+  );
+
+  return (
+    <ToggleGroup
+      type="single"
+      value={activeSnippetId}
+      onValueChange={(nextValue) => {
+        if (!nextValue) return;
+        const index = snippetIndex.get(nextValue);
+        if (index === undefined) return;
+        onSelectSnippet(nextValue, index);
+      }}
+    >
+      {snippets.map((snippet, index) => (
+        <ToggleGroupItem
+          key={snippet.id}
+          value={snippet.id}
+          draggable
+          onDragStart={(event) => {
+            event.dataTransfer.effectAllowed = "move";
+            event.dataTransfer.dropEffect = "move";
+            event.dataTransfer.setData("text/plain", String(index));
+            event.currentTarget.style.cursor = "grabbing";
+          }}
+          onDragEnd={(event) => {
+            event.currentTarget.style.cursor = "grab";
+          }}
+          onDragOver={(event) => {
+            event.preventDefault();
+            event.dataTransfer.dropEffect = "move";
+          }}
+          onDrop={(event) => {
+            event.preventDefault();
+            event.currentTarget.style.cursor = "grab";
+            const rawIndex = event.dataTransfer.getData("text/plain");
+            if (!rawIndex) return;
+            const fromIndex = Number(rawIndex);
+            if (Number.isNaN(fromIndex) || fromIndex === index) return;
+            onReorderSnippet(fromIndex, index);
+          }}
+        >
+          {snippet.title}
+        </ToggleGroupItem>
+      ))}
+    </ToggleGroup>
+  );
+};
 
 const ClientOnlySnippetList = dynamic(() => Promise.resolve(SnippetList), {
   ssr: false,
