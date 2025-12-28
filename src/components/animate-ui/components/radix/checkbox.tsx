@@ -1,58 +1,57 @@
-'use client';
+"use client";
 
-import * as React from 'react';
-import { motion, SVGMotionProps, type HTMLMotionProps } from 'motion/react';
-import { Checkbox as CheckboxPrimitive } from 'radix-ui';
+import * as React from "react";
+import { motion, SVGMotionProps, type HTMLMotionProps } from "motion/react";
+import { Checkbox as CheckboxPrimitive } from "radix-ui";
 
-import { getStrictContext } from '@/lib/get-strict-context';
-import { useControlledState } from '@/hooks/use-controlled-state';
-import { cn } from '@/lib/utils';
-import { cva, type VariantProps } from 'class-variance-authority';
+import { getStrictContext } from "@/lib/get-strict-context";
+import { useControlledState } from "@/hooks/use-controlled-state";
+import { cn } from "@/lib/utils";
+import { cva, type VariantProps } from "class-variance-authority";
 
 const checkboxVariants = cva(
-  'peer focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&[data-state=checked],&[data-state=indeterminate]]:bg-primary [&[data-state=checked],&[data-state=indeterminate]]:text-primary-foreground flex shrink-0 items-center justify-center transition-colors duration-500 outline-none focus-visible:ring-[3px] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
+  "peer focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&[data-state=checked],&[data-state=indeterminate]]:bg-primary [&[data-state=checked],&[data-state=indeterminate]]:text-primary-foreground flex shrink-0 items-center justify-center transition-colors duration-500 outline-none focus-visible:ring-[3px] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
   {
     variants: {
       variant: {
-        default: 'bg-background border',
-        accent: 'bg-input',
+        default: "bg-background border",
+        accent: "bg-input",
       },
       size: {
-        default: 'size-5 rounded-sm',
-        sm: 'size-4.5 rounded-[5px]',
-        lg: 'size-6 rounded-[7px]',
+        default: "size-5 rounded-sm",
+        sm: "size-4.5 rounded-[5px]",
+        lg: "size-6 rounded-[7px]",
       },
     },
     defaultVariants: {
-      variant: 'default',
-      size: 'default',
+      variant: "default",
+      size: "default",
     },
   },
 );
 
-const checkboxIndicatorVariants = cva('', {
+const checkboxIndicatorVariants = cva("", {
   variants: {
     size: {
-      default: 'size-3.5',
-      sm: 'size-3',
-      lg: 'size-4',
+      default: "size-3.5",
+      sm: "size-3",
+      lg: "size-4",
     },
   },
   defaultVariants: {
-    size: 'default',
+    size: "default",
   },
 });
 
 type CheckboxContextType = {
-  isChecked: boolean | 'indeterminate';
-  setIsChecked: (checked: boolean | 'indeterminate') => void;
+  isChecked: boolean | "indeterminate";
+  setIsChecked: (checked: boolean | "indeterminate") => void;
 };
 
-const [CheckboxProvider, useCheckbox] =
-  getStrictContext<CheckboxContextType>('CheckboxContext');
+const [CheckboxProvider, useCheckbox] = getStrictContext<CheckboxContextType>("CheckboxContext");
 
-type CheckboxBaseProps = HTMLMotionProps<'button'> &
-  Omit<React.ComponentProps<typeof CheckboxPrimitive.Root>, 'asChild'>;
+type CheckboxBaseProps = HTMLMotionProps<"button"> &
+  Omit<React.ComponentProps<typeof CheckboxPrimitive.Root>, "asChild">;
 
 type CheckboxProps = CheckboxBaseProps & VariantProps<typeof checkboxVariants>;
 
@@ -96,9 +95,7 @@ function Checkbox({
           {...props}
         >
           {children}
-          <CheckboxIndicator
-            className={cn(checkboxIndicatorVariants({ size }))}
-          />
+          <CheckboxIndicator className={cn(checkboxIndicatorVariants({ size }))} />
         </motion.button>
       </CheckboxPrimitive.Root>
     </CheckboxProvider>
@@ -120,10 +117,10 @@ function CheckboxIndicator(props: CheckboxIndicatorProps) {
         strokeWidth="3.5"
         stroke="currentColor"
         initial="unchecked"
-        animate={isChecked ? 'checked' : 'unchecked'}
+        animate={isChecked ? "checked" : "unchecked"}
         {...props}
       >
-        {isChecked === 'indeterminate' ? (
+        {isChecked === "indeterminate" ? (
           <motion.line
             x1="5"
             y1="12"

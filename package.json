@@ -9,7 +9,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "prepare": "husky"
+    "prepare": "husky",
+    "format": "oxfmt"
   },
   "dependencies": {
     "@google/genai": "^1.34.0",

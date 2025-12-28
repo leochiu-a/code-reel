@@ -53,22 +53,17 @@ const FEATURES = [
   },
   {
     title: "Customize",
-    description:
-      "Tune themes, fonts, spacing, and backgrounds to fit your brand.",
+    description: "Tune themes, fonts, spacing, and backgrounds to fit your brand.",
     icon: Palette,
   },
   {
     title: "Instant preview",
-    description:
-      "Play the sequence and refine timing without leaving the editor.",
+    description: "Play the sequence and refine timing without leaving the editor.",
     icon: Video,
   },
 ] as const;
 
-const HERO_TITLE_PARTS = [
-  "Animate every highlight.",
-  "Share every step.",
-] as const;
+const HERO_TITLE_PARTS = ["Animate every highlight.", "Share every step."] as const;
 const LOGO_TEXT = "CodeReel";
 
 const logoDrawVariants = {
@@ -85,13 +80,7 @@ const LOGO_SIZES = {
   xl: { width: 360, height: 80, fontSize: 52 },
 } as const;
 
-const LogoText = ({
-  draw,
-  size,
-}: {
-  draw?: boolean;
-  size: keyof typeof LOGO_SIZES;
-}) => {
+const LogoText = ({ draw, size }: { draw?: boolean; size: keyof typeof LOGO_SIZES }) => {
   const config = LOGO_SIZES[size];
   return (
     <motion.svg
@@ -126,8 +115,7 @@ export default function Page() {
   const [transition, setTransition] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [previewIndex, setPreviewIndex] = useState(0);
-  const [previewHighlighter, setPreviewHighlighter] =
-    useState<HighlighterCore | null>(null);
+  const [previewHighlighter, setPreviewHighlighter] = useState<HighlighterCore | null>(null);
   const prevPreviewIndexRef = useRef<number | null>(null);
 
   const previewCode = PREVIEW_STEPS[previewIndex].code;
@@ -142,7 +130,7 @@ export default function Page() {
             theme: "one-dark",
           }
         : undefined,
-    [previewHighlighter, previewCode]
+    [previewHighlighter, previewCode],
   );
   const shouldShowPreview = Boolean(previewHighlighter);
 
@@ -203,11 +191,7 @@ export default function Page() {
             animate={transition ? { top: 28 } : {}}
           >
             <div className="text-white">
-              {transition ? (
-                <LogoText size="sm" />
-              ) : (
-                <LogoText size="xl" draw />
-              )}
+              {transition ? <LogoText size="sm" /> : <LogoText size="xl" draw />}
               <span className="sr-only">CodeReel</span>
             </div>
           </motion.div>
@@ -215,9 +199,7 @@ export default function Page() {
           <motion.div
             initial={{ top: 28, right: -40, opacity: 0 }}
             animate={
-              transition
-                ? { top: 28, right: 20, opacity: 1 }
-                : { top: 28, right: -40, opacity: 0 }
+              transition ? { top: 28, right: 20, opacity: 1 } : { top: 28, right: -40, opacity: 0 }
             }
             transition={{ type: "spring", stiffness: 200, damping: 30 }}
             className="absolute z-40 hidden items-center gap-3 md:flex"
@@ -243,37 +225,32 @@ export default function Page() {
                 aria-label={HERO_TITLE_PARTS.join(" ")}
               >
                 <span className="sr-only">{HERO_TITLE_PARTS.join(" ")}</span>
-                <span
-                  aria-hidden="true"
-                  className="inline-flex flex-wrap justify-center"
-                >
+                <span aria-hidden="true" className="inline-flex flex-wrap justify-center">
                   {HERO_TITLE_PARTS.map((part, partIndex) => (
                     <span
                       key={`${part}-${partIndex}`}
                       className={partIndex === 1 ? "whitespace-nowrap" : ""}
                     >
-                      {Array.from(`${part}${partIndex === 0 ? " " : ""}`).map(
-                        (char, index) => (
-                          <motion.span
-                            key={`${char}-${partIndex}-${index}`}
-                            initial={{
-                              opacity: 0,
-                              x: -12,
-                              filter: "blur(6px)",
-                            }}
-                            animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
-                            transition={{
-                              type: "spring",
-                              stiffness: 160,
-                              damping: 18,
-                              delay: 0.08 + (partIndex * 10 + index) * 0.02,
-                            }}
-                            className={char === " " ? "mr-2" : ""}
-                          >
-                            {char}
-                          </motion.span>
-                        )
-                      )}
+                      {Array.from(`${part}${partIndex === 0 ? " " : ""}`).map((char, index) => (
+                        <motion.span
+                          key={`${char}-${partIndex}-${index}`}
+                          initial={{
+                            opacity: 0,
+                            x: -12,
+                            filter: "blur(6px)",
+                          }}
+                          animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+                          transition={{
+                            type: "spring",
+                            stiffness: 160,
+                            damping: 18,
+                            delay: 0.08 + (partIndex * 10 + index) * 0.02,
+                          }}
+                          className={char === " " ? "mr-2" : ""}
+                        >
+                          {char}
+                        </motion.span>
+                      ))}
                     </span>
                   ))}
                 </span>
@@ -289,8 +266,8 @@ export default function Page() {
                 }}
                 className="max-w-2xl text-sm text-white/60 sm:text-base"
               >
-                CodeReel helps you turn code into short, polished walkthroughs
-                with precise highlights and clean exports.
+                CodeReel helps you turn code into short, polished walkthroughs with precise
+                highlights and clean exports.
               </motion.p>
               <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
                 <motion.div whileHover="hover" whileTap={{ scale: 0.95 }}>
@@ -332,10 +309,7 @@ export default function Page() {
               </div>
             </section>
 
-            <section
-              id="features"
-              className="mx-auto w-full max-w-6xl px-6 pb-16"
-            >
+            <section id="features" className="mx-auto w-full max-w-6xl px-6 pb-16">
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {FEATURES.map((feature) => {
                   const Icon = feature.icon;
@@ -348,12 +322,8 @@ export default function Page() {
                       <div className="mb-4 flex size-11 items-center justify-center rounded-xl bg-white/10">
                         <Icon className="size-5 text-white" />
                       </div>
-                      <h3 className="text-base font-semibold text-white">
-                        {feature.title}
-                      </h3>
-                      <p className="mt-2 text-sm text-white/60">
-                        {feature.description}
-                      </p>
+                      <h3 className="text-base font-semibold text-white">{feature.title}</h3>
+                      <p className="mt-2 text-sm text-white/60">{feature.description}</p>
                     </motion.div>
                   );
                 })}

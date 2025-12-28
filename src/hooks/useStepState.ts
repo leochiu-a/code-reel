@@ -140,9 +140,7 @@ const useStepState = ({ defaultCode, defaultSnippets, intervalMs }: UseStepState
   const handleHighlightLinesChange = (nextLines: number[]) => {
     setSnippets((prev) =>
       prev.map((snippet) =>
-        snippet.id === activeSnippet.id
-          ? { ...snippet, highlightLines: nextLines }
-          : snippet,
+        snippet.id === activeSnippet.id ? { ...snippet, highlightLines: nextLines } : snippet,
       ),
     );
   };
@@ -222,9 +220,7 @@ const useStepState = ({ defaultCode, defaultSnippets, intervalMs }: UseStepState
 
   const handleResetConfirm = () => {
     const resetId = crypto.randomUUID();
-    const nextSnippets = [
-      { id: resetId, title: "Step 1", code: defaultCode, highlightLines: [] },
-    ];
+    const nextSnippets = [{ id: resetId, title: "Step 1", code: defaultCode, highlightLines: [] }];
     setSnippets(nextSnippets);
     setStoredSnippets(nextSnippets);
     setActiveSnippetId(resetId);
