@@ -63,16 +63,13 @@ const Frame: React.FC<FrameProps> = ({
     : undefined;
   const windowHeaderStyle: React.CSSProperties | undefined = shouldUseWindowShell
     ? {
-        backgroundColor: "rgba(49, 54, 64, 0.98)",
         borderBottom: "1px solid rgba(255, 255, 255, 0.12)",
         borderTopLeftRadius: `${borderRadius}px`,
         borderTopRightRadius: `${borderRadius}px`,
       }
     : undefined;
   const containerStyle: React.CSSProperties = {
-    backgroundColor: framePresentation.editorContainerTransparent
-      ? "transparent"
-      : themeBackground,
+    backgroundColor: framePresentation.editorContainerTransparent ? "transparent" : themeBackground,
     borderRadius: `${framePresentation.editorContainerRadius}px`,
     fontSize: `${fontSize}px`,
     boxShadow:
