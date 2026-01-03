@@ -57,30 +57,6 @@ body {
   color: #f8fafc;
 }
 
-/* Fix Monaco Editor font styles, prevent italic text */
-.monaco-editor * {
-  font-style: normal !important;
-}
-
-.fira-code {
-  font-family:
-    var(--font-fira), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
-    "Courier New", monospace;
-}
-
-.monaco-editor .my-line-highlight {
-  background: rgba(148, 163, 184, 0.28);
-}
-
-.margin-view-overlays > div:has(.my-line-number-highlight) {
-  background: rgba(148, 163, 184, 0.28);
-  width: 100%;
-}
-
-.monaco-editor .margin-view-overlays .line-numbers {
-  cursor: pointer !important;
-}
-
 @keyframes codesnap-highlight-fade {
   from {
     opacity: 0;
@@ -88,6 +64,10 @@ body {
   to {
     opacity: 1;
   }
+}
+
+.shiki-magic-move-container {
+  background: transparent !important;
 }
 
 @keyframes codesnap-highlight-fade-out {

@@ -60,7 +60,11 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
             <div className="grid grid-cols-1 gap-3">
               <Select
                 value={settings.theme}
-                onValueChange={(value) => onSettingsChange({ theme: value as Theme })}
+                onValueChange={(value) => {
+                  const nextTheme = value as Theme;
+                  const themeDefaults = THEMES[nextTheme]?.defaults ?? {};
+                  onSettingsChange({ theme: nextTheme, ...themeDefaults });
+                }}
               >
                 <SelectTrigger className="w-full border-white/10 bg-white/5 text-slate-100 transition-colors hover:bg-white/10 focus:ring-emerald-500/40">
                   <SelectValue placeholder="Select theme" />

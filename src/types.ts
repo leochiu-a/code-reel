@@ -1,4 +1,5 @@
 export type Theme =
+  | "vercel"
   | "nord"
   | "dracula"
   | "one-dark"

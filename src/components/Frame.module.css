@@ -1,0 +1,109 @@
+.frame {
+  position: relative;
+  display: flex;
+  width: 100%;
+  min-height: 100%;
+  flex-direction: column;
+  border-radius: var(--frame-radius, 16px);
+  height: 100%;
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+}
+
+.vercelFrame {
+  background: #000000;
+}
+
+.vercelWindow {
+  position: relative;
+}
+
+.vercelGridlinesHorizontal,
+.vercelGridlinesVertical {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.vercelGridlinesHorizontal::before,
+.vercelGridlinesHorizontal::after {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -150px;
+  width: 1200px;
+  height: 1px;
+  background: #1a1a1a;
+  content: "";
+}
+
+.vercelGridlinesHorizontal::after {
+  top: auto;
+  bottom: 0;
+}
+
+.vercelGridlinesVertical::before,
+.vercelGridlinesVertical::after {
+  position: absolute;
+  top: -150px;
+  bottom: 0;
+  left: 0;
+  width: 1px;
+  height: calc(100% + 300px);
+  background: #1a1a1a;
+  content: "";
+}
+
+.vercelGridlinesVertical::after {
+  right: 0;
+  left: auto;
+}
+
+.vercelBracketLeft,
+.vercelBracketRight {
+  position: absolute;
+  top: -12px;
+  left: -12px;
+  display: flex;
+  width: 25px;
+  height: 25px;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.vercelBracketLeft::before,
+.vercelBracketLeft::after,
+.vercelBracketRight::before,
+.vercelBracketRight::after {
+  position: absolute;
+  background: #515356;
+  content: "";
+}
+
+.vercelBracketLeft::before,
+.vercelBracketRight::before {
+  top: 12px;
+  width: 100%;
+  height: 1px;
+}
+
+.vercelBracketLeft::after,
+.vercelBracketRight::after {
+  left: 12px;
+  width: 1px;
+  height: 100%;
+}
+
+.vercelBracketRight {
+  top: auto;
+  right: -12px;
+  bottom: -12px;
+  left: auto;
+}
