@@ -229,12 +229,13 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
     updateEditorHeight();
   };
 
-  const handleTextareaMouseUp = (event: React.MouseEvent<HTMLTextAreaElement>) => {
+  const handleLineNumberMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (showPreview) return;
     if (!onHighlightLineChange) return;
-    if (!event.altKey) return;
-    const target = event.currentTarget;
-    const position = target.selectionStart ?? 0;
-    const lineNumber = target.value.slice(0, position).split(/\r\n|\r|\n/).length || 1;
+    const rect = event.currentTarget.getBoundingClientRect();
+    const offsetY = event.clientY - rect.top - editorPadding.top;
+    const nextLine = Math.floor(offsetY / lineHeight) + 1;
+    const lineNumber = Math.max(1, Math.min(nextLine, highlightLineCount));
     onHighlightLineChange(lineNumber);
   };
 
@@ -279,6 +280,24 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
         windowTitle={languageConfig.label}
       >
         <div className={FRAME_PRESENTATION.editorShellClassName}>
+          {!showPreview && settings.showLineNumbers && (
+            <div
+              className="absolute top-0 bottom-0 left-0 z-30 w-11 cursor-pointer"
+              onMouseDown={handleLineNumberMouseDown}
+            />
+          )}
+          {!showPreview &&
+            highlightLineNumbers.map((line) => (
+              <div
+                key={`highlight-static-${line}`}
+                className="pointer-events-none absolute right-0 left-0 z-20"
+                style={{
+                  top: `${editorPadding.top + (line - 1) * lineHeight}px`,
+                  height: `${lineHeight}px`,
+                  backgroundColor: "rgba(148, 163, 184, 0.18)",
+                }}
+              />
+            ))}
           {showPreview &&
             moveTargets.map((target) => (
               <div
@@ -369,7 +388,6 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
             ref={textareaRef}
             value={code}
             onChange={handleTextareaChange}
-            onMouseUp={handleTextareaMouseUp}
             spellCheck={false}
             autoComplete="off"
             autoCorrect="off"
