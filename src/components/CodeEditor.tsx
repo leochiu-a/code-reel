@@ -81,6 +81,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
     left: 16,
     right: 16,
   };
+  const lineNumberGutterWidth = settings.showLineNumbers ? 28 : 0;
   const editorFontFamily = FRAME_PRESENTATION.editorFontFamily;
 
   const previewPaddingY = editorPadding.top;
@@ -396,7 +397,9 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
             className="absolute inset-0 z-20 m-0 resize-none border-none bg-transparent"
             style={{
               height: editorHeight,
-              padding: `${editorPadding.top}px ${editorPadding.right}px ${editorPadding.bottom}px 44px`,
+              padding: `${editorPadding.top}px ${editorPadding.right}px ${editorPadding.bottom}px ${
+                editorPadding.left + lineNumberGutterWidth
+              }px`,
               fontFamily: editorFontFamily,
               fontSize: settings.fontSize,
               lineHeight: `${lineHeight}px`,
