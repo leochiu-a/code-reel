@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
-import type { HighlighterCore } from "shiki/core";
+import type { Highlighter } from "shiki";
 import { ShikiMagicMove } from "shiki-magic-move/react";
 
 import { EditorSettings } from "../types";
@@ -25,7 +25,7 @@ interface CodeEditorProps {
   highlightDelayMs?: number;
   onHighlightLineChange?: (line: number) => void;
   preview?: {
-    highlighter: HighlighterCore;
+    highlighter: Highlighter;
     code: string;
     language: string;
     theme: string;
@@ -56,7 +56,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
-  const [highlighter, setHighlighter] = useState<HighlighterCore | null>(null);
+  const [highlighter, setHighlighter] = useState<Highlighter | null>(null);
   const [editorHeight, setEditorHeight] = useState(180);
   const [themeBackground, setThemeBackground] = useState("#0b0b0b");
   const [themeForeground, setThemeForeground] = useState("#ededed");

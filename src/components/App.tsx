@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import type { HighlighterCore } from "shiki/core";
+import type { Highlighter } from "shiki";
 import { useLocalStorage } from "usehooks-ts";
 import { EditorSettings } from "../types";
 import {
@@ -64,7 +64,7 @@ const App: React.FC = () => {
     defaultSnippets: PREVIEW_STEPS,
     intervalMs: PLAY_ANIMATION_INTERVAL_MS,
   });
-  const [highlighter, setHighlighter] = useState<HighlighterCore | null>(null);
+  const [highlighter, setHighlighter] = useState<Highlighter | null>(null);
   const [storedSettings, setStoredSettings] = useLocalStorage<EditorSettings>(
     "codesnap-settings",
     DEFAULT_EDITOR_SETTINGS,

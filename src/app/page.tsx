@@ -5,7 +5,7 @@ import Link from "next/link";
 import { motion } from "motion/react";
 import { startTransition, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowRight, Palette, Sparkles, Video } from "lucide-react";
-import type { HighlighterCore } from "shiki/core";
+import type { Highlighter } from "shiki";
 
 import { Button } from "@/components/animate-ui/components/buttons/button";
 import {
@@ -115,7 +115,7 @@ export default function Page() {
   const [transition, setTransition] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [previewIndex, setPreviewIndex] = useState(0);
-  const [previewHighlighter, setPreviewHighlighter] = useState<HighlighterCore | null>(null);
+  const [previewHighlighter, setPreviewHighlighter] = useState<Highlighter | null>(null);
   const prevPreviewIndexRef = useRef<number>(0);
   const [highlightDelayMs, setHighlightDelayMs] = useState(HIGHLIGHT_STEP_DELAY_MS);
 
