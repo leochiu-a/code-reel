@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { motion } from "motion/react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { startTransition, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowRight, Palette, Sparkles, Video } from "lucide-react";
 import type { HighlighterCore } from "shiki/core";
 
@@ -116,7 +116,8 @@ export default function Page() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [previewIndex, setPreviewIndex] = useState(0);
   const [previewHighlighter, setPreviewHighlighter] = useState<HighlighterCore | null>(null);
-  const prevPreviewIndexRef = useRef<number | null>(null);
+  const prevPreviewIndexRef = useRef<number>(0);
+  const [highlightDelayMs, setHighlightDelayMs] = useState(HIGHLIGHT_STEP_DELAY_MS);
 
   const previewCode = PREVIEW_STEPS[previewIndex].code;
   const previewHighlightLines = PREVIEW_STEPS[previewIndex].highlightLines;
@@ -144,6 +145,14 @@ export default function Page() {
   }, []);
 
   useEffect(() => {
+    const isWrapAround =
+      prevPreviewIndexRef.current === PREVIEW_STEPS.length - 1 && previewIndex === 0;
+    // Compute delay in an effect to avoid accessing ref during render, and keep wrap-around timing stable.
+    startTransition(() => {
+      setHighlightDelayMs(
+        isWrapAround ? HIGHLIGHT_STEP_DELAY_MS : previewIndex * HIGHLIGHT_STEP_DELAY_MS,
+      );
+    });
     prevPreviewIndexRef.current = previewIndex;
   }, [previewIndex]);
 
@@ -300,7 +309,7 @@ export default function Page() {
                   showPreview={shouldShowPreview}
                   preview={shouldShowPreview ? preview : undefined}
                   highlightLines={previewHighlightLines}
-                  highlightDelayMs={HIGHLIGHT_STEP_DELAY_MS}
+                  highlightDelayMs={highlightDelayMs}
                   containerWidth={860}
                   containerHeight={420}
                   resizable={false}

@@ -189,6 +189,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
     setFadeInLines(newFadeIn);
     setFadeOutLines(newFadeOut);
     setMoveTargets(moveTargets);
+    setMoveActive(false);
     setHighlightCycle((prev) => prev + 1);
     prevHighlightLinesRef.current = highlightLineNumbers;
 
@@ -203,7 +204,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
     }
   }, [debugHighlight, highlightLineNumbers, showPreview]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!showPreview || moveTargets.length === 0) {
       setMoveActive(false);
       return;
