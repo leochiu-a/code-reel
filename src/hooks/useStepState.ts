@@ -72,6 +72,8 @@ const useStepState = ({ defaultCode, defaultSnippets, intervalMs }: UseStepState
   const activeSnippet = snippets[activeSnippetIndex] ?? snippets[0];
   const previewSnippet = snippets[previewIndex] ?? snippets[0];
 
+  const firstSnippetId = snippets[0]?.id;
+
   useEffect(() => {
     if (!isPlaying) return;
     if (snippets.length < 2) {
@@ -87,15 +89,22 @@ const useStepState = ({ defaultCode, defaultSnippets, intervalMs }: UseStepState
       setPreviewIndex((prev) => {
         const next = prev + 1;
         if (next >= snippets.length) {
-          setIsPlaying(false);
-          return prev;
+          startTransition(() => {
+            setIsPlaying(false);
+
+            // Reset to the first snippet when the last snippet is reached
+            if (firstSnippetId) {
+              setActiveSnippetId(firstSnippetId);
+            }
+          });
+          return 0;
         }
         return next;
       });
     }, timerDuration);
 
     return () => window.clearTimeout(timer);
-  }, [intervalMs, isPlaying, previewIndex, snippets.length]);
+  }, [firstSnippetId, intervalMs, isPlaying, previewIndex, snippets.length]);
 
   useEffect(() => {
     if (hasAppliedStoredRef.current) return;

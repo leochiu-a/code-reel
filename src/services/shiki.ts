@@ -22,3 +22,8 @@ export const getThemeBackground = (highlighter: Highlighter, themeName: string) 
   const theme = highlighter.getTheme(themeName);
   return theme.bg || "#0b0b0b";
 };
+
+export const getThemeForeground = (highlighter: Highlighter, themeName: string) => {
+  const theme = highlighter.getTheme(themeName);
+  return theme.fg || "#ededed";
+};

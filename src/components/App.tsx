@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import type { HighlighterCore } from "shiki/core";
+import type { Highlighter } from "shiki";
 import { useLocalStorage } from "usehooks-ts";
 import { EditorSettings } from "../types";
 import {
@@ -12,6 +12,7 @@ import {
   LANGUAGES,
   PLAY_ANIMATION_INTERVAL_MS,
   PREVIEW_STEPS,
+  resolveShikiThemeName,
   THEMES,
 } from "../constants";
 import { getHighlighter } from "../services/shiki";
@@ -34,6 +35,8 @@ const DEFAULT_CODE = `function helloWorld() {
   
   return greeting;
 }`;
+
+const DEBUG_HIGHLIGHT = false;
 
 const countLines = (code: string) => (code || "").split(/\r\n|\r|\n/).length || 1;
 
@@ -61,7 +64,7 @@ const App: React.FC = () => {
     defaultSnippets: PREVIEW_STEPS,
     intervalMs: PLAY_ANIMATION_INTERVAL_MS,
   });
-  const [highlighter, setHighlighter] = useState<HighlighterCore | null>(null);
+  const [highlighter, setHighlighter] = useState<Highlighter | null>(null);
   const [storedSettings, setStoredSettings] = useLocalStorage<EditorSettings>(
     "codesnap-settings",
     DEFAULT_EDITOR_SETTINGS,
@@ -93,7 +96,7 @@ const App: React.FC = () => {
   };
 
   const themeConfig = THEMES[settings.theme] ?? THEMES[DEFAULT_EDITOR_SETTINGS.theme];
-  const shikiTheme = themeConfig.shikiTheme;
+  const shikiTheme = resolveShikiThemeName(themeConfig);
   const languageConfig = LANGUAGES[settings.language];
   const shouldShowPreview = Boolean(highlighter) && (isPlaying || isExportMode);
 
@@ -216,6 +219,7 @@ const App: React.FC = () => {
                 highlightDelayMs={highlightDelayMs}
                 onHighlightLineChange={handleHighlightLineChange}
                 minCaptureHeight={maxCaptureHeight}
+                debugHighlight={DEBUG_HIGHLIGHT}
                 preview={
                   highlighter
                     ? {
