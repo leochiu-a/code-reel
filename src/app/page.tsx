@@ -170,11 +170,14 @@ export default function Page() {
 
   useEffect(() => {
     if (!shouldShowPreview) return;
+    if (!transition) return;
+
     const interval = window.setInterval(() => {
       setPreviewIndex((prev) => (prev + 1) % PREVIEW_STEPS.length);
     }, PLAY_ANIMATION_INTERVAL_MS);
+
     return () => window.clearInterval(interval);
-  }, [shouldShowPreview]);
+  }, [shouldShowPreview, transition]);
 
   return (
     <main
