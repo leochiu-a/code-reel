@@ -202,8 +202,7 @@ export default function Page() {
                 }}
                 className="max-w-2xl text-sm text-white/60 sm:text-base"
               >
-                CodeReel helps you turn code into short, polished walkthroughs with precise
-                highlights and clean exports.
+                CodeReel turns your code into short, polished walkthroughs.
               </motion.p>
               <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
                 <motion.div whileHover="hover" whileTap={{ scale: 0.95 }}>
