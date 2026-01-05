@@ -304,7 +304,6 @@ export default function Page() {
               <div className="flex min-h-[420px] justify-center">
                 <CodeEditor
                   code={previewCode}
-                  onCodeChange={() => {}}
                   settings={DEFAULT_EDITOR_SETTINGS}
                   showPreview={shouldShowPreview}
                   preview={shouldShowPreview ? preview : undefined}

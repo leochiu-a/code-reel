@@ -17,7 +17,7 @@ import Frame, { FRAME_PRESENTATION } from "./Frame";
 
 interface CodeEditorProps {
   code: string;
-  onCodeChange: (code: string) => void;
+  onCodeChange?: (code: string) => void;
   settings: EditorSettings;
   /** When true, render the preview code for playback/export and disable editing. */
   showPreview?: boolean;
