@@ -3,19 +3,14 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import type { Highlighter } from "shiki";
 import { useLocalStorage } from "usehooks-ts";
 import { EditorSettings } from "../types";
 import {
   DEFAULT_EDITOR_SETTINGS,
   HIGHLIGHT_STEP_DELAY_MS,
-  LANGUAGES,
   PLAY_ANIMATION_INTERVAL_MS,
   PREVIEW_STEPS,
-  resolveShikiThemeName,
-  THEMES,
 } from "../constants";
-import { getHighlighter } from "../services/shiki";
 import useStepState from "../hooks/useStepState";
 import useImageExport from "../hooks/useImageExport";
 import useVideoExport from "../hooks/useVideoExport";
@@ -65,7 +60,7 @@ const App: React.FC = () => {
     defaultSnippets: PREVIEW_STEPS,
     intervalMs: PLAY_ANIMATION_INTERVAL_MS,
   });
-  const [highlighter, setHighlighter] = useState<Highlighter | null>(null);
+  const [isHighlighterReady, setIsHighlighterReady] = useState(false);
   const [storedSettings, setStoredSettings] = useLocalStorage<EditorSettings>(
     "codesnap-settings",
     DEFAULT_EDITOR_SETTINGS,
@@ -98,10 +93,7 @@ const App: React.FC = () => {
     setSettings((prev) => ({ ...prev, ...newSettings }));
   };
 
-  const themeConfig = THEMES[settings.theme] ?? THEMES[DEFAULT_EDITOR_SETTINGS.theme];
-  const shikiTheme = resolveShikiThemeName(themeConfig);
-  const languageConfig = LANGUAGES[settings.language];
-  const shouldShowPreview = Boolean(highlighter) && (isPlaying || isExportMode);
+  const shouldShowPreview = isHighlighterReady && (isPlaying || isExportMode);
 
   const handleOpenVideoOnboarding = useCallback(() => {
     setIsVideoOnboardingOpen(true);
@@ -127,22 +119,11 @@ const App: React.FC = () => {
   }, [settings, setStoredSettings]);
 
   useVideoExportGlobals({
-    ready: Boolean(highlighter),
+    ready: isHighlighterReady,
     onPlay: handlePlay,
     isPlaying,
     previewIndex,
   });
-
-  useEffect(() => {
-    let mounted = true;
-    getHighlighter().then((loaded) => {
-      if (!mounted) return;
-      setHighlighter(loaded);
-    });
-    return () => {
-      mounted = false;
-    };
-  }, []);
 
   return (
     <div className="flex h-screen w-full flex-col overflow-hidden bg-[#181818] text-neutral-100 selection:bg-emerald-400/30 selection:text-emerald-100">
@@ -214,7 +195,7 @@ const App: React.FC = () => {
           <div className="relative flex min-h-full w-full flex-col items-center justify-center gap-6 rounded-t-2xl border border-white/10 bg-[#181818] p-8 duration-700 lg:p-12">
             <div id="onboarding-highlight-area" className="flex flex-col gap-6">
               <CodeEditor
-                code={activeSnippet.code}
+                code={shouldShowPreview ? previewSnippet.code : activeSnippet.code}
                 onCodeChange={handleSnippetChange}
                 settings={settings}
                 showPreview={shouldShowPreview}
@@ -223,17 +204,8 @@ const App: React.FC = () => {
                 onHighlightLineChange={handleHighlightLineChange}
                 minCaptureHeight={maxCaptureHeight}
                 containerHeight={maxCaptureHeight}
+                onHighlighterReady={setIsHighlighterReady}
                 debugHighlight={DEBUG_HIGHLIGHT}
-                preview={
-                  highlighter
-                    ? {
-                        highlighter,
-                        code: previewSnippet.code,
-                        language: languageConfig.shiki,
-                        theme: shikiTheme,
-                      }
-                    : undefined
-                }
               />
 
               {!isExportMode && (
@@ -249,7 +221,7 @@ const App: React.FC = () => {
                   onResetConfirm={handleResetConfirm}
                   onPlay={handlePlay}
                   isPlaying={isPlaying}
-                  isPlayDisabled={snippets.length < 2 || !highlighter}
+                  isPlayDisabled={snippets.length < 2 || !isHighlighterReady}
                 />
               )}
             </div>

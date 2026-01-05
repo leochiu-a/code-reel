@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
-import type { Highlighter } from "shiki";
 import { ShikiMagicMove } from "shiki-magic-move/react";
 
 import { EditorSettings } from "../types";
@@ -12,7 +11,8 @@ import {
   resolveShikiThemeName,
   THEMES,
 } from "../constants";
-import { getHighlighter, getThemeBackground, getThemeForeground } from "../services/shiki";
+import { getThemeBackground, getThemeForeground } from "../services/shiki";
+import useHighlighter from "../hooks/useHighlighter";
 import Frame, { FRAME_PRESENTATION } from "./Frame";
 
 interface CodeEditorProps {
@@ -24,12 +24,7 @@ interface CodeEditorProps {
   highlightLines?: number[];
   highlightDelayMs?: number;
   onHighlightLineChange?: (line: number) => void;
-  preview?: {
-    highlighter: Highlighter;
-    code: string;
-    language: string;
-    theme: string;
-  };
+  onHighlighterReady?: (ready: boolean) => void;
   minCaptureHeight?: number;
   containerWidth?: number | string;
   containerHeight?: number;
@@ -46,7 +41,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   highlightLines,
   highlightDelayMs = 0,
   onHighlightLineChange,
-  preview,
+  onHighlighterReady,
   minCaptureHeight,
   containerWidth = 860,
   containerHeight,
@@ -56,7 +51,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
-  const [highlighter, setHighlighter] = useState<Highlighter | null>(null);
+  const highlighter = useHighlighter();
   const [editorHeight, setEditorHeight] = useState(180);
   const [themeBackground, setThemeBackground] = useState("#0b0b0b");
   const [themeForeground, setThemeForeground] = useState("#ededed");
@@ -72,7 +67,6 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   const themeConfig = THEMES[settings.theme];
   const shikiTheme = resolveShikiThemeName(themeConfig);
   const languageConfig = LANGUAGES[settings.language];
-  const activeHighlighter = preview?.highlighter ?? highlighter;
 
   const lineHeight = Math.round(settings.fontSize * FRAME_PRESENTATION.editorLineHeightMultiplier);
   const editorPadding = {
@@ -87,9 +81,10 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   const previewPaddingY = editorPadding.top;
   const previewOuterPadding = 0;
 
-  const highlightSource = showPreview && preview ? preview.code : code;
+  const displayedLanguage = languageConfig.shiki;
+  const displayedCode = code;
   const highlightLineCount =
-    highlightSource.length > 0 ? highlightSource.split(/\r\n|\r|\n/).length : 1;
+    displayedCode.length > 0 ? displayedCode.split(/\r\n|\r|\n/).length : 1;
 
   const rawHighlightLineNumbers = (highlightLines ?? [])
     .filter((line) => Number.isFinite(line) && line > 0 && line <= highlightLineCount)
@@ -125,23 +120,14 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   }, [containerHeight, settings.padding, settings.windowControls]);
 
   useEffect(() => {
-    let mounted = true;
-    getHighlighter().then((loaded) => {
-      if (!mounted) return;
-      setHighlighter(loaded);
-      setThemeBackground(getThemeBackground(loaded, shikiTheme));
-      setThemeForeground(getThemeForeground(loaded, shikiTheme));
-    });
-    return () => {
-      mounted = false;
-    };
-  }, [shikiTheme]);
-
-  useEffect(() => {
     if (!highlighter) return;
     setThemeBackground(getThemeBackground(highlighter, shikiTheme));
     setThemeForeground(getThemeForeground(highlighter, shikiTheme));
   }, [highlighter, shikiTheme]);
+
+  useEffect(() => {
+    onHighlighterReady?.(Boolean(highlighter));
+  }, [highlighter, onHighlighterReady]);
 
   useLayoutEffect(() => {
     updateEditorHeight();
@@ -234,10 +220,12 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   const handleLineNumberMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
     if (showPreview) return;
     if (!onHighlightLineChange) return;
+
     const rect = event.currentTarget.getBoundingClientRect();
     const offsetY = event.clientY - rect.top - editorPadding.top;
     const nextLine = Math.floor(offsetY / lineHeight) + 1;
     const lineNumber = Math.max(1, Math.min(nextLine, highlightLineCount));
+
     onHighlightLineChange(lineNumber);
   };
 
@@ -358,7 +346,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
               />
             ))}
 
-          {preview?.highlighter && (
+          {highlighter && (
             <div
               className="relative z-10"
               style={{
@@ -370,10 +358,10 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
               }}
             >
               <ShikiMagicMove
-                highlighter={activeHighlighter}
-                lang={preview?.language ?? languageConfig.shiki}
+                highlighter={highlighter}
+                lang={displayedLanguage}
                 theme={shikiTheme}
-                code={preview?.code ?? code}
+                code={displayedCode}
                 options={{
                   // duration: 0 means no animation; when the user updates the code snippet,
                   // no animation should be shown. Animation should only play when the play button is clicked.
