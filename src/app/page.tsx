@@ -4,8 +4,11 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { motion } from "motion/react";
 import { useEffect, useMemo, useState } from "react";
-import { ArrowRight, Palette, Sparkles, Video } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
+import SparklesIcon from "@/components/ui/sparkles-icon";
+import GearIcon from "@/components/ui/gear-icon";
+import PlayerIcon from "@/components/ui/player-icon";
 import { Button } from "@/components/animate-ui/components/buttons/button";
 import LogoText from "@/components/LogoText";
 import {
@@ -50,17 +53,17 @@ const FEATURES = [
   {
     title: "Highlight steps",
     description: "Stage each step and guide viewers through the flow.",
-    icon: Sparkles,
+    icon: SparklesIcon,
   },
   {
     title: "Customize",
     description: "Tune themes, fonts, spacing, and backgrounds to fit your brand.",
-    icon: Palette,
+    icon: GearIcon,
   },
   {
     title: "Instant preview",
     description: "Play the sequence and refine timing without leaving the editor.",
-    icon: Video,
+    icon: PlayerIcon,
   },
 ] as const;
 
