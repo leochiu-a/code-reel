@@ -183,7 +183,6 @@ export default function Page() {
                             damping: 18,
                             delay: 0.08 + (partIndex * 10 + index) * 0.02,
                           }}
-                          className={char === " " ? "mr-2" : ""}
                         >
                           {char}
                         </motion.span>
