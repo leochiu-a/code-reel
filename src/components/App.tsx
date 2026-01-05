@@ -24,6 +24,7 @@ import SnippetControls from "./SnippetControls";
 import SettingsPanel from "./SettingsPanel";
 import CodeEditor from "./CodeEditor";
 import VideoOnboarding from "./VideoOnboarding";
+import { FRAME_PRESENTATION } from "./Frame";
 import { Button } from "@/components/ui/button";
 
 const DEFAULT_CODE = `function helloWorld() {
@@ -81,9 +82,11 @@ const App: React.FC = () => {
     () => Math.max(1, ...snippets.map((snippet) => countLines(snippet.code))),
     [snippets],
   );
-  const lineHeight = Math.round(settings.fontSize * 1.6);
+  const lineHeight = Math.round(settings.fontSize * FRAME_PRESENTATION.editorLineHeightMultiplier);
+  const chromeHeight = settings.windowControls ? 40 : 0;
+  const editorVerticalPadding = FRAME_PRESENTATION.editorPaddingY * 2;
   const maxCaptureHeight =
-    settings.padding * 2 + (settings.windowControls ? 48 : 0) + maxLineCount * lineHeight + 52;
+    settings.padding * 2 + chromeHeight + editorVerticalPadding + maxLineCount * lineHeight;
 
   const { isExportingVideo, videoStatus, exportProgress, exportEtaMs } = useVideoExport({
     snippets,
@@ -219,6 +222,7 @@ const App: React.FC = () => {
                 highlightDelayMs={highlightDelayMs}
                 onHighlightLineChange={handleHighlightLineChange}
                 minCaptureHeight={maxCaptureHeight}
+                containerHeight={maxCaptureHeight}
                 debugHighlight={DEBUG_HIGHLIGHT}
                 preview={
                   highlighter

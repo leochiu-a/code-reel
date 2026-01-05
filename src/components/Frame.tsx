@@ -76,6 +76,7 @@ const Frame: React.FC<FrameProps> = ({
       framePresentation.editorContainerShadow === "none" || borderShadow === "border-none"
         ? "none"
         : borderShadow,
+    height: "100%",
   };
   const style = {
     ["--frame-radius" as string]: `${borderRadius}px`,
@@ -84,7 +85,7 @@ const Frame: React.FC<FrameProps> = ({
   };
 
   const shellContent = (
-    <div style={windowShellStyle}>
+    <div className="flex h-full flex-col" style={windowShellStyle}>
       {windowControls && (
         <div
           className="relative flex h-10 items-center justify-center px-4"
@@ -102,7 +103,7 @@ const Frame: React.FC<FrameProps> = ({
           </div>
         </div>
       )}
-      {children}
+      <div className="flex min-h-0 flex-1 items-center">{children}</div>
     </div>
   );
 
