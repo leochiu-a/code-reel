@@ -144,11 +144,12 @@ export default function Page() {
     if (!shouldShowPreview) return;
     if (!transition) return;
 
-    const interval = window.setInterval(() => {
+    const interval = setInterval(() => {
       setPreviewIndex((prev) => (prev + 1) % PREVIEW_STEPS.length);
-    }, PLAY_ANIMATION_INTERVAL_MS);
+      // Add 300ms to the interval to prevent the preview from being too fast
+    }, PLAY_ANIMATION_INTERVAL_MS + 300);
 
-    return () => window.clearInterval(interval);
+    return () => clearInterval(interval);
   }, [shouldShowPreview, transition]);
 
   return (
