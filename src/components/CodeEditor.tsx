@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import type { Highlighter } from "shiki";
 import { ShikiMagicMove } from "shiki-magic-move/react";
 
 import { EditorSettings } from "../types";
@@ -12,7 +13,6 @@ import {
   THEMES,
 } from "../constants";
 import { getThemeBackground, getThemeForeground } from "../services/shiki";
-import useHighlighter from "../hooks/useHighlighter";
 import Frame, { FRAME_PRESENTATION } from "./Frame";
 
 interface CodeEditorProps {
@@ -24,13 +24,12 @@ interface CodeEditorProps {
   highlightLines?: number[];
   highlightDelayMs?: number;
   onHighlightLineChange?: (line: number) => void;
-  onHighlighterReady?: (ready: boolean) => void;
+  highlighter?: Highlighter | null;
   minCaptureHeight?: number;
   containerWidth?: number | string;
   containerHeight?: number;
   resizable?: boolean;
   debugHighlight?: boolean;
-  highlightMoveDurationMs?: number;
 }
 
 const CodeEditor: React.FC<CodeEditorProps> = ({
@@ -41,17 +40,15 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   highlightLines,
   highlightDelayMs = 0,
   onHighlightLineChange,
-  onHighlighterReady,
+  highlighter,
   minCaptureHeight,
   containerWidth = 860,
   containerHeight,
   resizable = true,
   debugHighlight = false,
-  highlightMoveDurationMs,
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
-  const highlighter = useHighlighter();
   const [editorHeight, setEditorHeight] = useState(180);
   const [themeBackground, setThemeBackground] = useState("#0b0b0b");
   const [themeForeground, setThemeForeground] = useState("#ededed");
@@ -101,7 +98,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
     fadeOut: number[];
   } | null>(null);
 
-  const computedHighlightMoveDurationMs = highlightMoveDurationMs ?? MAGIC_MOVE_DURATION_MS + 100;
+  const computedHighlightMoveDurationMs = MAGIC_MOVE_DURATION_MS;
   const arraysEqual = (a: number[], b: number[]) =>
     a.length === b.length && a.every((value, index) => value === b[index]);
 
@@ -124,10 +121,6 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
     setThemeBackground(getThemeBackground(highlighter, shikiTheme));
     setThemeForeground(getThemeForeground(highlighter, shikiTheme));
   }, [highlighter, shikiTheme]);
-
-  useEffect(() => {
-    onHighlighterReady?.(Boolean(highlighter));
-  }, [highlighter, onHighlighterReady]);
 
   useLayoutEffect(() => {
     updateEditorHeight();

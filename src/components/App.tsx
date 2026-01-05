@@ -13,6 +13,7 @@ import {
 } from "../constants";
 import useStepState from "../hooks/useStepState";
 import useImageExport from "../hooks/useImageExport";
+import useHighlighter from "../hooks/useHighlighter";
 import useVideoExport from "../hooks/useVideoExport";
 import useVideoExportGlobals from "../hooks/useVideoExportGlobals";
 import SnippetControls from "./SnippetControls";
@@ -60,7 +61,7 @@ const App: React.FC = () => {
     defaultSnippets: PREVIEW_STEPS,
     intervalMs: PLAY_ANIMATION_INTERVAL_MS,
   });
-  const [isHighlighterReady, setIsHighlighterReady] = useState(false);
+  const highlighter = useHighlighter();
   const [storedSettings, setStoredSettings] = useLocalStorage<EditorSettings>(
     "codesnap-settings",
     DEFAULT_EDITOR_SETTINGS,
@@ -93,7 +94,7 @@ const App: React.FC = () => {
     setSettings((prev) => ({ ...prev, ...newSettings }));
   };
 
-  const shouldShowPreview = isHighlighterReady && (isPlaying || isExportMode);
+  const shouldShowPreview = Boolean(highlighter) && (isPlaying || isExportMode);
 
   const handleOpenVideoOnboarding = useCallback(() => {
     setIsVideoOnboardingOpen(true);
@@ -119,7 +120,7 @@ const App: React.FC = () => {
   }, [settings, setStoredSettings]);
 
   useVideoExportGlobals({
-    ready: isHighlighterReady,
+    ready: Boolean(highlighter),
     onPlay: handlePlay,
     isPlaying,
     previewIndex,
@@ -204,7 +205,7 @@ const App: React.FC = () => {
                 onHighlightLineChange={handleHighlightLineChange}
                 minCaptureHeight={maxCaptureHeight}
                 containerHeight={maxCaptureHeight}
-                onHighlighterReady={setIsHighlighterReady}
+                highlighter={highlighter}
                 debugHighlight={DEBUG_HIGHLIGHT}
               />
 
@@ -221,7 +222,7 @@ const App: React.FC = () => {
                   onResetConfirm={handleResetConfirm}
                   onPlay={handlePlay}
                   isPlaying={isPlaying}
-                  isPlayDisabled={snippets.length < 2 || !isHighlighterReady}
+                  isPlayDisabled={snippets.length < 2 || !highlighter}
                 />
               )}
             </div>

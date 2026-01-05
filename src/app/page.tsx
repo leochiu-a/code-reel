@@ -13,6 +13,7 @@ import {
   PREVIEW_STEPS,
   PLAY_ANIMATION_INTERVAL_MS,
 } from "@/constants";
+import useHighlighter from "@/hooks/useHighlighter";
 import { EditorSettings } from "@/types";
 
 const CodeEditor = dynamic(() => import("@/components/CodeEditor"), {
@@ -113,11 +114,11 @@ const LogoText = ({ draw, size }: { draw?: boolean; size: keyof typeof LOGO_SIZE
 export default function Page() {
   const [transition, setTransition] = useState(false);
   const [previewIndex, setPreviewIndex] = useState(0);
-  const [isHighlighterReady, setIsHighlighterReady] = useState(false);
+  const highlighter = useHighlighter();
 
   const previewCode = PREVIEW_STEPS[previewIndex].code;
   const previewHighlightLines = PREVIEW_STEPS[previewIndex].highlightLines;
-  const shouldShowPreview = isHighlighterReady;
+  const shouldShowPreview = Boolean(highlighter);
 
   const previewSettings = useMemo<EditorSettings>(
     () => ({
@@ -280,7 +281,7 @@ export default function Page() {
                   showPreview={shouldShowPreview}
                   highlightLines={previewHighlightLines}
                   highlightDelayMs={highlightDelayMs}
-                  onHighlighterReady={setIsHighlighterReady}
+                  highlighter={highlighter}
                   containerWidth={860}
                   containerHeight={420}
                   resizable={false}
