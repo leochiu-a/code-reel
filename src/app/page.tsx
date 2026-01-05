@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { motion } from "motion/react";
-import { startTransition, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ArrowRight, Palette, Sparkles, Video } from "lucide-react";
 import type { Highlighter } from "shiki";
 
@@ -116,8 +116,7 @@ export default function Page() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [previewIndex, setPreviewIndex] = useState(0);
   const [previewHighlighter, setPreviewHighlighter] = useState<Highlighter | null>(null);
-  const prevPreviewIndexRef = useRef<number>(0);
-  const [highlightDelayMs, setHighlightDelayMs] = useState(HIGHLIGHT_STEP_DELAY_MS);
+  const [prevPreviewIndex, setPrevPreviewIndex] = useState(0);
 
   const previewCode = PREVIEW_STEPS[previewIndex].code;
   const previewHighlightLines = PREVIEW_STEPS[previewIndex].highlightLines;
@@ -135,6 +134,14 @@ export default function Page() {
   );
   const shouldShowPreview = Boolean(previewHighlighter);
 
+  const highlightDelayMs = useMemo(() => {
+    const isWrapAround = prevPreviewIndex === PREVIEW_STEPS.length - 1 && previewIndex === 0;
+
+    return isWrapAround || previewIndex === 0
+      ? HIGHLIGHT_STEP_DELAY_MS
+      : previewIndex * HIGHLIGHT_STEP_DELAY_MS;
+  }, [prevPreviewIndex, previewIndex]);
+
   useEffect(() => {
     const timer = setTimeout(() => setTransition(true), 1250);
     const timer2 = setTimeout(() => setIsLoaded(true), 2500);
@@ -145,15 +152,7 @@ export default function Page() {
   }, []);
 
   useEffect(() => {
-    const isWrapAround =
-      prevPreviewIndexRef.current === PREVIEW_STEPS.length - 1 && previewIndex === 0;
-    // Compute delay in an effect to avoid accessing ref during render, and keep wrap-around timing stable.
-    startTransition(() => {
-      setHighlightDelayMs(
-        isWrapAround ? HIGHLIGHT_STEP_DELAY_MS : previewIndex * HIGHLIGHT_STEP_DELAY_MS,
-      );
-    });
-    prevPreviewIndexRef.current = previewIndex;
+    setPrevPreviewIndex(previewIndex);
   }, [previewIndex]);
 
   useEffect(() => {
