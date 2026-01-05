@@ -76,6 +76,7 @@ const Frame: React.FC<FrameProps> = ({
       framePresentation.editorContainerShadow === "none" || borderShadow === "border-none"
         ? "none"
         : borderShadow,
+    height: "100%",
   };
   const style = {
     ["--frame-radius" as string]: `${borderRadius}px`,
@@ -102,7 +103,7 @@ const Frame: React.FC<FrameProps> = ({
           </div>
         </div>
       )}
-      {children}
+      <div>{children}</div>
     </div>
   );
 

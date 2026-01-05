@@ -3,9 +3,8 @@
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { motion } from "motion/react";
-import { startTransition, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ArrowRight, Palette, Sparkles, Video } from "lucide-react";
-import type { Highlighter } from "shiki";
 
 import { Button } from "@/components/animate-ui/components/buttons/button";
 import {
@@ -14,7 +13,8 @@ import {
   PREVIEW_STEPS,
   PLAY_ANIMATION_INTERVAL_MS,
 } from "@/constants";
-import { getHighlighter } from "@/services/shiki";
+import useHighlighter from "@/hooks/useHighlighter";
+import { EditorSettings } from "@/types";
 
 const CodeEditor = dynamic(() => import("@/components/CodeEditor"), {
   ssr: false,
@@ -113,75 +113,48 @@ const LogoText = ({ draw, size }: { draw?: boolean; size: keyof typeof LOGO_SIZE
 };
 export default function Page() {
   const [transition, setTransition] = useState(false);
-  const [isLoaded, setIsLoaded] = useState(false);
   const [previewIndex, setPreviewIndex] = useState(0);
-  const [previewHighlighter, setPreviewHighlighter] = useState<Highlighter | null>(null);
-  const prevPreviewIndexRef = useRef<number>(0);
-  const [highlightDelayMs, setHighlightDelayMs] = useState(HIGHLIGHT_STEP_DELAY_MS);
+  const highlighter = useHighlighter();
 
   const previewCode = PREVIEW_STEPS[previewIndex].code;
   const previewHighlightLines = PREVIEW_STEPS[previewIndex].highlightLines;
-  const preview = useMemo(
-    () =>
-      previewHighlighter
-        ? {
-            highlighter: previewHighlighter,
-            code: previewCode,
-            language: "typescript",
-            theme: "one-dark",
-          }
-        : undefined,
-    [previewHighlighter, previewCode],
+  const shouldShowPreview = Boolean(highlighter);
+
+  const previewSettings = useMemo<EditorSettings>(
+    () => ({
+      ...DEFAULT_EDITOR_SETTINGS,
+      language: "typescript",
+    }),
+    [],
   );
-  const shouldShowPreview = Boolean(previewHighlighter);
+
+  const highlightDelayMs = useMemo(
+    () => (previewIndex === 0 ? HIGHLIGHT_STEP_DELAY_MS : previewIndex * HIGHLIGHT_STEP_DELAY_MS),
+    [previewIndex],
+  );
 
   useEffect(() => {
     const timer = setTimeout(() => setTransition(true), 1250);
-    const timer2 = setTimeout(() => setIsLoaded(true), 2500);
+
     return () => {
       clearTimeout(timer);
-      clearTimeout(timer2);
-    };
-  }, []);
-
-  useEffect(() => {
-    const isWrapAround =
-      prevPreviewIndexRef.current === PREVIEW_STEPS.length - 1 && previewIndex === 0;
-    // Compute delay in an effect to avoid accessing ref during render, and keep wrap-around timing stable.
-    startTransition(() => {
-      setHighlightDelayMs(
-        isWrapAround ? HIGHLIGHT_STEP_DELAY_MS : previewIndex * HIGHLIGHT_STEP_DELAY_MS,
-      );
-    });
-    prevPreviewIndexRef.current = previewIndex;
-  }, [previewIndex]);
-
-  useEffect(() => {
-    let isActive = true;
-    getHighlighter().then((highlighter) => {
-      if (isActive) {
-        setPreviewHighlighter(highlighter);
-      }
-    });
-    return () => {
-      isActive = false;
     };
   }, []);
 
   useEffect(() => {
     if (!shouldShowPreview) return;
-    const interval = window.setInterval(() => {
+    if (!transition) return;
+
+    const interval = setInterval(() => {
       setPreviewIndex((prev) => (prev + 1) % PREVIEW_STEPS.length);
-    }, PLAY_ANIMATION_INTERVAL_MS);
-    return () => window.clearInterval(interval);
-  }, [shouldShowPreview]);
+      // Add 300ms to the interval to prevent the preview from being too fast
+    }, PLAY_ANIMATION_INTERVAL_MS + 300);
+
+    return () => clearInterval(interval);
+  }, [shouldShowPreview, transition]);
 
   return (
-    <main
-      className={`relative min-h-screen bg-[#181818] text-neutral-100 ${
-        !isLoaded ? "overflow-y-hidden" : ""
-      }`}
-    >
+    <main className="relative min-h-screen bg-[#181818] text-neutral-100">
       <motion.div
         variants={LOGO_WRAPPER_VARIANTS}
         initial="center"
@@ -304,16 +277,14 @@ export default function Page() {
               <div className="flex min-h-[420px] justify-center">
                 <CodeEditor
                   code={previewCode}
-                  onCodeChange={() => {}}
-                  settings={DEFAULT_EDITOR_SETTINGS}
+                  settings={previewSettings}
                   showPreview={shouldShowPreview}
-                  preview={shouldShowPreview ? preview : undefined}
                   highlightLines={previewHighlightLines}
                   highlightDelayMs={highlightDelayMs}
+                  highlighter={highlighter}
                   containerWidth={860}
                   containerHeight={420}
                   resizable={false}
-                  highlightMoveDurationMs={800}
                 />
               </div>
             </section>

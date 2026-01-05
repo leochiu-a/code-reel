@@ -3,27 +3,24 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import type { Highlighter } from "shiki";
 import { useLocalStorage } from "usehooks-ts";
 import { EditorSettings } from "../types";
 import {
   DEFAULT_EDITOR_SETTINGS,
   HIGHLIGHT_STEP_DELAY_MS,
-  LANGUAGES,
   PLAY_ANIMATION_INTERVAL_MS,
   PREVIEW_STEPS,
-  resolveShikiThemeName,
-  THEMES,
 } from "../constants";
-import { getHighlighter } from "../services/shiki";
 import useStepState from "../hooks/useStepState";
 import useImageExport from "../hooks/useImageExport";
+import useHighlighter from "../hooks/useHighlighter";
 import useVideoExport from "../hooks/useVideoExport";
 import useVideoExportGlobals from "../hooks/useVideoExportGlobals";
 import SnippetControls from "./SnippetControls";
 import SettingsPanel from "./SettingsPanel";
 import CodeEditor from "./CodeEditor";
 import VideoOnboarding from "./VideoOnboarding";
+import { FRAME_PRESENTATION } from "./Frame";
 import { Button } from "@/components/ui/button";
 
 const DEFAULT_CODE = `function helloWorld() {
@@ -64,7 +61,7 @@ const App: React.FC = () => {
     defaultSnippets: PREVIEW_STEPS,
     intervalMs: PLAY_ANIMATION_INTERVAL_MS,
   });
-  const [highlighter, setHighlighter] = useState<Highlighter | null>(null);
+  const highlighter = useHighlighter();
   const [storedSettings, setStoredSettings] = useLocalStorage<EditorSettings>(
     "codesnap-settings",
     DEFAULT_EDITOR_SETTINGS,
@@ -81,9 +78,11 @@ const App: React.FC = () => {
     () => Math.max(1, ...snippets.map((snippet) => countLines(snippet.code))),
     [snippets],
   );
-  const lineHeight = Math.round(settings.fontSize * 1.6);
+  const lineHeight = Math.round(settings.fontSize * FRAME_PRESENTATION.editorLineHeightMultiplier);
+  const chromeHeight = settings.windowControls ? 40 : 0;
+  const editorVerticalPadding = FRAME_PRESENTATION.editorPaddingY * 2;
   const maxCaptureHeight =
-    settings.padding * 2 + (settings.windowControls ? 48 : 0) + maxLineCount * lineHeight + 52;
+    settings.padding * 2 + chromeHeight + editorVerticalPadding + maxLineCount * lineHeight;
 
   const { isExportingVideo, videoStatus, exportProgress, exportEtaMs } = useVideoExport({
     snippets,
@@ -95,9 +94,6 @@ const App: React.FC = () => {
     setSettings((prev) => ({ ...prev, ...newSettings }));
   };
 
-  const themeConfig = THEMES[settings.theme] ?? THEMES[DEFAULT_EDITOR_SETTINGS.theme];
-  const shikiTheme = resolveShikiThemeName(themeConfig);
-  const languageConfig = LANGUAGES[settings.language];
   const shouldShowPreview = Boolean(highlighter) && (isPlaying || isExportMode);
 
   const handleOpenVideoOnboarding = useCallback(() => {
@@ -129,17 +125,6 @@ const App: React.FC = () => {
     isPlaying,
     previewIndex,
   });
-
-  useEffect(() => {
-    let mounted = true;
-    getHighlighter().then((loaded) => {
-      if (!mounted) return;
-      setHighlighter(loaded);
-    });
-    return () => {
-      mounted = false;
-    };
-  }, []);
 
   return (
     <div className="flex h-screen w-full flex-col overflow-hidden bg-[#181818] text-neutral-100 selection:bg-emerald-400/30 selection:text-emerald-100">
@@ -211,7 +196,7 @@ const App: React.FC = () => {
           <div className="relative flex min-h-full w-full flex-col items-center justify-center gap-6 rounded-t-2xl border border-white/10 bg-[#181818] p-8 duration-700 lg:p-12">
             <div id="onboarding-highlight-area" className="flex flex-col gap-6">
               <CodeEditor
-                code={activeSnippet.code}
+                code={shouldShowPreview ? previewSnippet.code : activeSnippet.code}
                 onCodeChange={handleSnippetChange}
                 settings={settings}
                 showPreview={shouldShowPreview}
@@ -219,17 +204,9 @@ const App: React.FC = () => {
                 highlightDelayMs={highlightDelayMs}
                 onHighlightLineChange={handleHighlightLineChange}
                 minCaptureHeight={maxCaptureHeight}
+                containerHeight={maxCaptureHeight}
+                highlighter={highlighter}
                 debugHighlight={DEBUG_HIGHLIGHT}
-                preview={
-                  highlighter
-                    ? {
-                        highlighter,
-                        code: previewSnippet.code,
-                        language: languageConfig.shiki,
-                        theme: shikiTheme,
-                      }
-                    : undefined
-                }
               />
 
               {!isExportMode && (
