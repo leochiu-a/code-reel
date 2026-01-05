@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Fira_Code } from "next/font/google";
+import { ViewTransition } from "react";
 import "shiki-magic-move/dist/style.css";
 
 import { Toaster } from "@/components/ui/sonner";
@@ -26,16 +27,18 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html
-      lang="en"
-      className={`${inter.variable} ${firaCode.variable} dark`}
-      suppressHydrationWarning
-    >
-      <body suppressHydrationWarning>
-        {children}
-        <Toaster richColors position="top-center" />
-        <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID ?? ""} />
-      </body>
-    </html>
+    <ViewTransition>
+      <html
+        lang="en"
+        className={`${inter.variable} ${firaCode.variable} dark`}
+        suppressHydrationWarning
+      >
+        <body suppressHydrationWarning>
+          {children}
+          <Toaster richColors position="top-center" />
+          <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID ?? ""} />
+        </body>
+      </html>
+    </ViewTransition>
   );
 }

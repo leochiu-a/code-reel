@@ -20,6 +20,7 @@ import SnippetControls from "./SnippetControls";
 import SettingsPanel from "./SettingsPanel";
 import CodeEditor from "./CodeEditor";
 import VideoOnboarding from "./VideoOnboarding";
+import LogoText from "./LogoText";
 import { FRAME_PRESENTATION } from "./Frame";
 import { Button } from "@/components/ui/button";
 
@@ -131,9 +132,9 @@ const App: React.FC = () => {
       {!isExportMode && (
         <header className="flex items-center justify-between bg-[#212121] px-6 py-4">
           <div className="flex items-center gap-3">
-            <h1 className="text-lg font-semibold tracking-tight text-[#f5f5f5]">
+            <h1 className="ml-[-32px] text-lg font-semibold tracking-tight text-[#f5f5f5]">
               <Link href="/" className="transition hover:text-white">
-                CodeReel
+                <LogoText size="sm" className="codereel-logo-text" />
               </Link>
             </h1>
           </div>

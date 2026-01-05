@@ -7,6 +7,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ArrowRight, Palette, Sparkles, Video } from "lucide-react";
 
 import { Button } from "@/components/animate-ui/components/buttons/button";
+import LogoText from "@/components/LogoText";
 import {
   DEFAULT_EDITOR_SETTINGS,
   HIGHLIGHT_STEP_DELAY_MS,
@@ -64,53 +65,6 @@ const FEATURES = [
 ] as const;
 
 const HERO_TITLE_PARTS = ["Animate every highlight.", "Share every step."] as const;
-const LOGO_TEXT = "CodeReel";
-
-const logoDrawVariants = {
-  hidden: { strokeDashoffset: 520, fillOpacity: 0 },
-  visible: {
-    strokeDashoffset: 0,
-    fillOpacity: 1,
-    transition: { duration: 1.4, ease: "easeInOut" },
-  },
-} as const;
-
-const LOGO_SIZES = {
-  sm: { width: 150, height: 40, fontSize: 20 },
-  xl: { width: 360, height: 80, fontSize: 52 },
-} as const;
-
-const LogoText = ({ draw, size }: { draw?: boolean; size: keyof typeof LOGO_SIZES }) => {
-  const config = LOGO_SIZES[size];
-  return (
-    <motion.svg
-      width={config.width}
-      height={config.height}
-      viewBox={`0 0 ${config.width} ${config.height}`}
-      aria-hidden="true"
-    >
-      <motion.text
-        x="50%"
-        y="50%"
-        textAnchor="middle"
-        dominantBaseline="central"
-        fontFamily="var(--font-inter), ui-sans-serif, system-ui, sans-serif"
-        fontSize={config.fontSize}
-        fontWeight={600}
-        fill="currentColor"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeDasharray="520"
-        strokeDashoffset="520"
-        variants={draw ? logoDrawVariants : undefined}
-        initial={draw ? "hidden" : false}
-        animate={draw ? "visible" : false}
-      >
-        {LOGO_TEXT}
-      </motion.text>
-    </motion.svg>
-  );
-};
 export default function Page() {
   const [transition, setTransition] = useState(false);
   const [previewIndex, setPreviewIndex] = useState(0);
@@ -174,7 +128,6 @@ export default function Page() {
           >
             <div className="text-white">
               {transition ? <LogoText size="sm" /> : <LogoText size="xl" draw />}
-              <span className="sr-only">CodeReel</span>
             </div>
           </motion.div>
 
@@ -187,7 +140,9 @@ export default function Page() {
             className="absolute z-40 hidden items-center gap-3 md:flex"
           >
             <Button size="sm" asChild>
-              <Link href="/app">Open editor</Link>
+              <Link href="/app" prefetch>
+                Open editor
+              </Link>
             </Button>
           </motion.div>
         </div>
@@ -254,7 +209,7 @@ export default function Page() {
               <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
                 <motion.div whileHover="hover" whileTap={{ scale: 0.95 }}>
                   <Button size="lg" className="w-full pr-5 sm:w-auto" asChild>
-                    <Link href="/app">
+                    <Link href="/app" prefetch>
                       Get started{" "}
                       <motion.span
                         variants={{ hover: { x: 4 } }}
