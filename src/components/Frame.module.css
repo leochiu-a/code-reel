@@ -5,6 +5,7 @@
   min-height: 100%;
   border-radius: var(--frame-radius, 16px);
   height: 100%;
+  align-items: center;
 }
 
 .content {
@@ -21,6 +22,7 @@
 
 .vercelWindow {
   position: relative;
+  flex: 1;
 }
 
 .vercelGridlinesHorizontal,

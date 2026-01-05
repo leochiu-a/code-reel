@@ -85,7 +85,7 @@ const Frame: React.FC<FrameProps> = ({
   };
 
   const shellContent = (
-    <div className="flex h-full flex-col" style={windowShellStyle}>
+    <div style={windowShellStyle}>
       {windowControls && (
         <div
           className="relative flex h-10 items-center justify-center px-4"
@@ -103,7 +103,7 @@ const Frame: React.FC<FrameProps> = ({
           </div>
         </div>
       )}
-      <div className="flex min-h-0 flex-1 items-center">{children}</div>
+      <div>{children}</div>
     </div>
   );
 
