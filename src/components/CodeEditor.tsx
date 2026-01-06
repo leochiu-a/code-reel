@@ -14,6 +14,7 @@ import {
 } from "../constants";
 import { getThemeBackground, getThemeForeground } from "../services/shiki";
 import Frame, { FRAME_PRESENTATION } from "./Frame";
+import CodeTextarea from "./CodeTextarea";
 
 interface CodeEditorProps {
   code: string;
@@ -205,8 +206,10 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
     };
   }, [moveTargets, showPreview]);
 
-  const handleTextareaChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    onCodeChange(event.target.value);
+  const handleCodeChange = (nextCode: string) => {
+    if (onCodeChange) {
+      onCodeChange(nextCode);
+    }
     updateEditorHeight();
   };
 
@@ -367,14 +370,11 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
             </div>
           )}
 
-          <textarea
+          <CodeTextarea
             ref={textareaRef}
             value={code}
-            onChange={handleTextareaChange}
-            spellCheck={false}
-            autoComplete="off"
-            autoCorrect="off"
-            autoCapitalize="off"
+            onValueChange={handleCodeChange}
+            showPreview={showPreview}
             className="absolute inset-0 z-20 m-0 resize-none border-none bg-transparent"
             style={{
               height: editorHeight,
@@ -390,7 +390,6 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
               outline: "none",
               pointerEvents: showPreview ? "none" : "auto",
             }}
-            aria-label="Code editor"
           />
         </div>
       </Frame>
