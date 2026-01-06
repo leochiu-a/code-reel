@@ -60,12 +60,33 @@ export const GRADIENTS = [
 
 export const THEME_BACKGROUND_MAP: Partial<Record<Theme, string>> = {
   vercel: GRADIENTS[0],
+  "arc-dark": GRADIENTS[1],
+  "coldark-cold": GRADIENTS[2],
+  "coldark-dark": GRADIENTS[3],
   dracula: GRADIENTS[4],
+  "duotone-dark": GRADIENTS[5],
+  "duotone-sea": GRADIENTS[6],
+  "fleet-dark": GRADIENTS[7],
   "github-dark": GRADIENTS[8],
-  "material-theme-palenight": GRADIENTS[15],
-  "night-owl": GRADIENTS[19],
-  "one-dark": GRADIENTS[20],
-  "synthwave-84": GRADIENTS[23],
+  "github-dark-dimmed": GRADIENTS[9],
+  "github-light": GRADIENTS[10],
+  "holi-dark": GRADIENTS[11],
+  "one-light": GRADIENTS[12],
+  "material-ocean": GRADIENTS[13],
+  "material-light": GRADIENTS[14],
+  "material-theme-palenight": GRADIENTS[14],
+  "material-volcano": GRADIENTS[15],
+  moonlight: GRADIENTS[16],
+  "night-owl": GRADIENTS[17],
+  "one-dark": GRADIENTS[18],
+  panda: GRADIENTS[19],
+  poimandres: GRADIENTS[20],
+  "shades-of-purple": GRADIENTS[21],
+  "synthwave-84": GRADIENTS[22],
+  "vitesse-dark": GRADIENTS[23],
+  "vscode-dark": GRADIENTS[24],
+  "xcode-dark": GRADIENTS[25],
+  "xcode-light": GRADIENTS[26],
 };
 
 export type ThemeConfig = {
@@ -74,7 +95,6 @@ export type ThemeConfig = {
   defaults?: Partial<EditorSettings>;
   frame?: "vercel";
 };
-
 
 const VERCEL_SHIKI_THEME: ThemeRegistration = {
   name: "vercel",
@@ -275,11 +295,241 @@ export const THEMES: Record<Theme, ThemeConfig> = {
         "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
     },
   },
+  "arc-dark": {
+    label: "Arc Dark",
+    shikiTheme: "min-dark",
+    defaults: {
+      padding: 64,
+      fontSize: 16,
+      borderRadius: 16,
+      borderShadow:
+        "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
+    },
+  },
+  "coldark-cold": {
+    label: "Coldark Cold",
+    shikiTheme: "rose-pine-dawn",
+    defaults: {
+      padding: 64,
+      fontSize: 16,
+      borderRadius: 16,
+      borderShadow:
+        "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
+    },
+  },
+  "coldark-dark": {
+    label: "Coldark Dark",
+    shikiTheme: "rose-pine-moon",
+    defaults: {
+      padding: 64,
+      fontSize: 16,
+      borderRadius: 16,
+      borderShadow:
+        "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
+    },
+  },
+  "duotone-dark": {
+    label: "Duotone Dark",
+    shikiTheme: "slack-dark",
+    defaults: {
+      padding: 64,
+      fontSize: 16,
+      borderRadius: 16,
+      borderShadow:
+        "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
+    },
+  },
+  "duotone-sea": {
+    label: "Duotone Sea",
+    shikiTheme: "kanagawa-wave",
+    defaults: {
+      padding: 64,
+      fontSize: 16,
+      borderRadius: 16,
+      borderShadow:
+        "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
+    },
+  },
+  "fleet-dark": {
+    label: "Fleet Dark",
+    shikiTheme: "andromeeda",
+    defaults: {
+      padding: 64,
+      fontSize: 16,
+      borderRadius: 16,
+      borderShadow:
+        "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
+    },
+  },
+  "github-dark-dimmed": {
+    label: "GitHub Dark Dimmed",
+    shikiTheme: "github-dark-dimmed",
+    defaults: {
+      padding: 64,
+      fontSize: 16,
+      borderRadius: 16,
+      borderShadow:
+        "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
+    },
+  },
+  "github-light": {
+    label: "GitHub Light",
+    shikiTheme: "github-light",
+    defaults: {
+      padding: 64,
+      fontSize: 16,
+      borderRadius: 16,
+      borderShadow:
+        "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
+    },
+  },
+  "holi-dark": {
+    label: "Holi Dark",
+    shikiTheme: "laserwave",
+    defaults: {
+      padding: 64,
+      fontSize: 16,
+      borderRadius: 16,
+      borderShadow:
+        "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
+    },
+  },
+  "one-light": {
+    label: "One Light",
+    shikiTheme: "one-light",
+    defaults: {
+      padding: 64,
+      fontSize: 16,
+      borderRadius: 16,
+      borderShadow:
+        "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
+    },
+  },
+  "material-ocean": {
+    label: "Material Ocean",
+    shikiTheme: "material-theme-ocean",
+    defaults: {
+      padding: 64,
+      fontSize: 16,
+      borderRadius: 16,
+      borderShadow:
+        "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
+    },
+  },
+  "material-light": {
+    label: "Material Light",
+    shikiTheme: "material-theme-lighter",
+    defaults: {
+      padding: 64,
+      fontSize: 16,
+      borderRadius: 16,
+      borderShadow:
+        "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
+    },
+  },
+  "material-volcano": {
+    label: "Material Volcano",
+    shikiTheme: "material-theme-darker",
+    defaults: {
+      padding: 64,
+      fontSize: 16,
+      borderRadius: 16,
+      borderShadow:
+        "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
+    },
+  },
+  moonlight: {
+    label: "Moonlight",
+    shikiTheme: "tokyo-night",
+    defaults: {
+      padding: 64,
+      fontSize: 16,
+      borderRadius: 16,
+      borderShadow:
+        "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
+    },
+  },
+  panda: {
+    label: "Panda",
+    shikiTheme: "gruvbox-dark-soft",
+    defaults: {
+      padding: 64,
+      fontSize: 16,
+      borderRadius: 16,
+      borderShadow:
+        "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
+    },
+  },
+  poimandres: {
+    label: "Poimandres",
+    shikiTheme: "poimandres",
+    defaults: {
+      padding: 64,
+      fontSize: 16,
+      borderRadius: 16,
+      borderShadow:
+        "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
+    },
+  },
+  "shades-of-purple": {
+    label: "Shades of Purple",
+    shikiTheme: "aurora-x",
+    defaults: {
+      padding: 64,
+      fontSize: 16,
+      borderRadius: 16,
+      borderShadow:
+        "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
+    },
+  },
+  "vitesse-dark": {
+    label: "Vitesse Dark",
+    shikiTheme: "vitesse-dark",
+    defaults: {
+      padding: 64,
+      fontSize: 16,
+      borderRadius: 16,
+      borderShadow:
+        "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
+    },
+  },
+  "vscode-dark": {
+    label: "VS Code Dark",
+    shikiTheme: "dark-plus",
+    defaults: {
+      padding: 64,
+      fontSize: 16,
+      borderRadius: 16,
+      borderShadow:
+        "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
+    },
+  },
+  "xcode-dark": {
+    label: "Xcode Dark",
+    shikiTheme: "vitesse-black",
+    defaults: {
+      padding: 64,
+      fontSize: 16,
+      borderRadius: 16,
+      borderShadow:
+        "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
+    },
+  },
+  "xcode-light": {
+    label: "Xcode Light",
+    shikiTheme: "light-plus",
+    defaults: {
+      padding: 64,
+      fontSize: 16,
+      borderRadius: 16,
+      borderShadow:
+        "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
+    },
+  },
 };
 
 export const resolveShikiThemeName = (themeConfig: ThemeConfig) =>
   typeof themeConfig.shikiTheme === "string" ? themeConfig.shikiTheme : themeConfig.shikiTheme.name;
-
 
 export const LANGUAGES = {
   javascript: {
