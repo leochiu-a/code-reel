@@ -2,7 +2,7 @@ import React from "react";
 import clsx from "clsx";
 import styles from "./Frame.module.css";
 
-export type FrameId = "vercel";
+export type FrameId = "vercel" | "tailwind" | "prisma" | "trigger";
 
 export type FramePresentation = {
   editorLineHeightMultiplier: number;
@@ -53,7 +53,8 @@ const Frame: React.FC<FrameProps> = ({
 }) => {
   const framePresentation = FRAME_PRESENTATION;
   const frameBackground = frame === "vercel" ? "#000000" : background;
-  const shouldUseWindowShell = frame !== "vercel";
+  const shouldUseWindowShell =
+    frame !== "vercel" && frame !== "tailwind" && frame !== "prisma" && frame !== "trigger";
   const windowShellStyle: React.CSSProperties | undefined = shouldUseWindowShell
     ? {
         borderRadius: `${borderRadius}px`,
@@ -116,6 +117,68 @@ const Frame: React.FC<FrameProps> = ({
             <span className={styles.vercelGridlinesVertical} data-grid />
             <span className={styles.vercelBracketLeft} data-grid />
             <span className={styles.vercelBracketRight} data-grid />
+            <div className={styles.content}>{shellContent}</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (frame === "tailwind") {
+    return (
+      <div className="relative flex w-full flex-col overflow-hidden" style={containerStyle}>
+        <div className={clsx(styles.frame, styles.tailwindFrame)} style={style}>
+          <div className={styles.tailwindBeams} aria-hidden />
+          <div className={styles.tailwindWindow}>
+            <span className={styles.tailwindGridlinesHorizontal} data-grid />
+            <span className={styles.tailwindGridlinesVertical} data-grid />
+            <div className={styles.tailwindGradient}>
+              <div>
+                <div className={styles.tailwindGradient1} />
+                <div className={styles.tailwindGradient2} />
+              </div>
+            </div>
+            <div className={styles.tailwindHeader}>
+              <div className={styles.tailwindControls}>
+                <div className={styles.tailwindControl} />
+                <div className={styles.tailwindControl} />
+                <div className={styles.tailwindControl} />
+              </div>
+            </div>
+
+            <div className={styles.content}>{shellContent}</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (frame === "prisma") {
+    return (
+      <div className="relative flex w-full flex-col overflow-hidden" style={containerStyle}>
+        <div className={clsx(styles.frame, styles.prismaFrame)} style={style}>
+          <div className={styles.prismaWindow}>
+            <span data-frameborder />
+            <span data-frameborder />
+            <span data-frameborder />
+            <span data-frameborder />
+
+            <div className={styles.content}>{shellContent}</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (frame === "trigger") {
+    return (
+      <div className="relative flex w-full flex-col overflow-hidden" style={containerStyle}>
+        <div className={clsx(styles.frame, styles.triggerFrame)} style={style}>
+          <div className={styles.triggerPatternTop} aria-hidden />
+          <div className={styles.triggerPatternBottom} aria-hidden />
+          <div className={styles.triggerWindow}>
+            <span className={styles.triggerGridlinesHorizontal} data-grid />
+            <span className={styles.triggerGridlinesVertical} data-grid />
             <div className={styles.content}>{shellContent}</div>
           </div>
         </div>

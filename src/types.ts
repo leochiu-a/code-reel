@@ -1,5 +1,8 @@
 export type Theme =
+  | "prisma"
+  | "tailwind"
   | "vercel"
+  | "trigger"
   | "arc-dark"
   | "coldark-cold"
   | "coldark-dark"

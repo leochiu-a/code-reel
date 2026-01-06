@@ -1,0 +1,135 @@
+.tailwindFrame {
+  position: relative;
+  background: #0f172a;
+}
+
+.tailwindWindow {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  border: 1px solid rgba(210, 235, 255, 0.2);
+  border-radius: 12px;
+  background: rgba(17, 24, 39, 0.92);
+}
+
+.tailwindBeams {
+  position: absolute;
+  z-index: 0;
+  top: -160px;
+  left: 50%;
+  width: 900px;
+  height: 360px;
+  transform: translateX(-50%);
+  background:
+    radial-gradient(closest-side at 28% 25%, rgba(56, 189, 248, 0.45), rgba(15, 23, 42, 0)),
+    radial-gradient(closest-side at 72% 18%, rgba(236, 72, 153, 0.45), rgba(15, 23, 42, 0));
+  filter: blur(10px);
+  opacity: 0.85;
+  pointer-events: none;
+}
+
+.tailwindHeader {
+  display: flex;
+  align-items: center;
+  height: 34px;
+  padding: 0 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.tailwindControls {
+  display: flex;
+  gap: 6px;
+}
+
+.tailwindControl {
+  width: 10px;
+  height: 10px;
+  border-radius: 9999px;
+  background: rgba(148, 163, 184, 0.6);
+}
+
+.tailwindGridlinesHorizontal,
+.tailwindGridlinesVertical {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.tailwindGridlinesHorizontal::before,
+.tailwindGridlinesHorizontal::after {
+  position: absolute;
+  top: -24px;
+  bottom: 0;
+  left: -64px;
+  width: calc(100% + 120px);
+  height: 1px;
+  background: rgba(226, 232, 240, 0.12);
+  content: "";
+  mask-image: linear-gradient(to left, transparent, white 40px, white calc(100% - 40px), transparent);
+}
+
+.tailwindGridlinesHorizontal::after {
+  top: auto;
+  bottom: -24px;
+}
+
+.tailwindGridlinesVertical::before,
+.tailwindGridlinesVertical::after {
+  position: absolute;
+  top: -64px;
+  bottom: 0;
+  left: -24px;
+  width: 1px;
+  height: calc(100% + 120px);
+  background: rgba(226, 232, 240, 0.12);
+  content: "";
+  mask-image: linear-gradient(to top, transparent, white 40px, white calc(100% - 40px), transparent);
+}
+
+.tailwindGridlinesVertical::after {
+  right: -24px;
+  left: auto;
+}
+
+.tailwindGradient {
+  position: absolute;
+  bottom: -46px;
+  left: 24px;
+  right: 24px;
+  height: 24px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.tailwindGradient > div {
+  display: flex;
+  width: clamp(14rem, 60%, 32rem);
+  height: 2px;
+}
+
+.tailwindGradient1 {
+  width: 100%;
+  flex: none;
+  background: linear-gradient(
+    90deg,
+    rgba(56, 189, 248, 0) 0%,
+    rgba(56, 189, 248, 0.85) 32%,
+    rgba(236, 72, 153, 0.45) 68%,
+    rgba(236, 72, 153, 0) 100%
+  );
+  filter: blur(4px);
+}
+
+.tailwindGradient2 {
+  width: 100%;
+  flex: none;
+  margin-left: -100%;
+  background: linear-gradient(
+    90deg,
+    rgba(56, 189, 248, 0) 0%,
+    rgba(56, 189, 248, 0.85) 32%,
+    rgba(236, 72, 153, 0.45) 68%,
+    rgba(236, 72, 153, 0) 100%
+  );
+  filter: blur(1px);
+}

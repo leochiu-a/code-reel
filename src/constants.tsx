@@ -1,9 +1,15 @@
 import type { ThemeRegistration } from "shiki";
 import type { EditorSettings, Theme } from "./types";
+import PRISMA_SHIKI_THEME from "./themes/prisma";
+import TAILWIND_SHIKI_THEME from "./themes/tailwind";
+import TRIGGER_SHIKI_THEME from "./themes/trigger";
+import VERCEL_SHIKI_THEME from "./themes/vercel";
 
 export const GRADIENTS = [
   // vercel
   "linear-gradient(140deg, #232323, #1f1f1f)",
+  // trigger.dev
+  "#121317",
   // arc dark
   "linear-gradient(to right bottom, #393939, #343435, #2f3030, #2b2b2c, #262727)",
   // coldark cold
@@ -59,125 +65,71 @@ export const GRADIENTS = [
 ];
 
 export const THEME_BACKGROUND_MAP: Partial<Record<Theme, string>> = {
+  prisma: "linear-gradient(140deg, #0c1d26 0%, #0a0c17 100%)",
+  tailwind: "linear-gradient(140deg, #0f172a, #0b1220)",
   vercel: GRADIENTS[0],
-  "arc-dark": GRADIENTS[1],
-  "coldark-cold": GRADIENTS[2],
-  "coldark-dark": GRADIENTS[3],
-  dracula: GRADIENTS[4],
-  "duotone-dark": GRADIENTS[5],
-  "duotone-sea": GRADIENTS[6],
-  "fleet-dark": GRADIENTS[7],
-  "github-dark": GRADIENTS[8],
-  "github-dark-dimmed": GRADIENTS[9],
-  "holi-dark": GRADIENTS[11],
-  "material-ocean": GRADIENTS[13],
-  "material-theme-palenight": GRADIENTS[14],
-  "material-volcano": GRADIENTS[15],
-  moonlight: GRADIENTS[16],
-  "night-owl": GRADIENTS[17],
-  "one-dark": GRADIENTS[18],
-  panda: GRADIENTS[19],
-  poimandres: GRADIENTS[20],
-  "shades-of-purple": GRADIENTS[21],
-  "synthwave-84": GRADIENTS[22],
-  "vitesse-dark": GRADIENTS[23],
-  "vscode-dark": GRADIENTS[24],
-  "xcode-dark": GRADIENTS[25],
+  trigger: GRADIENTS[1],
+  "arc-dark": GRADIENTS[2],
+  "coldark-cold": GRADIENTS[3],
+  "coldark-dark": GRADIENTS[4],
+  dracula: GRADIENTS[5],
+  "duotone-dark": GRADIENTS[6],
+  "duotone-sea": GRADIENTS[7],
+  "fleet-dark": GRADIENTS[8],
+  "github-dark": GRADIENTS[9],
+  "github-dark-dimmed": GRADIENTS[10],
+  "holi-dark": GRADIENTS[12],
+  "material-ocean": GRADIENTS[14],
+  "material-theme-palenight": GRADIENTS[15],
+  "material-volcano": GRADIENTS[16],
+  moonlight: GRADIENTS[17],
+  "night-owl": GRADIENTS[18],
+  "one-dark": GRADIENTS[19],
+  panda: GRADIENTS[20],
+  poimandres: GRADIENTS[21],
+  "shades-of-purple": GRADIENTS[22],
+  "synthwave-84": GRADIENTS[23],
+  "vitesse-dark": GRADIENTS[24],
+  "vscode-dark": GRADIENTS[25],
+  "xcode-dark": GRADIENTS[26],
 };
 
 export type ThemeConfig = {
   label: string;
   shikiTheme: string | ThemeRegistration;
   defaults?: Partial<EditorSettings>;
-  frame?: "vercel";
-};
-
-const VERCEL_SHIKI_THEME: ThemeRegistration = {
-  name: "vercel",
-  displayName: "Vercel",
-  type: "dark",
-  fg: "#ededed",
-  bg: "#000000",
-  settings: [
-    {
-      settings: {
-        foreground: "#ededed",
-        background: "#000000",
-      },
-    },
-    {
-      scope: ["comment", "punctuation.definition.comment"],
-      settings: {
-        foreground: "#a1a1a1",
-        fontStyle: "italic",
-      },
-    },
-    {
-      scope: ["string", "string.quoted", "string.template"],
-      settings: { foreground: "#00ca50" },
-    },
-    {
-      scope: ["constant", "constant.numeric", "constant.language", "constant.character"],
-      settings: { foreground: "#47a8ff" },
-    },
-    {
-      scope: ["keyword", "storage", "storage.type"],
-      settings: { foreground: "#ff4d8d" },
-    },
-    {
-      scope: ["variable.parameter"],
-      settings: { foreground: "#ff9300" },
-    },
-    {
-      scope: ["entity.name.function", "support.function"],
-      settings: { foreground: "#c472fb" },
-    },
-    {
-      scope: [
-        "entity.name.type",
-        "entity.name.class",
-        "entity.name.struct",
-        "entity.name.enum",
-        "entity.name.interface",
-        "support.class",
-        "support.type",
-        "support.type.primitive",
-        "support.module",
-        "support.type.swift",
-        "support.class.swift",
-        "support.constant",
-        "support.constant.swift",
-        "variable.other.class",
-      ],
-      settings: { foreground: "#c472fb" },
-    },
-    {
-      scope: ["variable.other.property", "support.type.property-name", "meta.object-literal.key"],
-      settings: { foreground: "#47a8ff" },
-    },
-    {
-      scope: ["punctuation", "meta.brace", "meta.delimiter"],
-      settings: { foreground: "#ededed" },
-    },
-    {
-      scope: ["markup.underline.link"],
-      settings: {
-        foreground: "#00ca50",
-        fontStyle: "underline",
-      },
-    },
-    {
-      scope: ["markup.inserted", "diff.inserted", "meta.diff.header.to-file"],
-      settings: { foreground: "#00952d" },
-    },
-    {
-      scope: ["markup.deleted", "diff.deleted", "meta.diff.header.from-file"],
-      settings: { foreground: "#f32e40" },
-    },
-  ],
+  frame?: "vercel" | "tailwind" | "prisma" | "trigger";
 };
 
 export const THEMES: Record<Theme, ThemeConfig> = {
+  prisma: {
+    label: "Prisma",
+    shikiTheme: PRISMA_SHIKI_THEME,
+    defaults: {
+      background: "linear-gradient(140deg, #0c1d26 0%, #0a0c17 100%)",
+      borderShadow: "border-none",
+      borderRadius: 12,
+      fontSize: 16,
+      padding: 72,
+      showLineNumbers: false,
+      windowControls: false,
+    },
+    frame: "prisma",
+  },
+  tailwind: {
+    label: "Tailwind",
+    shikiTheme: TAILWIND_SHIKI_THEME,
+    defaults: {
+      background: "linear-gradient(140deg, #0f172a, #0b1220)",
+      borderShadow: "border-none",
+      borderRadius: 18,
+      fontSize: 16,
+      padding: 72,
+      showLineNumbers: true,
+      windowControls: false,
+    },
+    frame: "tailwind",
+  },
   vercel: {
     label: "Vercel",
     shikiTheme: VERCEL_SHIKI_THEME,
@@ -191,6 +143,20 @@ export const THEMES: Record<Theme, ThemeConfig> = {
       windowControls: false,
     },
     frame: "vercel",
+  },
+  trigger: {
+    label: "Trigger.dev",
+    shikiTheme: TRIGGER_SHIKI_THEME,
+    defaults: {
+      background: "#121317",
+      borderShadow: "border-none",
+      borderRadius: 12,
+      fontSize: 16,
+      padding: 72,
+      showLineNumbers: false,
+      windowControls: false,
+    },
+    frame: "trigger",
   },
   "one-dark": {
     label: "One Dark",
