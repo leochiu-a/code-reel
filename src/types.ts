@@ -1,4 +1,5 @@
 export type Theme =
+  | "tailwind"
   | "vercel"
   | "arc-dark"
   | "coldark-cold"

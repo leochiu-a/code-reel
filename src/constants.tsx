@@ -1,5 +1,7 @@
 import type { ThemeRegistration } from "shiki";
 import type { EditorSettings, Theme } from "./types";
+import TAILWIND_SHIKI_THEME from "./themes/tailwind";
+import VERCEL_SHIKI_THEME from "./themes/vercel";
 
 export const GRADIENTS = [
   // vercel
@@ -59,6 +61,7 @@ export const GRADIENTS = [
 ];
 
 export const THEME_BACKGROUND_MAP: Partial<Record<Theme, string>> = {
+  tailwind: "linear-gradient(140deg, #0f172a, #0b1220)",
   vercel: GRADIENTS[0],
   "arc-dark": GRADIENTS[1],
   "coldark-cold": GRADIENTS[2],
@@ -89,95 +92,24 @@ export type ThemeConfig = {
   label: string;
   shikiTheme: string | ThemeRegistration;
   defaults?: Partial<EditorSettings>;
-  frame?: "vercel";
-};
-
-const VERCEL_SHIKI_THEME: ThemeRegistration = {
-  name: "vercel",
-  displayName: "Vercel",
-  type: "dark",
-  fg: "#ededed",
-  bg: "#000000",
-  settings: [
-    {
-      settings: {
-        foreground: "#ededed",
-        background: "#000000",
-      },
-    },
-    {
-      scope: ["comment", "punctuation.definition.comment"],
-      settings: {
-        foreground: "#a1a1a1",
-        fontStyle: "italic",
-      },
-    },
-    {
-      scope: ["string", "string.quoted", "string.template"],
-      settings: { foreground: "#00ca50" },
-    },
-    {
-      scope: ["constant", "constant.numeric", "constant.language", "constant.character"],
-      settings: { foreground: "#47a8ff" },
-    },
-    {
-      scope: ["keyword", "storage", "storage.type"],
-      settings: { foreground: "#ff4d8d" },
-    },
-    {
-      scope: ["variable.parameter"],
-      settings: { foreground: "#ff9300" },
-    },
-    {
-      scope: ["entity.name.function", "support.function"],
-      settings: { foreground: "#c472fb" },
-    },
-    {
-      scope: [
-        "entity.name.type",
-        "entity.name.class",
-        "entity.name.struct",
-        "entity.name.enum",
-        "entity.name.interface",
-        "support.class",
-        "support.type",
-        "support.type.primitive",
-        "support.module",
-        "support.type.swift",
-        "support.class.swift",
-        "support.constant",
-        "support.constant.swift",
-        "variable.other.class",
-      ],
-      settings: { foreground: "#c472fb" },
-    },
-    {
-      scope: ["variable.other.property", "support.type.property-name", "meta.object-literal.key"],
-      settings: { foreground: "#47a8ff" },
-    },
-    {
-      scope: ["punctuation", "meta.brace", "meta.delimiter"],
-      settings: { foreground: "#ededed" },
-    },
-    {
-      scope: ["markup.underline.link"],
-      settings: {
-        foreground: "#00ca50",
-        fontStyle: "underline",
-      },
-    },
-    {
-      scope: ["markup.inserted", "diff.inserted", "meta.diff.header.to-file"],
-      settings: { foreground: "#00952d" },
-    },
-    {
-      scope: ["markup.deleted", "diff.deleted", "meta.diff.header.from-file"],
-      settings: { foreground: "#f32e40" },
-    },
-  ],
+  frame?: "vercel" | "tailwind";
 };
 
 export const THEMES: Record<Theme, ThemeConfig> = {
+  tailwind: {
+    label: "Tailwind",
+    shikiTheme: TAILWIND_SHIKI_THEME,
+    defaults: {
+      background: "linear-gradient(140deg, #0f172a, #0b1220)",
+      borderShadow: "border-none",
+      borderRadius: 18,
+      fontSize: 16,
+      padding: 72,
+      showLineNumbers: true,
+      windowControls: false,
+    },
+    frame: "tailwind",
+  },
   vercel: {
     label: "Vercel",
     shikiTheme: VERCEL_SHIKI_THEME,
