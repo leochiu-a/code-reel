@@ -6,12 +6,9 @@ export type Theme =
   | "nord"
   | "dracula"
   | "one-dark"
-  | "one-light"
   | "github-dark"
   | "github-dark-dimmed"
-  | "github-light"
   | "material-ocean"
-  | "material-light"
   | "material-volcano"
   | "moonlight"
   | "monokai"
@@ -28,8 +25,7 @@ export type Theme =
   | "synthwave-84"
   | "vitesse-dark"
   | "vscode-dark"
-  | "xcode-dark"
-  | "xcode-light";
+  | "xcode-dark";
 
 export type Language =
   | "javascript"

@@ -69,11 +69,8 @@ export const THEME_BACKGROUND_MAP: Partial<Record<Theme, string>> = {
   "fleet-dark": GRADIENTS[7],
   "github-dark": GRADIENTS[8],
   "github-dark-dimmed": GRADIENTS[9],
-  "github-light": GRADIENTS[10],
   "holi-dark": GRADIENTS[11],
-  "one-light": GRADIENTS[12],
   "material-ocean": GRADIENTS[13],
-  "material-light": GRADIENTS[14],
   "material-theme-palenight": GRADIENTS[14],
   "material-volcano": GRADIENTS[15],
   moonlight: GRADIENTS[16],
@@ -86,7 +83,6 @@ export const THEME_BACKGROUND_MAP: Partial<Record<Theme, string>> = {
   "vitesse-dark": GRADIENTS[23],
   "vscode-dark": GRADIENTS[24],
   "xcode-dark": GRADIENTS[25],
-  "xcode-light": GRADIENTS[26],
 };
 
 export type ThemeConfig = {
@@ -372,17 +368,6 @@ export const THEMES: Record<Theme, ThemeConfig> = {
         "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
     },
   },
-  "github-light": {
-    label: "GitHub Light",
-    shikiTheme: "github-light",
-    defaults: {
-      padding: 64,
-      fontSize: 16,
-      borderRadius: 16,
-      borderShadow:
-        "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
-    },
-  },
   "holi-dark": {
     label: "Holi Dark",
     shikiTheme: "laserwave",
@@ -394,31 +379,9 @@ export const THEMES: Record<Theme, ThemeConfig> = {
         "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
     },
   },
-  "one-light": {
-    label: "One Light",
-    shikiTheme: "one-light",
-    defaults: {
-      padding: 64,
-      fontSize: 16,
-      borderRadius: 16,
-      borderShadow:
-        "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
-    },
-  },
   "material-ocean": {
     label: "Material Ocean",
     shikiTheme: "material-theme-ocean",
-    defaults: {
-      padding: 64,
-      fontSize: 16,
-      borderRadius: 16,
-      borderShadow:
-        "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
-    },
-  },
-  "material-light": {
-    label: "Material Light",
-    shikiTheme: "material-theme-lighter",
     defaults: {
       padding: 64,
       fontSize: 16,
@@ -507,17 +470,6 @@ export const THEMES: Record<Theme, ThemeConfig> = {
   "xcode-dark": {
     label: "Xcode Dark",
     shikiTheme: "vitesse-black",
-    defaults: {
-      padding: 64,
-      fontSize: 16,
-      borderRadius: 16,
-      borderShadow:
-        "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
-    },
-  },
-  "xcode-light": {
-    label: "Xcode Light",
-    shikiTheme: "light-plus",
     defaults: {
       padding: 64,
       fontSize: 16,
