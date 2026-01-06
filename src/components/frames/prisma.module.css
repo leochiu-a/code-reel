@@ -5,6 +5,7 @@
 
 .prismaWindow {
   position: relative;
+  width: 100%;
   overflow: visible;
   border: 1px solid transparent;
   border-radius: var(--radius);
