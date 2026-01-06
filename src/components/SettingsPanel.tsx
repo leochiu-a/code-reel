@@ -2,7 +2,7 @@
 
 import React from "react";
 import { EditorSettings, Language } from "../types";
-import { DEFAULT_EDITOR_SETTINGS, GRADIENTS, LANGUAGES } from "../constants";
+import { DEFAULT_EDITOR_SETTINGS, LANGUAGES } from "../constants";
 import {
   ToggleGroup,
   ToggleGroupItem,
@@ -51,7 +51,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
   ];
 
   return (
-    <div className="flex h-full w-60 flex-col gap-6 overflow-y-auto p-5 shadow-[0_20px_40px_-20px_rgba(0,0,0,0.9)]">
+    <div className="flex h-full w-60 flex-col gap-6 overflow-y-auto bg-[#212121] p-5 shadow-[0_20px_40px_-20px_rgba(0,0,0,0.9)]">
       <div className="space-y-6">
         {/* Core Settings */}
         <div className="space-y-4">
