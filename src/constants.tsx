@@ -543,6 +543,8 @@ export const LANGUAGES = {
   react: { label: "React", shiki: "jsx" },
   vue: { label: "Vue", shiki: "vue" },
   python: { label: "Python", shiki: "python" },
+  shell: { label: "Shell", shiki: "shell" },
+  markdown: { label: "Markdown", shiki: "markdown" },
   rust: { label: "Rust", shiki: "rust" },
   go: { label: "Go", shiki: "go" },
   cpp: { label: "C++", shiki: "cpp" },

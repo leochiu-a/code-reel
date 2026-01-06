@@ -37,6 +37,8 @@ export type Language =
   | "react"
   | "vue"
   | "python"
+  | "shell"
+  | "markdown"
   | "html"
   | "css"
   | "rust"
