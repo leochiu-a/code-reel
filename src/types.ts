@@ -1,4 +1,5 @@
 export type Theme =
+  | "prisma"
   | "tailwind"
   | "vercel"
   | "arc-dark"

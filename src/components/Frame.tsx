@@ -2,7 +2,7 @@ import React from "react";
 import clsx from "clsx";
 import styles from "./Frame.module.css";
 
-export type FrameId = "vercel" | "tailwind";
+export type FrameId = "vercel" | "tailwind" | "prisma";
 
 export type FramePresentation = {
   editorLineHeightMultiplier: number;
@@ -53,7 +53,7 @@ const Frame: React.FC<FrameProps> = ({
 }) => {
   const framePresentation = FRAME_PRESENTATION;
   const frameBackground = frame === "vercel" ? "#000000" : background;
-  const shouldUseWindowShell = frame !== "vercel" && frame !== "tailwind";
+  const shouldUseWindowShell = frame !== "vercel" && frame !== "tailwind" && frame !== "prisma";
   const windowShellStyle: React.CSSProperties | undefined = shouldUseWindowShell
     ? {
         borderRadius: `${borderRadius}px`,
@@ -144,6 +144,24 @@ const Frame: React.FC<FrameProps> = ({
                 <div className={styles.tailwindControl} />
               </div>
             </div>
+
+            <div className={styles.content}>{shellContent}</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (frame === "prisma") {
+    return (
+      <div className="relative flex w-full flex-col overflow-hidden" style={containerStyle}>
+        <div className={clsx(styles.frame, styles.prismaFrame)} style={style}>
+          <div className={styles.prismaWindow}>
+            <span data-frameborder />
+            <span data-frameborder />
+            <span data-frameborder />
+            <span data-frameborder />
+
             <div className={styles.content}>{shellContent}</div>
           </div>
         </div>

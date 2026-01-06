@@ -1,5 +1,6 @@
 @import "./frames/vercel.module.css";
 @import "./frames/tailwind.module.css";
+@import "./frames/prisma.module.css";
 
 .frame {
   position: relative;

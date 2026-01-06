@@ -1,5 +1,6 @@
 import type { ThemeRegistration } from "shiki";
 import type { EditorSettings, Theme } from "./types";
+import PRISMA_SHIKI_THEME from "./themes/prisma";
 import TAILWIND_SHIKI_THEME from "./themes/tailwind";
 import VERCEL_SHIKI_THEME from "./themes/vercel";
 
@@ -61,6 +62,7 @@ export const GRADIENTS = [
 ];
 
 export const THEME_BACKGROUND_MAP: Partial<Record<Theme, string>> = {
+  prisma: "linear-gradient(140deg, #0c1d26 0%, #0a0c17 100%)",
   tailwind: "linear-gradient(140deg, #0f172a, #0b1220)",
   vercel: GRADIENTS[0],
   "arc-dark": GRADIENTS[1],
@@ -92,10 +94,24 @@ export type ThemeConfig = {
   label: string;
   shikiTheme: string | ThemeRegistration;
   defaults?: Partial<EditorSettings>;
-  frame?: "vercel" | "tailwind";
+  frame?: "vercel" | "tailwind" | "prisma";
 };
 
 export const THEMES: Record<Theme, ThemeConfig> = {
+  prisma: {
+    label: "Prisma",
+    shikiTheme: PRISMA_SHIKI_THEME,
+    defaults: {
+      background: "linear-gradient(140deg, #0c1d26 0%, #0a0c17 100%)",
+      borderShadow: "border-none",
+      borderRadius: 12,
+      fontSize: 16,
+      padding: 72,
+      showLineNumbers: false,
+      windowControls: false,
+    },
+    frame: "prisma",
+  },
   tailwind: {
     label: "Tailwind",
     shikiTheme: TAILWIND_SHIKI_THEME,
