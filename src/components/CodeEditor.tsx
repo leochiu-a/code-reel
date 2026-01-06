@@ -29,6 +29,7 @@ interface CodeEditorProps {
   minCaptureHeight?: number;
   containerWidth?: number | string;
   containerHeight?: number;
+  minWidth?: number | string;
   resizable?: boolean;
   debugHighlight?: boolean;
 }
@@ -45,6 +46,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   minCaptureHeight,
   containerWidth = 860,
   containerHeight,
+  minWidth = "320px",
   resizable = true,
   debugHighlight = false,
 }) => {
@@ -237,7 +239,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
         height: containerHeight ? `${containerHeight}px` : undefined,
         width: typeof containerWidth === "number" ? `${containerWidth}px` : containerWidth,
         maxWidth: "100%",
-        minWidth: "320px",
+        minWidth: typeof minWidth === "number" ? `${minWidth}px` : minWidth,
       }}
     >
       {debugHighlight && debugSnapshot && (
@@ -354,6 +356,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
               }}
             >
               <ShikiMagicMove
+                key={shikiTheme}
                 highlighter={highlighter}
                 lang={displayedLanguage}
                 theme={shikiTheme}

@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import { EditorSettings, Theme, Language } from "../types";
-import { DEFAULT_EDITOR_SETTINGS, GRADIENTS, LANGUAGES, THEMES } from "../constants";
+import { EditorSettings, Language } from "../types";
+import { DEFAULT_EDITOR_SETTINGS, LANGUAGES } from "../constants";
 import {
   ToggleGroup,
   ToggleGroupItem,
@@ -51,37 +51,13 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
   ];
 
   return (
-    <div className="flex h-full w-80 flex-col gap-6 overflow-y-auto bg-[#212121] p-5 shadow-[0_20px_40px_-20px_rgba(0,0,0,0.9)]">
+    <div className="flex h-full w-60 flex-col gap-6 overflow-y-auto bg-[#212121] p-5 shadow-[0_20px_40px_-20px_rgba(0,0,0,0.9)]">
       <div className="space-y-6">
         {/* Core Settings */}
         <div className="space-y-4">
           <div className="grid gap-2">
-            <Label className="text-xs font-medium text-white/90">THEME & LANGUAGE</Label>
+            <Label className="text-xs font-medium text-white/90">LANGUAGE</Label>
             <div className="grid grid-cols-1 gap-3">
-              <Select
-                value={settings.theme}
-                onValueChange={(value) => {
-                  const nextTheme = value as Theme;
-                  const themeDefaults = THEMES[nextTheme]?.defaults ?? {};
-                  onSettingsChange({ theme: nextTheme, ...themeDefaults });
-                }}
-              >
-                <SelectTrigger className="w-full border-white/10 bg-white/5 text-slate-100 transition-colors hover:bg-white/10 focus:ring-emerald-500/40">
-                  <SelectValue placeholder="Select theme" />
-                </SelectTrigger>
-                <SelectContent className="border-white/10 bg-[#141414] text-slate-100">
-                  {Object.entries(THEMES).map(([key, theme]) => (
-                    <SelectItem
-                      key={key}
-                      value={key}
-                      className="focus:bg-white/10 focus:text-white"
-                    >
-                      {theme.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
               <Select
                 value={settings.language}
                 onValueChange={(value) => onSettingsChange({ language: value as Language })}
@@ -101,25 +77,6 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
                   ))}
                 </SelectContent>
               </Select>
-            </div>
-          </div>
-
-          <div className="grid gap-2">
-            <Label className="text-xs font-medium text-white/90">BACKGROUND</Label>
-            <div className="grid grid-cols-5 gap-2">
-              {GRADIENTS.map((g, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => onSettingsChange({ background: g })}
-                  className={`aspect-square w-full cursor-pointer rounded-lg border-2 transition-all duration-200 ${
-                    settings.background === g
-                      ? "scale-105 border-white shadow-md ring-2 ring-white/20"
-                      : "border-transparent opacity-60 hover:opacity-100"
-                  }`}
-                  style={{ background: g }}
-                  aria-label={`Select background gradient ${idx + 1}`}
-                />
-              ))}
             </div>
           </div>
         </div>
