@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import { EditorSettings, Theme, Language } from "../types";
-import { DEFAULT_EDITOR_SETTINGS, GRADIENTS, LANGUAGES, THEMES } from "../constants";
+import { EditorSettings, Language } from "../types";
+import { DEFAULT_EDITOR_SETTINGS, GRADIENTS, LANGUAGES } from "../constants";
 import {
   ToggleGroup,
   ToggleGroupItem,
@@ -56,32 +56,8 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
         {/* Core Settings */}
         <div className="space-y-4">
           <div className="grid gap-2">
-            <Label className="text-xs font-medium text-white/90">THEME & LANGUAGE</Label>
+            <Label className="text-xs font-medium text-white/90">LANGUAGE</Label>
             <div className="grid grid-cols-1 gap-3">
-              <Select
-                value={settings.theme}
-                onValueChange={(value) => {
-                  const nextTheme = value as Theme;
-                  const themeDefaults = THEMES[nextTheme]?.defaults ?? {};
-                  onSettingsChange({ theme: nextTheme, ...themeDefaults });
-                }}
-              >
-                <SelectTrigger className="w-full border-white/10 bg-white/5 text-slate-100 transition-colors hover:bg-white/10 focus:ring-emerald-500/40">
-                  <SelectValue placeholder="Select theme" />
-                </SelectTrigger>
-                <SelectContent className="border-white/10 bg-[#141414] text-slate-100">
-                  {Object.entries(THEMES).map(([key, theme]) => (
-                    <SelectItem
-                      key={key}
-                      value={key}
-                      className="focus:bg-white/10 focus:text-white"
-                    >
-                      {theme.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
               <Select
                 value={settings.language}
                 onValueChange={(value) => onSettingsChange({ language: value as Language })}
