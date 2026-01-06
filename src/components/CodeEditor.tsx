@@ -356,7 +356,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
               }}
             >
               <ShikiMagicMove
-                key={shikiTheme}
+                key={`${shikiTheme}-${displayedLanguage}`}
                 highlighter={highlighter}
                 lang={displayedLanguage}
                 theme={shikiTheme}
