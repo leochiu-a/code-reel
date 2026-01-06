@@ -17,11 +17,7 @@ interface ThemeSidebarProps {
   highlighter?: Highlighter | null;
 }
 
-const ThemeSidebar: React.FC<ThemeSidebarProps> = ({
-  settings,
-  onSettingsChange,
-  highlighter,
-}) => {
+const ThemeSidebar: React.FC<ThemeSidebarProps> = ({ settings, onSettingsChange, highlighter }) => {
   const previewCode = `const preview = "Hello";\nconsole.log(preview);`;
   const previewHeight = 140;
   const themeItems = useMemo(
@@ -32,12 +28,8 @@ const ThemeSidebar: React.FC<ThemeSidebarProps> = ({
         const codeBackground = highlighter
           ? getThemeBackground(highlighter, shikiTheme)
           : "#0b0b0b";
-        const background = highlighter
-          ? codeBackground
-          : theme.defaults?.background ?? "#0b0b0b";
-        const foreground = highlighter
-          ? getThemeForeground(highlighter, shikiTheme)
-          : "#ededed";
+        const background = highlighter ? codeBackground : (theme.defaults?.background ?? "#0b0b0b");
+        const foreground = highlighter ? getThemeForeground(highlighter, shikiTheme) : "#ededed";
         const previewSettings: EditorSettings = {
           theme: key as Theme,
           language: settings.language,
@@ -64,7 +56,7 @@ const ThemeSidebar: React.FC<ThemeSidebarProps> = ({
   );
 
   return (
-    <aside className="hidden h-full w-72 flex-col gap-4 overflow-y-auto bg-[#212121] p-5 shadow-[0_20px_40px_-20px_rgba(0,0,0,0.9)] lg:flex">
+    <aside className="hidden h-full w-72 flex-col gap-4 overflow-y-auto bg-[#212121] p-5 lg:flex">
       <div className="space-y-2">
         <span className="text-xs font-medium text-white/90">THEMES</span>
         <p className="text-xs text-white/50">Pick a look for the editor preview.</p>
