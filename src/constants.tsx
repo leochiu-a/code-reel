@@ -58,6 +58,16 @@ export const GRADIENTS = [
   "linear-gradient(to right bottom, #ffcc99, #f6bd83, #edad6e, #e49e59, #da8f44)",
 ];
 
+export const THEME_BACKGROUND_MAP: Partial<Record<Theme, string>> = {
+  vercel: GRADIENTS[0],
+  dracula: GRADIENTS[4],
+  "github-dark": GRADIENTS[8],
+  "material-theme-palenight": GRADIENTS[15],
+  "night-owl": GRADIENTS[19],
+  "one-dark": GRADIENTS[20],
+  "synthwave-84": GRADIENTS[23],
+};
+
 export type ThemeConfig = {
   label: string;
   shikiTheme: string | ThemeRegistration;
@@ -159,8 +169,8 @@ export const THEMES: Record<Theme, ThemeConfig> = {
       background: "#000000",
       borderShadow: "border-none",
       borderRadius: 0,
-      fontSize: 15,
-      padding: 16,
+      fontSize: 16,
+      padding: 96,
       showLineNumbers: false,
       windowControls: false,
     },
@@ -169,38 +179,101 @@ export const THEMES: Record<Theme, ThemeConfig> = {
   "one-dark": {
     label: "One Dark",
     shikiTheme: "one-dark-pro",
+    defaults: {
+      padding: 64,
+      fontSize: 16,
+      borderRadius: 16,
+      borderShadow:
+        "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
+    },
   },
   dracula: {
     label: "Dracula",
     shikiTheme: "dracula",
+    defaults: {
+      padding: 64,
+      fontSize: 16,
+      borderRadius: 16,
+      borderShadow:
+        "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
+    },
   },
   nord: {
     label: "Nord",
     shikiTheme: "nord",
+    defaults: {
+      padding: 64,
+      fontSize: 16,
+      borderRadius: 16,
+      borderShadow:
+        "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
+    },
   },
   "github-dark": {
     label: "GitHub Dark",
     shikiTheme: "github-dark",
+    defaults: {
+      padding: 64,
+      fontSize: 16,
+      borderRadius: 16,
+      borderShadow:
+        "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
+    },
   },
   monokai: {
     label: "Monokai",
     shikiTheme: "monokai",
+    defaults: {
+      padding: 64,
+      fontSize: 16,
+      borderRadius: 16,
+      borderShadow:
+        "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
+    },
   },
   "night-owl": {
     label: "Night Owl",
     shikiTheme: "night-owl",
+    defaults: {
+      padding: 64,
+      fontSize: 16,
+      borderRadius: 16,
+      borderShadow:
+        "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
+    },
   },
   "catppuccin-macchiato": {
     label: "Catppuccin Macchiato",
     shikiTheme: "catppuccin-macchiato",
+    defaults: {
+      padding: 64,
+      fontSize: 16,
+      borderRadius: 16,
+      borderShadow:
+        "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
+    },
   },
   "material-theme-palenight": {
     label: "Material Theme Palenight",
     shikiTheme: "material-theme-palenight",
+    defaults: {
+      padding: 64,
+      fontSize: 16,
+      borderRadius: 16,
+      borderShadow:
+        "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
+    },
   },
   "synthwave-84": {
     label: "Synthwave 84",
     shikiTheme: "synthwave-84",
+    defaults: {
+      padding: 64,
+      fontSize: 16,
+      borderRadius: 16,
+      borderShadow:
+        "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
+    },
   },
 };
 

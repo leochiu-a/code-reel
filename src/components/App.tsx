@@ -18,6 +18,7 @@ import useVideoExport from "../hooks/useVideoExport";
 import useVideoExportGlobals from "../hooks/useVideoExportGlobals";
 import SnippetControls from "./SnippetControls";
 import SettingsPanel from "./SettingsPanel";
+import ThemeSidebar from "./ThemeSidebar";
 import CodeEditor from "./CodeEditor";
 import VideoOnboarding from "./VideoOnboarding";
 import LogoText from "./LogoText";
@@ -229,6 +230,14 @@ const App: React.FC = () => {
             </div>
           </div>
         </main>
+
+        {!isExportMode && (
+          <ThemeSidebar
+            settings={settings}
+            onSettingsChange={handleSettingsChange}
+            highlighter={highlighter}
+          />
+        )}
       </div>
 
       {!isExportMode && (
