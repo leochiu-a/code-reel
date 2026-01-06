@@ -68,15 +68,16 @@ const ThemeSidebar: React.FC<ThemeSidebarProps> = ({ settings, onSettingsChange,
             <button
               key={theme.key}
               type="button"
-              onClick={() =>
+              onClick={() => {
+                const nextBackground =
+                  THEME_BACKGROUND_MAP[theme.key] ?? theme.defaults?.background ?? theme.background;
+
                 onSettingsChange({
                   theme: theme.key,
                   ...theme.defaults,
-                  ...(THEME_BACKGROUND_MAP[theme.key]
-                    ? { background: THEME_BACKGROUND_MAP[theme.key] }
-                    : {}),
-                })
-              }
+                  background: nextBackground,
+                });
+              }}
               className={`group w-full overflow-hidden rounded-xl border text-left transition ${
                 isActive
                   ? "border-emerald-400/60 ring-2 ring-emerald-400/20"
