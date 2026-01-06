@@ -2,7 +2,7 @@ import React from "react";
 import clsx from "clsx";
 import styles from "./Frame.module.css";
 
-export type FrameId = "vercel" | "tailwind" | "prisma";
+export type FrameId = "vercel" | "tailwind" | "prisma" | "trigger";
 
 export type FramePresentation = {
   editorLineHeightMultiplier: number;
@@ -53,7 +53,8 @@ const Frame: React.FC<FrameProps> = ({
 }) => {
   const framePresentation = FRAME_PRESENTATION;
   const frameBackground = frame === "vercel" ? "#000000" : background;
-  const shouldUseWindowShell = frame !== "vercel" && frame !== "tailwind" && frame !== "prisma";
+  const shouldUseWindowShell =
+    frame !== "vercel" && frame !== "tailwind" && frame !== "prisma" && frame !== "trigger";
   const windowShellStyle: React.CSSProperties | undefined = shouldUseWindowShell
     ? {
         borderRadius: `${borderRadius}px`,
@@ -162,6 +163,22 @@ const Frame: React.FC<FrameProps> = ({
             <span data-frameborder />
             <span data-frameborder />
 
+            <div className={styles.content}>{shellContent}</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (frame === "trigger") {
+    return (
+      <div className="relative flex w-full flex-col overflow-hidden" style={containerStyle}>
+        <div className={clsx(styles.frame, styles.triggerFrame)} style={style}>
+          <div className={styles.triggerPatternTop} aria-hidden />
+          <div className={styles.triggerPatternBottom} aria-hidden />
+          <div className={styles.triggerWindow}>
+            <span className={styles.triggerGridlinesHorizontal} data-grid />
+            <span className={styles.triggerGridlinesVertical} data-grid />
             <div className={styles.content}>{shellContent}</div>
           </div>
         </div>
