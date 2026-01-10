@@ -1,11 +1,18 @@
 import { useCallback, useEffect, useState } from "react";
-import { domToPng } from "modern-screenshot";
+import { domToJpeg, domToPng, domToWebp } from "modern-screenshot";
 import { toast } from "sonner";
 
 type CopyStatus = {
   tone: "success" | "error";
   message: string;
 } | null;
+
+type ImageExportFormat = "png" | "jpeg" | "webp";
+
+type ImageExportOptions = {
+  format?: ImageExportFormat;
+  scale?: number;
+};
 
 const getCaptureNode = () => document.getElementById("code-capture-area");
 
@@ -19,14 +26,14 @@ const createCaptureStyle = (width: number, height: number) => ({
   height: `${height}px`,
 });
 
-const buildCapture = (node: HTMLElement) => {
+const buildCapture = (node: HTMLElement, scale: number) => {
   const { width, height } = getCaptureSize(node);
   return {
     width,
     height,
     captureOptions: {
       quality: 1,
-      scale: 2,
+      scale,
       width,
       height,
       style: createCaptureStyle(width, height),
@@ -49,19 +56,26 @@ const useImageExport = () => {
   const [copyStatus, setCopyStatus] = useState<CopyStatus>(null);
   const [isCopySupported, setIsCopySupported] = useState(false);
 
-  const onExport = useCallback(async () => {
+  const onExport = useCallback(async (options: ImageExportOptions = {}) => {
     const node = getCaptureNode();
     if (!node) return;
 
     setIsExporting(true);
     await nextFrame();
     await nextFrame();
-    const { captureOptions } = buildCapture(node);
+    const format = options.format ?? "png";
+    const scale = options.scale ?? 2;
+    const { captureOptions } = buildCapture(node, scale);
 
     try {
-      const dataUrl = await domToPng(node, captureOptions);
+      const dataUrl =
+        format === "jpeg"
+          ? await domToJpeg(node, captureOptions)
+          : format === "webp"
+            ? await domToWebp(node, captureOptions)
+            : await domToPng(node, captureOptions);
       const link = document.createElement("a");
-      link.download = `codesnap-${Date.now()}.png`;
+      link.download = `codesnap-${Date.now()}.${format}`;
       link.href = dataUrl;
       link.click();
     } catch (err) {
@@ -89,7 +103,7 @@ const useImageExport = () => {
     // Then run domToPng to avoid blocking UI and delaying the "Copying..." label.
     await nextFrame();
     await nextFrame();
-    const { captureOptions } = buildCapture(node);
+    const { captureOptions } = buildCapture(node, 2);
 
     try {
       const dataUrl = await domToPng(node, captureOptions);

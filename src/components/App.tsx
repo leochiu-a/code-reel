@@ -24,6 +24,7 @@ import VideoOnboarding from "./VideoOnboarding";
 import LogoText from "./LogoText";
 import { FRAME_PRESENTATION } from "./Frame";
 import { Button } from "@/components/ui/button";
+import ImageExportPopover from "./ImageExportPopover";
 
 const DEFAULT_CODE = `function helloWorld() {
   console.log("Hello from CodeReel!");
@@ -74,6 +75,8 @@ const App: React.FC = () => {
   });
   const { onExport, onCopyImage, isCopying, isExporting, copyStatus, isCopySupported } =
     useImageExport();
+  const [imageExportFormat, setImageExportFormat] = useState<"png" | "jpeg" | "webp">("png");
+  const [imageExportScale, setImageExportScale] = useState<1 | 2 | 3>(2);
   const [isVideoOnboardingOpen, setIsVideoOnboardingOpen] = useState(false);
   const mainRef = useRef<HTMLDivElement | null>(null);
   const maxLineCount = useMemo(
@@ -101,6 +104,10 @@ const App: React.FC = () => {
   const handleOpenVideoOnboarding = useCallback(() => {
     setIsVideoOnboardingOpen(true);
   }, []);
+
+  const handleImageExport = useCallback(async () => {
+    await onExport({ format: imageExportFormat, scale: imageExportScale });
+  }, [imageExportFormat, imageExportScale, onExport]);
 
   const handleHighlightLineChange = useCallback(
     (line: number) => {
@@ -158,13 +165,14 @@ const App: React.FC = () => {
             >
               {isCopying ? "Copying..." : "Copy"}
             </Button>
-            <Button
-              onClick={onExport}
-              disabled={isExporting}
-              className="h-8 cursor-pointer bg-emerald-500 px-3 text-xs text-white shadow-lg shadow-emerald-900/25 hover:bg-emerald-400"
-            >
-              {isExporting ? "Exporting..." : "Export Image"}
-            </Button>
+            <ImageExportPopover
+              isExporting={isExporting}
+              format={imageExportFormat}
+              scale={imageExportScale}
+              onFormatChange={setImageExportFormat}
+              onScaleChange={setImageExportScale}
+              onExport={handleImageExport}
+            />
             <Button
               onClick={handleOpenVideoOnboarding}
               disabled={isExportingVideo}
