@@ -25,6 +25,7 @@ import LogoText from "./LogoText";
 import { FRAME_PRESENTATION } from "./Frame";
 import { Button } from "@/components/ui/button";
 import ImageExportPopover from "./ImageExportPopover";
+import BulbSvg from "@/components/ui/bulb-svg";
 
 const DEFAULT_CODE = `function helloWorld() {
   console.log("Hello from CodeReel!");
@@ -176,8 +177,9 @@ const App: React.FC = () => {
             <Button
               onClick={handleOpenVideoOnboarding}
               disabled={isExportingVideo}
-              className="h-8 cursor-pointer border border-emerald-600/30 bg-emerald-600/10 px-3 text-xs text-emerald-300 transition-all duration-300 hover:bg-emerald-600 hover:text-white"
+              className="h-8 cursor-pointer gap-2 border border-emerald-600/30 bg-emerald-600/10 px-3 text-xs text-emerald-300 transition-all duration-300 hover:bg-emerald-600 hover:text-white"
             >
+              <BulbSvg size={14} className="text-emerald-100" />
               {isExportingVideo ? "Exporting..." : "Export Video"}
             </Button>
           </div>

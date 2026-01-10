@@ -11,6 +11,7 @@ import {
   ToggleGroupItem,
 } from "@/components/animate-ui/components/radix/toggle-group";
 import { Button } from "@/components/ui/button";
+import ArrowBigDownDashIcon from "@/components/ui/arrow-big-down-dash-icon";
 
 type ImageExportFormat = "png" | "jpeg" | "webp";
 type ImageExportScale = 1 | 2 | 3;
@@ -44,8 +45,9 @@ const ImageExportPopover: React.FC<ImageExportPopoverProps> = ({
       <PopoverTrigger asChild>
         <Button
           disabled={isExporting}
-          className="h-8 cursor-pointer bg-emerald-500 px-3 text-xs text-white shadow-lg shadow-emerald-900/25 hover:bg-emerald-400"
+          className="h-8 cursor-pointer gap-2 bg-emerald-500 px-3 text-xs text-white shadow-lg shadow-emerald-900/25 hover:bg-emerald-400"
         >
+          <ArrowBigDownDashIcon size={14} className="text-white/90" />
           {isExporting ? "Exporting..." : "Export Image"}
         </Button>
       </PopoverTrigger>
