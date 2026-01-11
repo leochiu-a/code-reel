@@ -1,8 +1,8 @@
 import * as React from "react";
-import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
+import type { AnimatedIconHandle } from "./types";
 
 const buttonVariants = cva(
   "focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
@@ -39,21 +39,79 @@ function Button({
   variant = "default",
   size = "default",
   asChild = false,
+  animatedIcon,
+  children,
+  onMouseEnter,
+  onMouseLeave,
   ...props
 }: React.ComponentProps<"button"> &
   VariantProps<typeof buttonVariants> & {
     asChild?: boolean;
+    animatedIcon?: React.ReactElement;
   }) {
-  const Comp = asChild ? Slot : "button";
+  const iconRef = React.useRef<AnimatedIconHandle | null>(null);
+
+  const handleMouseEnter = (event: React.MouseEvent<HTMLElement>) => {
+    onMouseEnter?.(event);
+    if (event.defaultPrevented || props.disabled) return;
+    iconRef.current?.startAnimation();
+  };
+
+  const handleMouseLeave = (event: React.MouseEvent<HTMLElement>) => {
+    onMouseLeave?.(event);
+    if (event.defaultPrevented) return;
+    iconRef.current?.stopAnimation();
+  };
+
+  const iconNode = animatedIcon
+    ? React.cloneElement(animatedIcon as React.ReactElement, { ref: iconRef })
+    : null;
+
+  if (asChild && React.isValidElement(children)) {
+    const child = React.Children.only(children) as React.ReactElement<{
+      className?: string;
+      onMouseEnter?: React.MouseEventHandler<HTMLElement>;
+      onMouseLeave?: React.MouseEventHandler<HTMLElement>;
+      children?: React.ReactNode;
+    }>;
+    const childOnMouseEnter = child.props.onMouseEnter;
+    const childOnMouseLeave = child.props.onMouseLeave;
+
+    return React.cloneElement(
+      child,
+      {
+        ...props,
+        "data-slot": "button",
+        "data-variant": variant,
+        "data-size": size,
+        className: cn(buttonVariants({ variant, size, className }), child.props.className),
+        onMouseEnter: (event: React.MouseEvent<HTMLElement>) => {
+          childOnMouseEnter?.(event);
+          handleMouseEnter(event);
+        },
+        onMouseLeave: (event: React.MouseEvent<HTMLElement>) => {
+          childOnMouseLeave?.(event);
+          handleMouseLeave(event);
+        },
+      },
+      iconNode,
+      child.props.children,
+    );
+  }
 
   return (
-    <Comp
+    <button
       data-slot="button"
       data-variant={variant}
       data-size={size}
       className={cn(buttonVariants({ variant, size, className }))}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       {...props}
-    />
+    >
+      {iconNode}
+      {children}
+    </button>
   );
 }
 

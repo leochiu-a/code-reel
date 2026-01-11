@@ -46,8 +46,8 @@ const ImageExportPopover: React.FC<ImageExportPopoverProps> = ({
         <Button
           disabled={isExporting}
           className="h-8 cursor-pointer gap-2 bg-emerald-500 px-3 text-xs text-white shadow-lg shadow-emerald-900/25 hover:bg-emerald-400"
+          animatedIcon={<ArrowBigDownDashIcon size={14} className="text-white/90" />}
         >
-          <ArrowBigDownDashIcon size={14} className="text-white/90" />
           {isExporting ? "Exporting..." : "Export Image"}
         </Button>
       </PopoverTrigger>

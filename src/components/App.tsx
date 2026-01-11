@@ -26,6 +26,8 @@ import { FRAME_PRESENTATION } from "./Frame";
 import { Button } from "@/components/ui/button";
 import ImageExportPopover from "./ImageExportPopover";
 import BulbSvg from "@/components/ui/bulb-svg";
+import CopyIcon from "@/components/ui/copy-icon";
+import MessageCircleIcon from "@/components/ui/message-circle-icon";
 
 const DEFAULT_CODE = `function helloWorld() {
   console.log("Hello from CodeReel!");
@@ -148,7 +150,12 @@ const App: React.FC = () => {
             </h1>
           </div>
           <div className="flex items-center gap-2">
-            <Button size="sm" variant="outline" asChild>
+            <Button
+              size="sm"
+              variant="outline"
+              asChild
+              animatedIcon={<MessageCircleIcon size={14} className="text-slate-200" />}
+            >
               <a
                 href="https://forms.gle/KJSCGjiNPxRqjbrg6"
                 target="_blank"
@@ -162,6 +169,7 @@ const App: React.FC = () => {
               onClick={onCopyImage}
               disabled={isCopying || !isCopySupported}
               variant="secondary"
+              animatedIcon={<CopyIcon size={14} className="text-slate-200" />}
               className="h-8 cursor-pointer border border-white/10 bg-white/5 px-3 text-xs text-slate-100 hover:bg-white/10 hover:text-white"
             >
               {isCopying ? "Copying..." : "Copy"}
@@ -177,9 +185,9 @@ const App: React.FC = () => {
             <Button
               onClick={handleOpenVideoOnboarding}
               disabled={isExportingVideo}
+              animatedIcon={<BulbSvg size={14} className="text-emerald-100" />}
               className="h-8 cursor-pointer gap-2 border border-emerald-600/30 bg-emerald-600/10 px-3 text-xs text-emerald-300 transition-all duration-300 hover:bg-emerald-600 hover:text-white"
             >
-              <BulbSvg size={14} className="text-emerald-100" />
               {isExportingVideo ? "Exporting..." : "Export Video"}
             </Button>
           </div>
