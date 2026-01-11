@@ -37,7 +37,7 @@ const buttonVariants = cva(
 type ButtonProps = Omit<React.ComponentProps<"button">, "onMouseEnter" | "onMouseLeave"> &
   VariantProps<typeof buttonVariants> & {
     asChild?: boolean;
-    animatedIcon?: React.ReactElement;
+    animatedIcon?: React.ReactElement<React.RefAttributes<AnimatedIconHandle>>;
     onMouseEnter?: React.MouseEventHandler<HTMLElement>;
     onMouseLeave?: React.MouseEventHandler<HTMLElement>;
   };
@@ -70,7 +70,7 @@ function Button({
   const iconNode = animatedIcon
     ? // FIXME: https://github.com/facebook/react/issues/34775
       // eslint-disable-next-line react-hooks/refs
-      React.cloneElement(animatedIcon as React.ReactElement, { ref: iconRef })
+      React.cloneElement(animatedIcon, { ref: iconRef })
     : null;
 
   if (asChild && React.isValidElement(children)) {
