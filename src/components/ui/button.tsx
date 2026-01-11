@@ -68,7 +68,9 @@ function Button({
   };
 
   const iconNode = animatedIcon
-    ? React.cloneElement(animatedIcon as React.ReactElement, { ref: iconRef })
+    ? // FIXME: https://github.com/facebook/react/issues/34775
+      // eslint-disable-next-line react-hooks/refs
+      React.cloneElement(animatedIcon as React.ReactElement, { ref: iconRef })
     : null;
 
   if (asChild && React.isValidElement(children)) {
