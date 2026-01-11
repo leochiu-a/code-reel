@@ -87,9 +87,6 @@ function Button({
       child,
       {
         ...props,
-        "data-slot": "button",
-        "data-variant": variant,
-        "data-size": size,
         className: cn(buttonVariants({ variant, size, className }), child.props.className),
         onMouseEnter: (event: React.MouseEvent<HTMLElement>) => {
           childOnMouseEnter?.(event);
