@@ -34,6 +34,14 @@ const buttonVariants = cva(
   },
 );
 
+type ButtonProps = Omit<React.ComponentProps<"button">, "onMouseEnter" | "onMouseLeave"> &
+  VariantProps<typeof buttonVariants> & {
+    asChild?: boolean;
+    animatedIcon?: React.ReactElement;
+    onMouseEnter?: React.MouseEventHandler<HTMLElement>;
+    onMouseLeave?: React.MouseEventHandler<HTMLElement>;
+  };
+
 function Button({
   className,
   variant = "default",
@@ -44,11 +52,7 @@ function Button({
   onMouseEnter,
   onMouseLeave,
   ...props
-}: React.ComponentProps<"button"> &
-  VariantProps<typeof buttonVariants> & {
-    asChild?: boolean;
-    animatedIcon?: React.ReactElement;
-  }) {
+}: ButtonProps) {
   const iconRef = React.useRef<AnimatedIconHandle | null>(null);
 
   const handleMouseEnter = (event: React.MouseEvent<HTMLElement>) => {
