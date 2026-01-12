@@ -52,6 +52,6 @@ export interface EditorSettings {
   showLineNumbers: boolean;
   windowControls: boolean;
   fontSize: number;
-  borderRadius: number;
+  borderRadius?: number;
   borderShadow: string;
 }

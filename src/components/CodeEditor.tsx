@@ -85,10 +85,10 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
     right: 16,
   };
   const lineNumberGutterWidth = settings.showLineNumbers ? 48 : 0;
-  const editorFontFamily = FRAME_PRESENTATION.editorFontFamily;
 
   const previewPaddingY = editorPadding.top;
   const previewOuterPadding = 0;
+  const borderRadius = settings.borderRadius ?? 16;
 
   const displayedLanguage = languageConfig.shiki;
   const displayedCode = code;
@@ -286,7 +286,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
       )}
       <Frame
         frame={themeConfig.frame}
-        borderRadius={settings.borderRadius}
+        borderRadius={borderRadius}
         padding={settings.padding}
         background={settings.background}
         themeBackground={themeBackground}

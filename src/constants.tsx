@@ -108,7 +108,6 @@ export const THEMES: Record<Theme, ThemeConfig> = {
     defaults: {
       background: "linear-gradient(140deg, #0c1d26 0%, #0a0c17 100%)",
       borderShadow: "border-none",
-      borderRadius: 12,
       padding: 72,
       showLineNumbers: false,
       windowControls: false,
@@ -121,7 +120,6 @@ export const THEMES: Record<Theme, ThemeConfig> = {
     defaults: {
       background: "linear-gradient(140deg, #0f172a, #0b1220)",
       borderShadow: "border-none",
-      borderRadius: 18,
       padding: 72,
       showLineNumbers: true,
       windowControls: false,
@@ -134,7 +132,6 @@ export const THEMES: Record<Theme, ThemeConfig> = {
     defaults: {
       background: "#000000",
       borderShadow: "border-none",
-      borderRadius: 0,
       padding: 96,
       showLineNumbers: false,
       windowControls: false,
@@ -147,7 +144,6 @@ export const THEMES: Record<Theme, ThemeConfig> = {
     defaults: {
       background: "#121317",
       borderShadow: "border-none",
-      borderRadius: 12,
       padding: 72,
       showLineNumbers: false,
       windowControls: false,
@@ -159,7 +155,6 @@ export const THEMES: Record<Theme, ThemeConfig> = {
     shikiTheme: "one-dark-pro",
     defaults: {
       padding: 64,
-      borderRadius: 16,
       borderShadow:
         "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
     },
@@ -169,7 +164,6 @@ export const THEMES: Record<Theme, ThemeConfig> = {
     shikiTheme: "dracula",
     defaults: {
       padding: 64,
-      borderRadius: 16,
       borderShadow:
         "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
     },
@@ -179,7 +173,6 @@ export const THEMES: Record<Theme, ThemeConfig> = {
     shikiTheme: "nord",
     defaults: {
       padding: 64,
-      borderRadius: 16,
       borderShadow:
         "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
     },
@@ -189,7 +182,6 @@ export const THEMES: Record<Theme, ThemeConfig> = {
     shikiTheme: "github-dark",
     defaults: {
       padding: 64,
-      borderRadius: 16,
       borderShadow:
         "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
     },
@@ -199,7 +191,6 @@ export const THEMES: Record<Theme, ThemeConfig> = {
     shikiTheme: "monokai",
     defaults: {
       padding: 64,
-      borderRadius: 16,
       borderShadow:
         "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
     },
@@ -209,7 +200,6 @@ export const THEMES: Record<Theme, ThemeConfig> = {
     shikiTheme: "night-owl",
     defaults: {
       padding: 64,
-      borderRadius: 16,
       borderShadow:
         "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
     },
@@ -219,7 +209,6 @@ export const THEMES: Record<Theme, ThemeConfig> = {
     shikiTheme: "catppuccin-macchiato",
     defaults: {
       padding: 64,
-      borderRadius: 16,
       borderShadow:
         "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
     },
@@ -229,7 +218,6 @@ export const THEMES: Record<Theme, ThemeConfig> = {
     shikiTheme: "material-theme-palenight",
     defaults: {
       padding: 64,
-      borderRadius: 16,
       borderShadow:
         "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
     },
@@ -239,7 +227,6 @@ export const THEMES: Record<Theme, ThemeConfig> = {
     shikiTheme: "synthwave-84",
     defaults: {
       padding: 64,
-      borderRadius: 16,
       borderShadow:
         "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
     },
@@ -249,7 +236,6 @@ export const THEMES: Record<Theme, ThemeConfig> = {
     shikiTheme: "min-dark",
     defaults: {
       padding: 64,
-      borderRadius: 16,
       borderShadow:
         "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
     },
@@ -259,7 +245,6 @@ export const THEMES: Record<Theme, ThemeConfig> = {
     shikiTheme: "rose-pine-dawn",
     defaults: {
       padding: 64,
-      borderRadius: 16,
       borderShadow:
         "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
     },
@@ -269,7 +254,6 @@ export const THEMES: Record<Theme, ThemeConfig> = {
     shikiTheme: "rose-pine-moon",
     defaults: {
       padding: 64,
-      borderRadius: 16,
       borderShadow:
         "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
     },
@@ -279,7 +263,6 @@ export const THEMES: Record<Theme, ThemeConfig> = {
     shikiTheme: "slack-dark",
     defaults: {
       padding: 64,
-      borderRadius: 16,
       borderShadow:
         "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
     },
@@ -289,7 +272,6 @@ export const THEMES: Record<Theme, ThemeConfig> = {
     shikiTheme: "kanagawa-wave",
     defaults: {
       padding: 64,
-      borderRadius: 16,
       borderShadow:
         "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
     },
@@ -299,7 +281,6 @@ export const THEMES: Record<Theme, ThemeConfig> = {
     shikiTheme: "andromeeda",
     defaults: {
       padding: 64,
-      borderRadius: 16,
       borderShadow:
         "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
     },
@@ -309,7 +290,6 @@ export const THEMES: Record<Theme, ThemeConfig> = {
     shikiTheme: "github-dark-dimmed",
     defaults: {
       padding: 64,
-      borderRadius: 16,
       borderShadow:
         "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
     },
@@ -319,7 +299,6 @@ export const THEMES: Record<Theme, ThemeConfig> = {
     shikiTheme: "laserwave",
     defaults: {
       padding: 64,
-      borderRadius: 16,
       borderShadow:
         "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
     },
@@ -329,7 +308,6 @@ export const THEMES: Record<Theme, ThemeConfig> = {
     shikiTheme: "material-theme-ocean",
     defaults: {
       padding: 64,
-      borderRadius: 16,
       borderShadow:
         "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
     },
@@ -339,7 +317,6 @@ export const THEMES: Record<Theme, ThemeConfig> = {
     shikiTheme: "material-theme-darker",
     defaults: {
       padding: 64,
-      borderRadius: 16,
       borderShadow:
         "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
     },
@@ -349,7 +326,6 @@ export const THEMES: Record<Theme, ThemeConfig> = {
     shikiTheme: "tokyo-night",
     defaults: {
       padding: 64,
-      borderRadius: 16,
       borderShadow:
         "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
     },
@@ -359,7 +335,6 @@ export const THEMES: Record<Theme, ThemeConfig> = {
     shikiTheme: "gruvbox-dark-soft",
     defaults: {
       padding: 64,
-      borderRadius: 16,
       borderShadow:
         "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
     },
@@ -369,7 +344,6 @@ export const THEMES: Record<Theme, ThemeConfig> = {
     shikiTheme: "poimandres",
     defaults: {
       padding: 64,
-      borderRadius: 16,
       borderShadow:
         "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
     },
@@ -379,7 +353,6 @@ export const THEMES: Record<Theme, ThemeConfig> = {
     shikiTheme: "aurora-x",
     defaults: {
       padding: 64,
-      borderRadius: 16,
       borderShadow:
         "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
     },
@@ -389,7 +362,6 @@ export const THEMES: Record<Theme, ThemeConfig> = {
     shikiTheme: "vitesse-dark",
     defaults: {
       padding: 64,
-      borderRadius: 16,
       borderShadow:
         "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
     },
@@ -399,7 +371,6 @@ export const THEMES: Record<Theme, ThemeConfig> = {
     shikiTheme: "dark-plus",
     defaults: {
       padding: 64,
-      borderRadius: 16,
       borderShadow:
         "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
     },
@@ -409,7 +380,6 @@ export const THEMES: Record<Theme, ThemeConfig> = {
     shikiTheme: "vitesse-black",
     defaults: {
       padding: 64,
-      borderRadius: 16,
       borderShadow:
         "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
     },
@@ -485,7 +455,6 @@ export const DEFAULT_EDITOR_SETTINGS: EditorSettings = {
   showLineNumbers: true,
   windowControls: true,
   fontSize: 20,
-  borderRadius: 16,
   borderShadow:
     "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
 };

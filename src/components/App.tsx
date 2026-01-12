@@ -40,6 +40,7 @@ const DEFAULT_CODE = `function helloWorld() {
 }`;
 
 const DEBUG_HIGHLIGHT = false;
+const DEFAULT_BORDER_RADIUS = 16;
 
 const countLines = (code: string) => (code || "").split(/\r\n|\r|\n/).length || 1;
 
@@ -76,6 +77,7 @@ const App: React.FC = () => {
     ...DEFAULT_EDITOR_SETTINGS,
     ...storedSettings,
     fontSize: DEFAULT_EDITOR_SETTINGS.fontSize,
+    borderRadius: DEFAULT_BORDER_RADIUS,
   });
   const { onExport, onCopyImage, isCopying, isExporting, copyStatus, isCopySupported } =
     useImageExport();
@@ -105,6 +107,7 @@ const App: React.FC = () => {
       ...newSettings,
       // Font size is fixed globally; ignore stored/theme overrides.
       fontSize: DEFAULT_EDITOR_SETTINGS.fontSize,
+      borderRadius: DEFAULT_BORDER_RADIUS,
     }));
   };
 
@@ -134,7 +137,11 @@ const App: React.FC = () => {
   const highlightDelayMs = previewIndex * HIGHLIGHT_STEP_DELAY_MS;
 
   useEffect(() => {
-    setStoredSettings({ ...settings, fontSize: DEFAULT_EDITOR_SETTINGS.fontSize });
+    setStoredSettings({
+      ...settings,
+      fontSize: DEFAULT_EDITOR_SETTINGS.fontSize,
+      borderRadius: DEFAULT_BORDER_RADIUS,
+    });
   }, [settings, setStoredSettings]);
 
   useVideoExportGlobals({

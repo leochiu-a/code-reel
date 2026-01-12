@@ -20,6 +20,7 @@ interface ThemeSidebarProps {
 const ThemeSidebar: React.FC<ThemeSidebarProps> = ({ settings, onSettingsChange, highlighter }) => {
   const previewCode = `const preview = "Hello";\nconsole.log(preview);`;
   const previewHeight = 140;
+  const defaultBorderRadius = 16;
   const themeItems = useMemo(
     () =>
       Object.entries(THEMES).map(([key, theme]) => {
@@ -38,7 +39,7 @@ const ThemeSidebar: React.FC<ThemeSidebarProps> = ({ settings, onSettingsChange,
           showLineNumbers: false,
           windowControls: false,
           fontSize: 11,
-          borderRadius: 12,
+          borderRadius: defaultBorderRadius,
           borderShadow: DEFAULT_EDITOR_SETTINGS.borderShadow,
         };
 
@@ -52,7 +53,7 @@ const ThemeSidebar: React.FC<ThemeSidebarProps> = ({ settings, onSettingsChange,
           previewSettings,
         };
       }),
-    [highlighter, settings.background, settings.language],
+    [defaultBorderRadius, highlighter, settings.background, settings.language],
   );
 
   return (

@@ -39,7 +39,6 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
   const etaLabel =
     typeof exportEtaMs === "number" ? `~${(Math.max(exportEtaMs, 0) / 1000).toFixed(1)}s` : null;
   const paddingOptions = [16, 32, 64, 96];
-  const radiusOptions = [0, 8, 16, 32];
   const borderShadowOptions = [
     { label: "None", value: "border-none" },
     {
@@ -98,24 +97,6 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
                 className="w-full justify-start gap-1"
               >
                 {paddingOptions.map((value) => (
-                  <ToggleGroupItem key={value} value={String(value)} className="h-8 flex-1">
-                    {value}
-                  </ToggleGroupItem>
-                ))}
-              </ToggleGroup>
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-              <span className="text-xs text-white/80">Radius</span>
-              <ToggleGroup
-                type="single"
-                value={String(settings.borderRadius)}
-                onValueChange={(value) =>
-                  value && onSettingsChange({ borderRadius: parseInt(value, 10) })
-                }
-                className="w-full justify-start gap-1"
-              >
-                {radiusOptions.map((value) => (
                   <ToggleGroupItem key={value} value={String(value)} className="h-8 flex-1">
                     {value}
                   </ToggleGroupItem>
