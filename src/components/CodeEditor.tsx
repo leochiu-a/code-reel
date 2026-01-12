@@ -81,7 +81,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
     left: 16,
     right: 16,
   };
-  const lineNumberGutterWidth = settings.showLineNumbers ? 28 : 0;
+  const lineNumberGutterWidth = settings.showLineNumbers ? 48 : 0;
   const editorFontFamily = FRAME_PRESENTATION.editorFontFamily;
 
   const previewPaddingY = editorPadding.top;
