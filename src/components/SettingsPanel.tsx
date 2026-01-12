@@ -52,77 +52,63 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
     <div className="flex h-full w-60 flex-col gap-6 overflow-y-auto bg-[#212121] p-5 shadow-[0_20px_40px_-20px_rgba(0,0,0,0.9)]">
       <div className="space-y-6">
         {/* Core Settings */}
-        <div className="space-y-4">
-          <div className="grid gap-2">
-            <Label className="text-xs font-medium text-white/90">LANGUAGE</Label>
-            <div className="grid grid-cols-1 gap-3">
-              <Select
-                value={settings.language}
-                onValueChange={(value) => onSettingsChange({ language: value as Language })}
-              >
-                <SelectTrigger className="w-full border-white/10 bg-white/5 text-slate-100 transition-colors hover:bg-white/10 focus:ring-emerald-500/40">
-                  <SelectValue placeholder="Select language" />
-                </SelectTrigger>
-                <SelectContent className="border-white/10 bg-[#141414] text-slate-100">
-                  {Object.entries(LANGUAGES).map(([key, language]) => (
-                    <SelectItem
-                      key={key}
-                      value={key}
-                      className="focus:bg-white/10 focus:text-white"
-                    >
-                      {language.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+        <div className="grid gap-2">
+          <Label className="text-xs font-medium text-white/90">LANGUAGE</Label>
+          <div className="grid grid-cols-1 gap-3">
+            <Select
+              value={settings.language}
+              onValueChange={(value) => onSettingsChange({ language: value as Language })}
+            >
+              <SelectTrigger className="w-full border-white/10 bg-white/5 text-slate-100 transition-colors hover:bg-white/10 focus:ring-emerald-500/40">
+                <SelectValue placeholder="Select language" />
+              </SelectTrigger>
+              <SelectContent className="border-white/10 bg-[#141414] text-slate-100">
+                {Object.entries(LANGUAGES).map(([key, language]) => (
+                  <SelectItem key={key} value={key} className="focus:bg-white/10 focus:text-white">
+                    {language.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
-
-        <div className="h-px bg-slate-800/50" />
 
         {/* Layout Settings */}
-        <div className="space-y-4">
-          <Label className="text-xs font-medium text-white/90">LAYOUT</Label>
+        <Label className="text-xs font-medium text-white/90">LAYOUT</Label>
 
-          <div className="space-y-3">
-            <div className="flex flex-col gap-1.5">
-              <span className="text-xs text-white/80">Padding</span>
-              <ToggleGroup
-                type="single"
-                value={String(settings.padding)}
-                onValueChange={(value) =>
-                  value && onSettingsChange({ padding: parseInt(value, 10) })
-                }
-                className="w-full justify-start gap-1"
-              >
-                {paddingOptions.map((value) => (
-                  <ToggleGroupItem key={value} value={String(value)} className="h-8 flex-1">
-                    {value}
-                  </ToggleGroupItem>
-                ))}
-              </ToggleGroup>
-            </div>
+        <div className="space-y-3">
+          <div className="flex flex-col gap-1.5">
+            <span className="text-xs text-white/80">Padding</span>
+            <ToggleGroup
+              type="single"
+              value={String(settings.padding)}
+              onValueChange={(value) => value && onSettingsChange({ padding: parseInt(value, 10) })}
+              className="w-full justify-start gap-1"
+            >
+              {paddingOptions.map((value) => (
+                <ToggleGroupItem key={value} value={String(value)} className="h-8 flex-1">
+                  {value}
+                </ToggleGroupItem>
+              ))}
+            </ToggleGroup>
+          </div>
 
-            <div className="flex flex-col gap-1.5">
-              <span className="text-xs text-white/80">Shadow</span>
-              <ToggleGroup
-                type="single"
-                value={settings.borderShadow ?? DEFAULT_EDITOR_SETTINGS.borderShadow}
-                onValueChange={(value) => value && onSettingsChange({ borderShadow: value })}
-                className="w-full justify-start gap-1"
-              >
-                {borderShadowOptions.map((option) => (
-                  <ToggleGroupItem key={option.value} value={option.value} className="h-8 flex-1">
-                    {option.label}
-                  </ToggleGroupItem>
-                ))}
-              </ToggleGroup>
-            </div>
+          <div className="flex flex-col gap-1.5">
+            <span className="text-xs text-white/80">Shadow</span>
+            <ToggleGroup
+              type="single"
+              value={settings.borderShadow ?? DEFAULT_EDITOR_SETTINGS.borderShadow}
+              onValueChange={(value) => value && onSettingsChange({ borderShadow: value })}
+              className="w-full justify-start gap-1"
+            >
+              {borderShadowOptions.map((option) => (
+                <ToggleGroupItem key={option.value} value={option.value} className="h-8 flex-1">
+                  {option.label}
+                </ToggleGroupItem>
+              ))}
+            </ToggleGroup>
           </div>
         </div>
-
-        <div className="h-px bg-slate-800/50" />
 
         {/* Visibility */}
         <div className="space-y-3">
