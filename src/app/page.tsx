@@ -81,6 +81,7 @@ export default function Page() {
     () => ({
       ...DEFAULT_EDITOR_SETTINGS,
       language: "typescript",
+      fontSize: 16,
     }),
     [],
   );
