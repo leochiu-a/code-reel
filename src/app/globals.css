@@ -45,8 +45,14 @@
 
 body {
   margin: 0;
-  font-family: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
-    BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family:
+    var(--font-inter),
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
   background-color: #181818;
   color: #f8fafc;
 }
@@ -69,6 +75,11 @@ body {
 }
 
 .codesnap-code-textarea::selection {
+  color: transparent;
+}
+
+.codesnap-code-textarea {
+  overflow: hidden;
 }
 
 ::view-transition-new(codereel-logo),

@@ -145,6 +145,7 @@ const CodeTextarea = forwardRef<HTMLTextAreaElement, CodeTextareaProps>(
         value={value}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
+        wrap="off"
         spellCheck={false}
         autoComplete="off"
         autoCorrect="off"
