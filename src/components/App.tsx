@@ -75,6 +75,7 @@ const App: React.FC = () => {
   const [settings, setSettings] = useState<EditorSettings>({
     ...DEFAULT_EDITOR_SETTINGS,
     ...storedSettings,
+    fontSize: DEFAULT_EDITOR_SETTINGS.fontSize,
   });
   const { onExport, onCopyImage, isCopying, isExporting, copyStatus, isCopySupported } =
     useImageExport();
@@ -99,7 +100,12 @@ const App: React.FC = () => {
   });
 
   const handleSettingsChange = (newSettings: Partial<EditorSettings>) => {
-    setSettings((prev) => ({ ...prev, ...newSettings }));
+    setSettings((prev) => ({
+      ...prev,
+      ...newSettings,
+      // Font size is fixed globally; ignore stored/theme overrides.
+      fontSize: DEFAULT_EDITOR_SETTINGS.fontSize,
+    }));
   };
 
   const shouldShowPreview = Boolean(highlighter) && (isPlaying || isExportMode);
@@ -128,7 +134,7 @@ const App: React.FC = () => {
   const highlightDelayMs = previewIndex * HIGHLIGHT_STEP_DELAY_MS;
 
   useEffect(() => {
-    setStoredSettings(settings);
+    setStoredSettings({ ...settings, fontSize: DEFAULT_EDITOR_SETTINGS.fontSize });
   }, [settings, setStoredSettings]);
 
   useVideoExportGlobals({
