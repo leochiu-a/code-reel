@@ -51,8 +51,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   debugHighlight = false,
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
-
-  const [editorHeight, setEditorHeight] = useState(180);
+  const [dynamicEditorHeight, setDynamicEditorHeight] = useState(180);
 
   const [highlightCycle, setHighlightCycle] = useState(0);
   const [moveTargets, setMoveTargets] = useState<{ id: number; from: number; to: number }[]>([]);
@@ -112,23 +111,48 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   const arraysEqual = (a: number[], b: number[]) =>
     a.length === b.length && a.every((value, index) => value === b[index]);
 
-  const updateEditorHeight = useCallback(() => {
+  /**
+   * Calculate height from containerHeight (no DOM needed)
+   */
+  const computedEditorHeight = useMemo(() => {
     if (containerHeight) {
       const chromeHeight = settings.windowControls ? 40 : 0;
       const padding = settings.padding * 2;
-      const height = Math.max(120, containerHeight - chromeHeight - padding);
-      setEditorHeight(height);
-      return;
+      return Math.max(120, containerHeight - chromeHeight - padding);
     }
-
-    if (!textareaRef.current) return;
-    const height = Math.max(24, textareaRef.current.scrollHeight);
-    setEditorHeight(height);
+    return null; // Will use dynamic height from DOM measurement
   }, [containerHeight, settings.padding, settings.windowControls]);
 
+  const editorHeight = computedEditorHeight ?? dynamicEditorHeight;
+
+  /**
+   * Use ref callback to measure DOM height when containerHeight is not provided
+   */
+  const textareaRefCallback = useCallback(
+    (element: HTMLTextAreaElement | null) => {
+      textareaRef.current = element;
+      if (!element || containerHeight) return;
+
+      // Measure and update height
+      const height = Math.max(24, element.scrollHeight);
+      setDynamicEditorHeight(height);
+    },
+    [containerHeight]
+  );
+
+  // Update dynamic height when code or settings change (only if not using containerHeight)
   useLayoutEffect(() => {
-    updateEditorHeight();
-  }, [code, settings.fontSize, settings.showLineNumbers, containerHeight, updateEditorHeight]);
+    if (containerHeight || !textareaRef.current) return;
+    
+    // Use requestAnimationFrame to defer state update and avoid cascading renders
+    const rafId = requestAnimationFrame(() => {
+      if (!textareaRef.current) return;
+      const height = Math.max(24, textareaRef.current.scrollHeight);
+      setDynamicEditorHeight(height);
+    });
+    
+    return () => cancelAnimationFrame(rafId);
+  }, [code, settings.fontSize, settings.showLineNumbers, containerHeight]);
 
   useEffect(() => {
     if (!showPreview) {
@@ -213,7 +237,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
     if (onCodeChange) {
       onCodeChange(nextCode);
     }
-    updateEditorHeight();
+    // Height will be updated by useLayoutEffect or ref callback
   };
 
   const handleLineNumberMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -375,7 +399,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
           )}
 
           <CodeTextarea
-            ref={textareaRef}
+            ref={textareaRefCallback}
             value={code}
             onValueChange={handleCodeChange}
             showPreview={showPreview}
