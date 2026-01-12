@@ -3,6 +3,7 @@
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { Highlighter } from "shiki";
 import { ShikiMagicMove } from "shiki-magic-move/react";
+import { Fira_Code } from "next/font/google";
 
 import { EditorSettings } from "../types";
 import {
@@ -15,6 +16,8 @@ import {
 import { getThemeBackground, getThemeForeground } from "../services/shiki";
 import Frame, { FRAME_PRESENTATION } from "./Frame";
 import CodeTextarea from "./CodeTextarea";
+
+const firaCode = Fira_Code();
 
 interface CodeEditorProps {
   code: string;
@@ -67,11 +70,11 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
 
   const themeBackground = useMemo(
     () => (highlighter ? getThemeBackground(highlighter, shikiTheme) : "#0b0b0b"),
-    [highlighter, shikiTheme]
+    [highlighter, shikiTheme],
   );
   const themeForeground = useMemo(
     () => (highlighter ? getThemeForeground(highlighter, shikiTheme) : "#ededed"),
-    [highlighter, shikiTheme]
+    [highlighter, shikiTheme],
   );
 
   const lineHeight = Math.round(settings.fontSize * FRAME_PRESENTATION.editorLineHeightMultiplier);
@@ -137,20 +140,20 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
       const height = Math.max(24, element.scrollHeight);
       setDynamicEditorHeight(height);
     },
-    [containerHeight]
+    [containerHeight],
   );
 
   // Update dynamic height when code or settings change (only if not using containerHeight)
   useLayoutEffect(() => {
     if (containerHeight || !textareaRef.current) return;
-    
+
     // Use requestAnimationFrame to defer state update and avoid cascading renders
     const rafId = requestAnimationFrame(() => {
       if (!textareaRef.current) return;
       const height = Math.max(24, textareaRef.current.scrollHeight);
       setDynamicEditorHeight(height);
     });
-    
+
     return () => cancelAnimationFrame(rafId);
   }, [code, settings.fontSize, settings.showLineNumbers, containerHeight]);
 
@@ -375,12 +378,11 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
               style={{
                 fontSize: settings.fontSize,
                 lineHeight: `${lineHeight}px`,
-                fontFamily: editorFontFamily,
-                fontVariantLigatures: "normal",
                 padding: `${editorPadding.top}px ${editorPadding.right}px ${editorPadding.bottom}px ${editorPadding.left}px`,
               }}
             >
               <ShikiMagicMove
+                className={firaCode.className}
                 key={`${shikiTheme}-${displayedLanguage}`}
                 highlighter={highlighter}
                 lang={displayedLanguage}
@@ -403,13 +405,12 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
             value={code}
             onValueChange={handleCodeChange}
             showPreview={showPreview}
-            className="codesnap-code-textarea absolute inset-0 z-20 m-0 resize-none border-none bg-transparent"
+            className={`codesnap-code-textarea absolute inset-0 z-20 m-0 resize-none border-none bg-transparent ${firaCode.className}`}
             style={{
               height: editorHeight,
               padding: `${editorPadding.top}px ${editorPadding.right}px ${editorPadding.bottom}px ${
                 editorPadding.left + lineNumberGutterWidth
               }px`,
-              fontFamily: editorFontFamily,
               fontSize: settings.fontSize,
               lineHeight: `${lineHeight}px`,
               color: "transparent",

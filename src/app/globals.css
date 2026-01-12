@@ -69,7 +69,6 @@ body {
 }
 
 .codesnap-code-textarea::selection {
-  color: transparent;
 }
 
 ::view-transition-new(codereel-logo),
