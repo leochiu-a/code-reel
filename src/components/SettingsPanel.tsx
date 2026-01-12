@@ -127,20 +127,28 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
         {/* Visibility */}
         <div className="space-y-3">
           <Label className="text-xs font-medium text-white/90">WINDOW</Label>
-          <div className="flex items-center justify-between rounded-md border border-white/10 bg-white/5 p-3 transition-colors hover:border-white/20">
+          <div
+            className="flex cursor-pointer items-center justify-between rounded-md border border-white/10 bg-white/5 p-3 transition-colors hover:border-white/20"
+            onClick={() => onSettingsChange({ showLineNumbers: !settings.showLineNumbers })}
+          >
             <span className="text-sm text-slate-200">Line Numbers</span>
             <Checkbox
               checked={settings.showLineNumbers}
               onCheckedChange={(checked) => onSettingsChange({ showLineNumbers: Boolean(checked) })}
-              className="border-white/20 data-[state=checked]:border-emerald-500 data-[state=checked]:bg-emerald-500"
+              onClick={(event) => event.stopPropagation()}
+              className="cursor-pointer border-white/20 data-[state=checked]:border-emerald-500 data-[state=checked]:bg-emerald-500"
             />
           </div>
-          <div className="flex items-center justify-between rounded-md border border-white/10 bg-white/5 p-3 transition-colors hover:border-white/20">
+          <div
+            className="flex cursor-pointer items-center justify-between rounded-md border border-white/10 bg-white/5 p-3 transition-colors hover:border-white/20"
+            onClick={() => onSettingsChange({ windowControls: !settings.windowControls })}
+          >
             <span className="text-sm text-slate-200">Window Controls</span>
             <Checkbox
               checked={settings.windowControls}
               onCheckedChange={(checked) => onSettingsChange({ windowControls: Boolean(checked) })}
-              className="border-white/20 data-[state=checked]:border-emerald-500 data-[state=checked]:bg-emerald-500"
+              onClick={(event) => event.stopPropagation()}
+              className="cursor-pointer border-white/20 data-[state=checked]:border-emerald-500 data-[state=checked]:bg-emerald-500"
             />
           </div>
         </div>
