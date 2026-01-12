@@ -165,7 +165,7 @@ const App: React.FC = () => {
           <div className="flex items-center gap-2">
             <Button
               size="sm"
-              variant="outline"
+              variant="secondary"
               asChild
               animatedIcon={<MessageCircleIcon size={14} className="text-slate-200" />}
             >
@@ -187,6 +187,17 @@ const App: React.FC = () => {
             >
               {isCopying ? "Copying..." : "Copy"}
             </Button>
+
+            <Button
+              onClick={handleOpenVideoOnboarding}
+              disabled={isExportingVideo}
+              variant="secondary"
+              animatedIcon={<BulbSvg size={14} className="text-emerald-100" />}
+              className="h-8 cursor-pointer border border-white/10 bg-white/5 px-3 text-xs text-slate-100 hover:bg-white/10 hover:text-white"
+            >
+              {isExportingVideo ? "Exporting..." : "Export Video"}
+            </Button>
+
             <ImageExportPopover
               isExporting={isExporting}
               format={imageExportFormat}
@@ -195,14 +206,6 @@ const App: React.FC = () => {
               onScaleChange={setImageExportScale}
               onExport={handleImageExport}
             />
-            <Button
-              onClick={handleOpenVideoOnboarding}
-              disabled={isExportingVideo}
-              animatedIcon={<BulbSvg size={14} className="text-emerald-100" />}
-              className="h-8 cursor-pointer gap-2 border border-emerald-600/30 bg-emerald-600/10 px-3 text-xs text-emerald-300 transition-all duration-300 hover:bg-emerald-600 hover:text-white"
-            >
-              {isExportingVideo ? "Exporting..." : "Export Video"}
-            </Button>
           </div>
         </header>
       )}
