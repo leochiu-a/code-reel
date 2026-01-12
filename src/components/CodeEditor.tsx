@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { Highlighter } from "shiki";
 import { ShikiMagicMove } from "shiki-magic-move/react";
 
@@ -53,8 +53,6 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   const [editorHeight, setEditorHeight] = useState(180);
-  const [themeBackground, setThemeBackground] = useState("#0b0b0b");
-  const [themeForeground, setThemeForeground] = useState("#ededed");
 
   const [highlightCycle, setHighlightCycle] = useState(0);
   const [moveTargets, setMoveTargets] = useState<{ id: number; from: number; to: number }[]>([]);
@@ -67,6 +65,15 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   const themeConfig = THEMES[settings.theme];
   const shikiTheme = resolveShikiThemeName(themeConfig);
   const languageConfig = LANGUAGES[settings.language];
+
+  const themeBackground = useMemo(
+    () => (highlighter ? getThemeBackground(highlighter, shikiTheme) : "#0b0b0b"),
+    [highlighter, shikiTheme]
+  );
+  const themeForeground = useMemo(
+    () => (highlighter ? getThemeForeground(highlighter, shikiTheme) : "#ededed"),
+    [highlighter, shikiTheme]
+  );
 
   const lineHeight = Math.round(settings.fontSize * FRAME_PRESENTATION.editorLineHeightMultiplier);
   const editorPadding = {
@@ -118,12 +125,6 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
     const height = Math.max(24, textareaRef.current.scrollHeight);
     setEditorHeight(height);
   }, [containerHeight, settings.padding, settings.windowControls]);
-
-  useEffect(() => {
-    if (!highlighter) return;
-    setThemeBackground(getThemeBackground(highlighter, shikiTheme));
-    setThemeForeground(getThemeForeground(highlighter, shikiTheme));
-  }, [highlighter, shikiTheme]);
 
   useLayoutEffect(() => {
     updateEditorHeight();
