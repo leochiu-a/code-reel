@@ -378,7 +378,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
             value={code}
             onValueChange={handleCodeChange}
             showPreview={showPreview}
-            className="absolute inset-0 z-20 m-0 resize-none border-none bg-transparent"
+            className="codesnap-code-textarea absolute inset-0 z-20 m-0 resize-none border-none bg-transparent"
             style={{
               height: editorHeight,
               padding: `${editorPadding.top}px ${editorPadding.right}px ${editorPadding.bottom}px ${
