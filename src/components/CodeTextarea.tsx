@@ -1,4 +1,6 @@
 import React, { forwardRef, useCallback } from "react";
+import { computeBackspaceDelete } from "../utils/handleBackspace";
+import { computeEnterInsert } from "../utils/handleEnter";
 
 interface CodeTextareaProps {
   value: string;
@@ -68,16 +70,13 @@ function handleTab(textarea: HTMLTextAreaElement, shiftKey: boolean) {
 }
 
 function handleEnter(textarea: HTMLTextAreaElement) {
-  const currentLine = getCurrentlySelectedLine(textarea);
-  const { selectionStart, selectionEnd } = textarea;
-  const currentIndentationMatch = currentLine.match(/^(\s+)/);
-  let wantedIndentation = currentIndentationMatch ? currentIndentationMatch[0] : "";
-
-  if (currentLine.match(/([{\[:>])$/)) {
-    wantedIndentation += "  ";
-  }
-
-  textarea.setRangeText(`\n${wantedIndentation}`, selectionStart, selectionEnd, "end");
+  const { selectionStart, selectionEnd, value } = textarea;
+  textarea.setRangeText(
+    computeEnterInsert(value, selectionStart),
+    selectionStart,
+    selectionEnd,
+    "end",
+  );
 }
 
 function handleBracketClose(textarea: HTMLTextAreaElement) {
@@ -125,6 +124,18 @@ const CodeTextarea = forwardRef<HTMLTextAreaElement, CodeTextareaProps>(
             handleEnter(textarea);
             syncValue(textarea);
             break;
+          case "Backspace": {
+            event.preventDefault();
+            const result = computeBackspaceDelete(
+              textarea.value,
+              textarea.selectionStart,
+              textarea.selectionEnd,
+            );
+            textarea.value = result.value;
+            textarea.setSelectionRange(result.selectionStart, result.selectionStart);
+            syncValue(textarea);
+            break;
+          }
           default:
             break;
         }
