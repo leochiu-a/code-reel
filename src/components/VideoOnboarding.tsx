@@ -7,13 +7,7 @@ import {
   PopoverContent,
 } from "@/components/animate-ui/components/radix/popover";
 import { Button } from "./ui/button";
-
-type OnboardingRect = {
-  top: number;
-  left: number;
-  width: number;
-  height: number;
-};
+import { computeHighlightRect, HIGHLIGHT_PADDING_PX, type OnboardingRect } from "@/utils/highlightRegion";
 
 type VideoOnboardingProps = {
   open: boolean;
@@ -38,13 +32,7 @@ const VideoOnboarding: React.FC<VideoOnboardingProps> = ({
       return;
     }
     const rect = target.getBoundingClientRect();
-    const padding = 14;
-    setOnboardingRect({
-      top: Math.max(rect.top - padding, 12),
-      left: Math.max(rect.left - padding, 12),
-      width: rect.width + padding * 2,
-      height: rect.height + padding * 2,
-    });
+    setOnboardingRect(computeHighlightRect(rect, HIGHLIGHT_PADDING_PX));
   }, [targetId]);
 
   useEffect(() => {
