@@ -21,6 +21,7 @@ import SettingsPanel from "./SettingsPanel";
 import ThemeSidebar from "./ThemeSidebar";
 import CodeEditor from "./CodeEditor";
 import VideoOnboarding from "./VideoOnboarding";
+import HighlightRegionOverlay from "./HighlightRegionOverlay";
 import LogoText from "./LogoText";
 import { FRAME_PRESENTATION } from "./Frame";
 import { Button } from "@/components/ui/button";
@@ -28,6 +29,7 @@ import ImageExportPopover from "./ImageExportPopover";
 import BulbSvg from "@/components/ui/bulb-svg";
 import CopyIcon from "@/components/ui/copy-icon";
 import MessageCircleIcon from "@/components/ui/message-circle-icon";
+import { Crosshair } from "lucide-react";
 
 const DEFAULT_CODE = `function helloWorld() {
   console.log("Hello from CodeReel!");
@@ -84,6 +86,7 @@ const App: React.FC = () => {
   const [imageExportFormat, setImageExportFormat] = useState<"png" | "jpeg" | "webp">("png");
   const [imageExportScale, setImageExportScale] = useState<1 | 2 | 3>(2);
   const [isVideoOnboardingOpen, setIsVideoOnboardingOpen] = useState(false);
+  const [isHighlightRegionOpen, setIsHighlightRegionOpen] = useState(false);
   const mainRef = useRef<HTMLDivElement | null>(null);
   const maxLineCount = useMemo(
     () => Math.max(1, ...snippets.map((snippet) => countLines(snippet.code))),
@@ -115,6 +118,10 @@ const App: React.FC = () => {
 
   const handleOpenVideoOnboarding = useCallback(() => {
     setIsVideoOnboardingOpen(true);
+  }, []);
+
+  const handleToggleHighlightRegion = useCallback(() => {
+    setIsHighlightRegionOpen((prev) => !prev);
   }, []);
 
   const handleImageExport = useCallback(async () => {
@@ -186,6 +193,20 @@ const App: React.FC = () => {
               className="h-8 cursor-pointer border border-white/10 bg-white/5 px-3 text-xs text-slate-100 hover:bg-white/10 hover:text-white"
             >
               {isCopying ? "Copying..." : "Copy"}
+            </Button>
+
+            <Button
+              onClick={handleToggleHighlightRegion}
+              disabled={isExportingVideo}
+              variant="secondary"
+              animatedIcon={<Crosshair size={14} className="text-emerald-100" />}
+              className={`h-8 cursor-pointer border px-3 text-xs hover:bg-white/10 hover:text-white ${
+                isHighlightRegionOpen
+                  ? "border-emerald-300/40 bg-emerald-300/10 text-emerald-100"
+                  : "border-white/10 bg-white/5 text-slate-100"
+              }`}
+            >
+              Highlight Region
             </Button>
 
             <Button
@@ -280,6 +301,14 @@ const App: React.FC = () => {
           onClose={() => setIsVideoOnboardingOpen(false)}
           targetId="onboarding-highlight-area"
           scrollContainerRef={mainRef}
+        />
+      )}
+
+      {!isExportMode && (
+        <HighlightRegionOverlay
+          open={isHighlightRegionOpen}
+          onClose={() => setIsHighlightRegionOpen(false)}
+          targetId="onboarding-highlight-area"
         />
       )}
     </div>
