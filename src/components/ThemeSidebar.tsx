@@ -7,6 +7,7 @@ import {
   THEMES,
   resolveShikiThemeName,
 } from "../constants";
+import { computeThemePreviewBackground } from "../utils/themePreviewBackground";
 import { getThemeBackground, getThemeForeground } from "../services/shiki";
 import type { EditorSettings, Theme } from "../types";
 import CodeEditor from "./CodeEditor";
@@ -35,7 +36,7 @@ const ThemeSidebar: React.FC<ThemeSidebarProps> = ({ settings, onSettingsChange,
           theme: key as Theme,
           language: settings.language,
           padding: 20,
-          background: mappedBackground ?? theme.defaults?.background ?? settings.background,
+          background: computeThemePreviewBackground(mappedBackground, theme.defaults?.background, codeBackground),
           showLineNumbers: false,
           windowControls: false,
           fontSize: 11,
@@ -53,7 +54,7 @@ const ThemeSidebar: React.FC<ThemeSidebarProps> = ({ settings, onSettingsChange,
           previewSettings,
         };
       }),
-    [defaultBorderRadius, highlighter, settings.background, settings.language],
+    [defaultBorderRadius, highlighter, settings.language],
   );
 
   return (
