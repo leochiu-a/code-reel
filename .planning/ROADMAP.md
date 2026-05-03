@@ -28,6 +28,15 @@ _No phases committed yet. Promote from backlog when ready._
 Plans:
 - [ ] TBD (promote with /gsd:review-backlog when ready)
 
+### Phase 999.2: /code-screenshot Landing Page — Server Component，server-side Shiki 預覽，針對 "code screenshot" / "code image" 關鍵字 (BACKLOG)
+
+**Goal:** [Captured for future planning]
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd:review-backlog when ready)
+
 ## Progress
 
 | Phase | Plans Complete | Status | Completed |
