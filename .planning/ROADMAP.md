@@ -14,18 +14,18 @@ CodeReel 是一個讓開發者把程式碼轉成精美動畫影片的工具。
 
 **Milestone Goal:** 建立 SEO 基礎設施與關鍵字 landing pages，讓 Google 能正確索引 CodeReel 並帶入自然流量。
 
-_No phases committed yet. Promote from backlog when ready._
-
-
-## Backlog
-
-### Phase 999.1: Technical SEO Foundation (BACKLOG)
+### Phase 1: Technical SEO Foundation
 
 **Goal:** 建立 SEO 基礎設施，讓 Google 能正確索引 CodeReel。
+**Status:** 📋 Planned
+**Spec:** [01-SPEC.md](.planning/phases/01-technical-seo-foundation/01-SPEC.md) — 5 requirements locked
 **Plans:** 0 plans
 
 Plans:
-- [ ] TBD (promote with /gsd:review-backlog when ready)
+- [ ] TBD
+
+
+## Backlog
 
 ### Phase 999.2: /code-screenshot Landing Page (BACKLOG)
 
