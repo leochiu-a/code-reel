@@ -15,8 +15,23 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://codereel.dev"),
   title: "CodeReel — Animate your code. Share your story.",
   description: "Animate your code. Share your story.",
+  openGraph: {
+    title: "CodeReel — Animate your code. Share your story.",
+    description: "Animate your code. Share your story.",
+    url: "https://codereel.dev",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "CodeReel — Animate your code. Share your story.",
+    description: "Animate your code. Share your story.",
+  },
+  alternates: {
+    canonical: "/",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
