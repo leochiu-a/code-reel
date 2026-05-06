@@ -17,7 +17,7 @@ CodeReel 是一個讓開發者把程式碼轉成精美動畫影片的工具。
 ### Phase 1: Technical SEO Foundation
 
 **Goal:** 建立 SEO 基礎設施，讓 Google 能正確索引 CodeReel。
-**Status:** 📋 Planned
+**Status:** 🔄 Ready to execute
 **Spec:** [01-SPEC.md](.planning/phases/01-technical-seo-foundation/01-SPEC.md) — 5 requirements locked
 **Plans:** 3 plans
 
