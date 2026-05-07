@@ -17,14 +17,14 @@ CodeReel 是一個讓開發者把程式碼轉成精美動畫影片的工具。
 ### Phase 1: Technical SEO Foundation
 
 **Goal:** 建立 SEO 基礎設施，讓 Google 能正確索引 CodeReel。
-**Status:** 🔄 In Progress
+**Status:** ✅ Complete
 **Spec:** [01-SPEC.md](.planning/phases/01-technical-seo-foundation/01-SPEC.md) — 5 requirements locked
-**Plans:** 3 plans (2/3 complete)
+**Plans:** 3 plans (3/3 complete)
 
 Plans:
 - [x] 01-PLAN-01.md — Homepage SSR refactor: page.tsx becomes Server Component, CodePreview client island extracted, JSON-LD injected
 - [x] 01-PLAN-02.md — SEO infrastructure: sitemap.ts, robots.ts, layout.tsx enhanced metadata (OG/Twitter/canonical)
-- [ ] 01-PLAN-03.md — OG image: opengraph-image.tsx with ImageResponse API (1200x630 dark background)
+- [x] 01-PLAN-03.md — OG image: opengraph-image.tsx with ImageResponse API (1200x630 dark background)
 
 
 ## Backlog
@@ -49,3 +49,4 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
+| 1 — Technical SEO Foundation | 3/3 | ✅ Complete | 2026-05-07 |
