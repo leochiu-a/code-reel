@@ -26,16 +26,18 @@ Plans:
 - [x] 01-PLAN-02.md — SEO infrastructure: sitemap.ts, robots.ts, layout.tsx enhanced metadata (OG/Twitter/canonical)
 - [x] 01-PLAN-03.md — OG image: opengraph-image.tsx with ImageResponse API (1200x630 dark background)
 
-
-## Backlog
-
-### Phase 999.2: /code-screenshot Landing Page (BACKLOG)
+### Phase 2: /code-screenshot Landing Page
 
 **Goal:** 建立針對 "code screenshot" / "code image" 關鍵字的 SEO landing page。
-**Plans:** 0 plans
+**Status:** 📋 Planned
+**Depends on:** Phase 1
+**Plans:** 0 plans (TBD — run /gsd-spec-phase 2 to start)
 
 Plans:
-- [ ] TBD (promote with /gsd:review-backlog when ready)
+- [ ] TBD
+
+
+## Backlog
 
 ### Phase 999.3: /code-animation Landing Page (BACKLOG)
 
@@ -50,3 +52,4 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1 — Technical SEO Foundation | 3/3 | ✅ Complete | 2026-05-07 |
+| 2 — /code-screenshot Landing Page | 0/0 | 📋 Planned | — |
