@@ -19,6 +19,13 @@ import CodeTextarea from "./CodeTextarea";
 
 const firaCode = Fira_Code();
 
+/**
+ * A bar with `from === to` stays put. Preview needs those: the steady-state
+ * bars only render while editing, so a line with no move / fade entry has
+ * nothing drawn for it at all.
+ */
+type HighlightMoveTarget = { id: number; from: number; to: number };
+
 interface CodeEditorProps {
   code: string;
   onCodeChange?: (code: string) => void;
@@ -57,12 +64,13 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   const [dynamicEditorHeight, setDynamicEditorHeight] = useState(180);
 
   const [highlightCycle, setHighlightCycle] = useState(0);
-  const [moveTargets, setMoveTargets] = useState<{ id: number; from: number; to: number }[]>([]);
+  const [moveTargets, setMoveTargets] = useState<HighlightMoveTarget[]>([]);
   const [fadeInLines, setFadeInLines] = useState<number[]>([]);
   const [fadeOutLines, setFadeOutLines] = useState<number[]>([]);
   const [moveActive, setMoveActive] = useState(false);
   const moveFrameRef = useRef<number | null>(null);
   const prevHighlightLinesRef = useRef<number[]>([]);
+  const wasPreviewingRef = useRef(false);
 
   const themeConfig = THEMES[settings.theme];
   const shikiTheme = resolveShikiThemeName(themeConfig);
@@ -158,12 +166,31 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   }, [code, settings.fontSize, settings.showLineNumbers, containerHeight]);
 
   useEffect(() => {
+    const enteringPreview = showPreview && !wasPreviewingRef.current;
+    wasPreviewingRef.current = showPreview;
+
     if (!showPreview) {
       prevHighlightLinesRef.current = [];
       setMoveTargets((prev) => (prev.length === 0 ? prev : []));
       setFadeInLines((prev) => (prev.length === 0 ? prev : []));
       setFadeOutLines((prev) => (prev.length === 0 ? prev : []));
       setMoveActive((prev) => (prev ? false : prev));
+      return;
+    }
+
+    if (enteringPreview) {
+      // Playback positions the reel at its first step; it does not animate into
+      // it. The editor may have been sitting on any step, so treat whatever the
+      // first step highlights as already in place: bars that carry over must not
+      // fade back in from zero, and bars on other lines must not slide in from
+      // the step that happened to be open.
+      prevHighlightLinesRef.current = highlightLineNumbers;
+      setMoveTargets(
+        highlightLineNumbers.map((line, index) => ({ id: index, from: line, to: line })),
+      );
+      setFadeInLines([]);
+      setFadeOutLines([]);
+      setMoveActive(false);
       return;
     }
 
@@ -188,18 +215,20 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
     const nextLen = nextLines.length;
     const commonLen = Math.min(prevLen, nextLen);
 
-    const moveTargets = Array.from({ length: commonLen }, (_, index) => ({
-      id: index,
-      from: prevLines[index],
-      to: nextLines[index],
-    })).filter((target) => target.from !== target.to);
+    // from === to kept deliberately: dropping those left a highlight that does
+    // not change line between two steps with no element at all, so it blinked
+    // out for the whole of the second step.
+    const nextMoveTargets: HighlightMoveTarget[] = Array.from(
+      { length: commonLen },
+      (_, index) => ({ id: index, from: prevLines[index], to: nextLines[index] }),
+    );
 
     const newFadeOut = prevLines.slice(commonLen);
     const newFadeIn = nextLines.slice(commonLen);
 
     setFadeInLines(newFadeIn);
     setFadeOutLines(newFadeOut);
-    setMoveTargets(moveTargets);
+    setMoveTargets(nextMoveTargets);
     setMoveActive(false);
     setHighlightCycle((prev) => prev + 1);
     prevHighlightLinesRef.current = highlightLineNumbers;
@@ -208,7 +237,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
       setDebugSnapshot({
         prev: prevLines,
         next: highlightLineNumbers,
-        move: moveTargets,
+        move: nextMoveTargets,
         fadeIn: newFadeIn,
         fadeOut: newFadeOut,
       });
