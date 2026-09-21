@@ -44,6 +44,31 @@ interface CodeEditorProps {
   debugHighlight?: boolean;
 }
 
+// The capture frame's closest ancestors shrink-wrap to their content, so their
+// width just mirrors the frame's own. Measure the scroll container instead and
+// subtract the padding between it and the frame, leaving room for the handles.
+const RESIZE_HANDLE_GUTTER = 64;
+
+const getAvailableWidth = (wrapper: HTMLElement) => {
+  const container = wrapper.closest("main");
+  if (!container) return Number.POSITIVE_INFINITY;
+
+  let inset = 0;
+  for (let node = wrapper.parentElement; node && node !== container; node = node.parentElement) {
+    const style = getComputedStyle(node);
+    inset +=
+      Number.parseFloat(style.paddingLeft) +
+      Number.parseFloat(style.paddingRight) +
+      Number.parseFloat(style.borderLeftWidth) +
+      Number.parseFloat(style.borderRightWidth);
+  }
+  const containerStyle = getComputedStyle(container);
+  inset +=
+    Number.parseFloat(containerStyle.paddingLeft) + Number.parseFloat(containerStyle.paddingRight);
+
+  return Math.max(0, container.clientWidth - inset - RESIZE_HANDLE_GUTTER);
+};
+
 const CodeEditor: React.FC<CodeEditorProps> = ({
   code,
   onCodeChange,
@@ -61,6 +86,9 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   debugHighlight = false,
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
+  const [resizedWidth, setResizedWidth] = useState<number | null>(null);
+  const [isResizing, setIsResizing] = useState(false);
   const [dynamicEditorHeight, setDynamicEditorHeight] = useState(180);
 
   const [highlightCycle, setHighlightCycle] = useState(0);
@@ -272,6 +300,64 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
     };
   }, [moveTargets, showPreview]);
 
+  const resolvedWidth = resizedWidth ?? containerWidth;
+  const minResizeWidth = typeof minWidth === "number" ? minWidth : Number.parseFloat(minWidth) || 0;
+
+  const resizeBy = useCallback(
+    (delta: number) => {
+      const wrapper = wrapperRef.current;
+      if (!wrapper) return;
+      const max = getAvailableWidth(wrapper);
+      setResizedWidth((previous) => {
+        const current = previous ?? wrapper.getBoundingClientRect().width;
+        return Math.round(Math.min(Math.max(current + delta, minResizeWidth), max));
+      });
+    },
+    [minResizeWidth],
+  );
+
+  const startResize =
+    (edge: "left" | "right") => (event: React.PointerEvent<HTMLButtonElement>) => {
+      const wrapper = wrapperRef.current;
+      if (!wrapper) return;
+      event.preventDefault();
+
+      const startX = event.clientX;
+      const startWidth = wrapper.getBoundingClientRect().width;
+      const max = getAvailableWidth(wrapper);
+      const direction = edge === "right" ? 1 : -1;
+      setIsResizing(true);
+
+      const onMove = (moveEvent: PointerEvent) => {
+        // The frame stays centred, so each edge only travels half of any width
+        // change. Doubling the delta keeps the bar under the pointer.
+        const next = startWidth + direction * (moveEvent.clientX - startX) * 2;
+        setResizedWidth(Math.round(Math.min(Math.max(next, minResizeWidth), max)));
+      };
+      const onEnd = () => {
+        setIsResizing(false);
+        window.removeEventListener("pointermove", onMove);
+        window.removeEventListener("pointerup", onEnd);
+        window.removeEventListener("pointercancel", onEnd);
+      };
+
+      window.addEventListener("pointermove", onMove);
+      window.addEventListener("pointerup", onEnd);
+      window.addEventListener("pointercancel", onEnd);
+    };
+
+  const handleResizeKeyDown = (edge: "left" | "right") => (event: React.KeyboardEvent) => {
+    const step = event.shiftKey ? 64 : 16;
+    const direction = edge === "right" ? 1 : -1;
+    if (event.key === "ArrowRight") {
+      event.preventDefault();
+      resizeBy(direction * step * 2);
+    } else if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      resizeBy(-direction * step * 2);
+    }
+  };
+
   const handleCodeChange = (nextCode: string) => {
     if (onCodeChange) {
       onCodeChange(nextCode);
@@ -293,171 +379,199 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
 
   return (
     <div
-      className={`relative mx-auto flex items-center justify-center overflow-hidden ${
-        resizable ? "resize-x" : ""
-      }`}
-      id="code-capture-area"
+      ref={wrapperRef}
+      className="relative mx-auto"
       style={{
-        borderRadius: `${FRAME_PRESENTATION.editorContainerRadius}px`,
-        minHeight: minCaptureHeight,
-        height: containerHeight ? `${containerHeight}px` : undefined,
-        width: typeof containerWidth === "number" ? `${containerWidth}px` : containerWidth,
+        width: typeof resolvedWidth === "number" ? `${resolvedWidth}px` : resolvedWidth,
         maxWidth: "100%",
         minWidth: typeof minWidth === "number" ? `${minWidth}px` : minWidth,
       }}
     >
-      {debugHighlight && debugSnapshot && (
-        <div className="pointer-events-none absolute top-3 left-3 z-50 rounded-xl bg-black/70 px-3 py-2 text-[11px] text-white/80">
-          <div>prev: {debugSnapshot.prev.join(",") || "-"}</div>
-          <div>next: {debugSnapshot.next.join(",") || "-"}</div>
-          <div>
-            move:{" "}
-            {debugSnapshot.move.length
-              ? debugSnapshot.move.map((item) => `${item.from}->${item.to}`).join(", ")
-              : "-"}
-          </div>
-          <div>fadeIn: {debugSnapshot.fadeIn.join(",") || "-"}</div>
-          <div>fadeOut: {debugSnapshot.fadeOut.join(",") || "-"}</div>
-        </div>
-      )}
-      <Frame
-        frame={themeConfig.frame}
-        borderRadius={borderRadius}
-        padding={settings.padding}
-        background={settings.background}
-        themeBackground={themeBackground}
-        fontSize={settings.fontSize}
-        borderShadow={settings.borderShadow}
-        windowControls={settings.windowControls}
-        windowTitle={languageConfig.label}
+      <div
+        className="relative flex w-full items-center justify-center overflow-hidden"
+        id="code-capture-area"
+        style={{
+          borderRadius: `${FRAME_PRESENTATION.editorContainerRadius}px`,
+          minHeight: minCaptureHeight,
+          height: containerHeight ? `${containerHeight}px` : undefined,
+        }}
       >
-        <div className={FRAME_PRESENTATION.editorShellClassName}>
-          {!showPreview && settings.showLineNumbers && (
-            <div
-              className="absolute top-0 bottom-0 left-0 z-30 w-11 cursor-pointer"
-              onMouseDown={handleLineNumberMouseDown}
-            />
-          )}
-          {!showPreview &&
-            highlightLineNumbers.map((line) => (
+        {debugHighlight && debugSnapshot && (
+          <div className="pointer-events-none absolute top-3 left-3 z-50 rounded-xl bg-black/70 px-3 py-2 text-[11px] text-white/80">
+            <div>prev: {debugSnapshot.prev.join(",") || "-"}</div>
+            <div>next: {debugSnapshot.next.join(",") || "-"}</div>
+            <div>
+              move:{" "}
+              {debugSnapshot.move.length
+                ? debugSnapshot.move.map((item) => `${item.from}->${item.to}`).join(", ")
+                : "-"}
+            </div>
+            <div>fadeIn: {debugSnapshot.fadeIn.join(",") || "-"}</div>
+            <div>fadeOut: {debugSnapshot.fadeOut.join(",") || "-"}</div>
+          </div>
+        )}
+        <Frame
+          frame={themeConfig.frame}
+          borderRadius={borderRadius}
+          padding={settings.padding}
+          background={settings.background}
+          themeBackground={themeBackground}
+          fontSize={settings.fontSize}
+          borderShadow={settings.borderShadow}
+          windowControls={settings.windowControls}
+          windowTitle={languageConfig.label}
+        >
+          <div className={FRAME_PRESENTATION.editorShellClassName}>
+            {!showPreview && settings.showLineNumbers && (
               <div
-                key={`highlight-static-${line}`}
-                className="pointer-events-none absolute right-0 left-0 z-20"
-                style={{
-                  top: `${editorPadding.top + (line - 1) * lineHeight}px`,
-                  height: `${lineHeight}px`,
-                  backgroundColor: "rgba(148, 163, 184, 0.18)",
-                }}
+                className="absolute top-0 bottom-0 left-0 z-30 w-11 cursor-pointer"
+                onMouseDown={handleLineNumberMouseDown}
               />
-            ))}
-          {showPreview &&
-            moveTargets.map((target) => (
-              <div
-                key={`highlight-move-${target.id}-${highlightCycle}`}
-                className="pointer-events-none absolute right-0 left-0 z-20"
-                style={{
-                  top: `${previewOuterPadding + previewPaddingY}px`,
-                  transform: `translate3d(0, ${
-                    ((moveActive ? target.to : target.from) - 1) * lineHeight
-                  }px, 0)`,
-                  height: `${lineHeight}px`,
-                  backgroundColor: debugHighlight
-                    ? "rgba(255, 90, 90, 0.35)"
-                    : "rgba(148, 163, 184, 0.18)",
-                  outline: debugHighlight ? "1px dashed rgba(255, 90, 90, 0.7)" : undefined,
-                  transitionProperty: "transform",
-                  transitionDuration: `${computedHighlightMoveDurationMs}ms`,
-                  transitionTimingFunction: "ease",
-                  transitionDelay: `${highlightDelayMs}ms`,
-                  willChange: "transform",
-                }}
-              />
-            ))}
-          {showPreview &&
-            fadeInLines.map((line) => (
-              <div
-                key={`highlight-fade-in-${line}-${highlightCycle}`}
-                className="pointer-events-none absolute right-0 left-0 z-20"
-                style={{
-                  top: `${previewOuterPadding + previewPaddingY + (line - 1) * lineHeight}px`,
-                  height: `${lineHeight}px`,
-                  backgroundColor: "rgba(148, 163, 184, 0.18)",
-                  animationName: "codesnap-highlight-fade",
-                  animationDuration: "400ms",
-                  animationTimingFunction: "ease",
-                  animationDelay: `${highlightDelayMs}ms`,
-                  animationFillMode: "both",
-                }}
-              />
-            ))}
-          {showPreview &&
-            fadeOutLines.map((line) => (
-              <div
-                key={`highlight-fade-out-${line}-${highlightCycle}`}
-                className="pointer-events-none absolute right-0 left-0 z-20"
-                style={{
-                  top: `${previewOuterPadding + previewPaddingY + (line - 1) * lineHeight}px`,
-                  height: `${lineHeight}px`,
-                  backgroundColor: "rgba(148, 163, 184, 0.18)",
-                  animationName: "codesnap-highlight-fade-out",
-                  animationDuration: "400ms",
-                  animationTimingFunction: "ease",
-                  animationDelay: `${highlightDelayMs}ms`,
-                  animationFillMode: "both",
-                }}
-              />
-            ))}
+            )}
+            {!showPreview &&
+              highlightLineNumbers.map((line) => (
+                <div
+                  key={`highlight-static-${line}`}
+                  className="pointer-events-none absolute right-0 left-0 z-20"
+                  style={{
+                    top: `${editorPadding.top + (line - 1) * lineHeight}px`,
+                    height: `${lineHeight}px`,
+                    backgroundColor: "rgba(148, 163, 184, 0.18)",
+                  }}
+                />
+              ))}
+            {showPreview &&
+              moveTargets.map((target) => (
+                <div
+                  key={`highlight-move-${target.id}-${highlightCycle}`}
+                  className="pointer-events-none absolute right-0 left-0 z-20"
+                  style={{
+                    top: `${previewOuterPadding + previewPaddingY}px`,
+                    transform: `translate3d(0, ${
+                      ((moveActive ? target.to : target.from) - 1) * lineHeight
+                    }px, 0)`,
+                    height: `${lineHeight}px`,
+                    backgroundColor: debugHighlight
+                      ? "rgba(255, 90, 90, 0.35)"
+                      : "rgba(148, 163, 184, 0.18)",
+                    outline: debugHighlight ? "1px dashed rgba(255, 90, 90, 0.7)" : undefined,
+                    transitionProperty: "transform",
+                    transitionDuration: `${computedHighlightMoveDurationMs}ms`,
+                    transitionTimingFunction: "ease",
+                    transitionDelay: `${highlightDelayMs}ms`,
+                    willChange: "transform",
+                  }}
+                />
+              ))}
+            {showPreview &&
+              fadeInLines.map((line) => (
+                <div
+                  key={`highlight-fade-in-${line}-${highlightCycle}`}
+                  className="pointer-events-none absolute right-0 left-0 z-20"
+                  style={{
+                    top: `${previewOuterPadding + previewPaddingY + (line - 1) * lineHeight}px`,
+                    height: `${lineHeight}px`,
+                    backgroundColor: "rgba(148, 163, 184, 0.18)",
+                    animationName: "codesnap-highlight-fade",
+                    animationDuration: "400ms",
+                    animationTimingFunction: "ease",
+                    animationDelay: `${highlightDelayMs}ms`,
+                    animationFillMode: "both",
+                  }}
+                />
+              ))}
+            {showPreview &&
+              fadeOutLines.map((line) => (
+                <div
+                  key={`highlight-fade-out-${line}-${highlightCycle}`}
+                  className="pointer-events-none absolute right-0 left-0 z-20"
+                  style={{
+                    top: `${previewOuterPadding + previewPaddingY + (line - 1) * lineHeight}px`,
+                    height: `${lineHeight}px`,
+                    backgroundColor: "rgba(148, 163, 184, 0.18)",
+                    animationName: "codesnap-highlight-fade-out",
+                    animationDuration: "400ms",
+                    animationTimingFunction: "ease",
+                    animationDelay: `${highlightDelayMs}ms`,
+                    animationFillMode: "both",
+                  }}
+                />
+              ))}
 
-          {highlighter && (
-            <div
-              className="relative z-10"
+            {highlighter && (
+              <div
+                className="relative z-10"
+                style={{
+                  fontSize: settings.fontSize,
+                  lineHeight: `${lineHeight}px`,
+                  padding: `${editorPadding.top}px ${editorPadding.right}px ${editorPadding.bottom}px ${editorPadding.left}px`,
+                }}
+              >
+                <ShikiMagicMove
+                  className={firaCode.className}
+                  key={`${shikiTheme}-${displayedLanguage}`}
+                  highlighter={highlighter}
+                  lang={displayedLanguage}
+                  theme={shikiTheme}
+                  code={displayedCode}
+                  options={{
+                    // duration: 0 means no animation; when the user updates the code snippet,
+                    // no animation should be shown. Animation should only play when the play button is clicked.
+                    duration: showPreview ? MAGIC_MOVE_DURATION_MS : 0,
+                    stagger: 0.2,
+                    lineNumbers: settings.showLineNumbers,
+                    delayMove: MAGIC_MOVE_DELAY_MOVE_S,
+                  }}
+                />
+              </div>
+            )}
+
+            <CodeTextarea
+              ref={textareaRefCallback}
+              value={code}
+              onValueChange={handleCodeChange}
+              showPreview={showPreview}
+              className={`codesnap-code-textarea absolute inset-0 z-20 m-0 resize-none border-none bg-transparent ${firaCode.className}`}
               style={{
+                height: editorHeight,
+                padding: `${editorPadding.top}px ${editorPadding.right}px ${editorPadding.bottom}px ${
+                  editorPadding.left + lineNumberGutterWidth
+                }px`,
                 fontSize: settings.fontSize,
                 lineHeight: `${lineHeight}px`,
-                padding: `${editorPadding.top}px ${editorPadding.right}px ${editorPadding.bottom}px ${editorPadding.left}px`,
+                color: "transparent",
+                WebkitTextFillColor: "transparent",
+                caretColor: themeForeground,
+                outline: "none",
+                pointerEvents: showPreview ? "none" : "auto",
               }}
-            >
-              <ShikiMagicMove
-                className={firaCode.className}
-                key={`${shikiTheme}-${displayedLanguage}`}
-                highlighter={highlighter}
-                lang={displayedLanguage}
-                theme={shikiTheme}
-                code={displayedCode}
-                options={{
-                  // duration: 0 means no animation; when the user updates the code snippet,
-                  // no animation should be shown. Animation should only play when the play button is clicked.
-                  duration: showPreview ? MAGIC_MOVE_DURATION_MS : 0,
-                  stagger: 0.2,
-                  lineNumbers: settings.showLineNumbers,
-                  delayMove: MAGIC_MOVE_DELAY_MOVE_S,
-                }}
-              />
-            </div>
-          )}
+            />
+          </div>
+        </Frame>
+      </div>
 
-          <CodeTextarea
-            ref={textareaRefCallback}
-            value={code}
-            onValueChange={handleCodeChange}
-            showPreview={showPreview}
-            className={`codesnap-code-textarea absolute inset-0 z-20 m-0 resize-none border-none bg-transparent ${firaCode.className}`}
-            style={{
-              height: editorHeight,
-              padding: `${editorPadding.top}px ${editorPadding.right}px ${editorPadding.bottom}px ${
-                editorPadding.left + lineNumberGutterWidth
-              }px`,
-              fontSize: settings.fontSize,
-              lineHeight: `${lineHeight}px`,
-              color: "transparent",
-              WebkitTextFillColor: "transparent",
-              caretColor: themeForeground,
-              outline: "none",
-              pointerEvents: showPreview ? "none" : "auto",
-            }}
-          />
-        </div>
-      </Frame>
+      {resizable && (
+        <>
+          {(["left", "right"] as const).map((edge) => (
+            <button
+              key={edge}
+              type="button"
+              aria-label={`Resize capture area from the ${edge}`}
+              onPointerDown={startResize(edge)}
+              onKeyDown={handleResizeKeyDown(edge)}
+              className={`group absolute top-1/2 z-30 flex h-20 w-6 -translate-y-1/2 cursor-ew-resize touch-none items-center justify-center rounded-full outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70 ${
+                edge === "right" ? "-right-7" : "-left-7"
+              }`}
+            >
+              <span
+                className={`h-14 w-1.5 rounded-full transition-colors ${
+                  isResizing ? "bg-emerald-400" : "bg-white/25 group-hover:bg-white/60"
+                }`}
+              />
+            </button>
+          ))}
+        </>
+      )}
     </div>
   );
 };
