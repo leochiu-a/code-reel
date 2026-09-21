@@ -15,9 +15,8 @@
     "jsx": "react-jsx",
     "incremental": true,
     "types": ["node"],
-    "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["./src/*"]
     },
     "plugins": [
       {

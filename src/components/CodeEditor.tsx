@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { Highlighter } from "shiki";
-import { ShikiMagicMove } from "shiki-magic-move/react";
+import { ShikiMagicMove } from "@shikijs/magic-move/react";
 import { Fira_Code } from "next/font/google";
 
 import { EditorSettings } from "../types";

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Github } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 import SparklesIcon from "@/components/ui/sparkles-icon";
 import GearIcon from "@/components/ui/gear-icon";
@@ -7,6 +7,7 @@ import PlayerIcon from "@/components/ui/player-icon";
 import { Button } from "@/components/animate-ui/components/buttons/button";
 import LogoText from "@/components/LogoText";
 import { CodePreview } from "@/components/CodePreview";
+import GithubIcon from "@/components/ui/github-icon";
 
 const FEATURES = [
   {
@@ -65,7 +66,7 @@ export default function Page() {
                 aria-label="CodeReel on GitHub"
                 className="border border-white/10 bg-white/5 text-white/80 hover:bg-white/10 hover:text-white"
               >
-                <Github className="size-4" />
+                <GithubIcon className="size-4" />
                 GitHub
               </a>
             </Button>

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ViewTransition } from "react";
-import "shiki-magic-move/dist/style.css";
+import "@shikijs/magic-move/style.css";
 
 import { Toaster } from "@/components/ui/sonner";
 import { GoogleAnalytics } from "@next/third-parties/google";
