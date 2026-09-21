@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Github } from "lucide-react";
 
 import SparklesIcon from "@/components/ui/sparkles-icon";
 import GearIcon from "@/components/ui/gear-icon";
@@ -57,6 +57,18 @@ export default function Page() {
             <LogoText size="sm" />
           </div>
           <div className="absolute right-5 top-7 hidden items-center gap-3 md:flex">
+            <Button size="sm" variant="ghost" asChild>
+              <a
+                href="https://github.com/leochiu-a/code-reel"
+                target="_blank"
+                rel="noreferrer"
+                aria-label="CodeReel on GitHub"
+                className="border border-white/10 bg-white/5 text-white/80 hover:bg-white/10 hover:text-white"
+              >
+                <Github className="size-4" />
+                GitHub
+              </a>
+            </Button>
             <Button size="sm" asChild>
               <Link href="/app" prefetch>
                 Open editor
