@@ -4,6 +4,15 @@ A browser-only code snippet editor: write your steps, style the frame, play the
 animation, and export images. Everything runs in the browser — there is no
 backend, no API route, and no server-side rendering of user data.
 
+![CodeReel landing page](docs/landing.png)
+
+## The editor
+
+Write each step on the left, pick a theme on the right, then play the sequence
+to see the highlight animate between steps.
+
+![CodeReel editor](docs/editor.png)
+
 ## Run Locally
 
 **Prerequisites:** Node.js, pnpm
