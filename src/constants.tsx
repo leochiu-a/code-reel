@@ -458,11 +458,3 @@ export const DEFAULT_EDITOR_SETTINGS: EditorSettings = {
   borderShadow:
     "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
 };
-
-export const EXPORT_PAGE_PATH = "/?export=1";
-export const EXPORT_VIDEO_FPS = 60;
-export const EXPORT_CAPTURE_QUALITY = 92;
-export const EXPORT_CAPTURE_FORMAT = "png" as const;
-export const EXPORT_DEVICE_SCALE = 2;
-export const EXPORT_VIEWPORT = { width: 1600, height: 900 };
-export const EXPORT_PROCESSING_BUFFER_MS = 2000;

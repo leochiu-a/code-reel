@@ -20,24 +20,14 @@ import { Label } from "@/components/ui/label";
 interface SettingsPanelProps {
   settings: EditorSettings;
   onSettingsChange: (settings: Partial<EditorSettings>) => void;
-  isExportingVideo: boolean;
-  exportProgress: number;
-  exportEtaMs?: number | null;
   copyStatus?: { tone: "success" | "error"; message: string } | null;
-  videoStatus?: { tone: "success" | "error"; message: string } | null;
 }
 
 const SettingsPanel: React.FC<SettingsPanelProps> = ({
   settings,
   onSettingsChange,
-  isExportingVideo,
-  exportProgress,
-  exportEtaMs,
   copyStatus,
-  videoStatus,
 }) => {
-  const etaLabel =
-    typeof exportEtaMs === "number" ? `~${(Math.max(exportEtaMs, 0) / 1000).toFixed(1)}s` : null;
   const paddingOptions = [16, 32, 64, 96];
   const borderShadowOptions = [
     { label: "None", value: "border-none" },
@@ -142,45 +132,15 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
 
       {/* Footer Actions */}
       <div className="mt-auto flex flex-col gap-3 pt-6">
-        {isExportingVideo && (
-          <div className="animate-pulse rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-100">
-            <div className="flex items-center justify-between text-xs text-emerald-200/80">
-              <span>Exporting video...</span>
-              {etaLabel && <span className="font-mono">{etaLabel}</span>}
-            </div>
-            <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-emerald-950/60">
-              <div
-                className="h-full rounded-full bg-emerald-400 transition-[width] duration-300 ease-out"
-                style={{ width: `${Math.round(exportProgress * 100)}%` }}
-              />
-            </div>
-          </div>
-        )}
-
-        {(videoStatus || copyStatus) && (
-          <div className="space-y-2">
-            {videoStatus && (
-              <div
-                className={`rounded-lg border px-3 py-2 text-xs font-medium ${
-                  videoStatus.tone === "success"
-                    ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300"
-                    : "border-rose-500/30 bg-rose-500/10 text-rose-300"
-                }`}
-              >
-                {videoStatus.message}
-              </div>
-            )}
-            {copyStatus && (
-              <div
-                className={`rounded-lg border px-3 py-2 text-xs font-medium ${
-                  copyStatus.tone === "success"
-                    ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300"
-                    : "border-rose-500/30 bg-rose-500/10 text-rose-300"
-                }`}
-              >
-                {copyStatus.message}
-              </div>
-            )}
+        {copyStatus && (
+          <div
+            className={`rounded-lg border px-3 py-2 text-xs font-medium ${
+              copyStatus.tone === "success"
+                ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300"
+                : "border-rose-500/30 bg-rose-500/10 text-rose-300"
+            }`}
+          >
+            {copyStatus.message}
           </div>
         )}
       </div>
