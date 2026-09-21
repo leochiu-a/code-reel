@@ -215,7 +215,10 @@ function Highlight<T extends React.ElementType = "div">({ ref, ...props }: Highl
     setBoundsState((prev) => (prev === null ? prev : null));
   }, []);
 
+  // Vendored animate-ui code; left as upstream wrote it so updates apply
+  // cleanly.
   React.useEffect(() => {
+    // oxlint-disable-next-line react/set-state-in-effect
     if (value !== undefined) setActiveValue(value);
     else if (defaultValue !== undefined) setActiveValue(defaultValue);
   }, [value, defaultValue]);

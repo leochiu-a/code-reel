@@ -5,7 +5,6 @@ interface CommonControlledStateProps<T> {
   defaultValue?: T;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function useControlledState<T, Rest extends any[] = []>(
   props: CommonControlledStateProps<T> & {
     onChange?: (value: T, ...args: Rest) => void;
@@ -13,13 +12,11 @@ export function useControlledState<T, Rest extends any[] = []>(
 ): readonly [T, (next: T, ...args: Rest) => void] {
   const { value, defaultValue, onChange } = props;
 
-  const [state, setInternalState] = React.useState<T>(
-    value !== undefined ? value : (defaultValue as T),
-  );
+  const [internalState, setInternalState] = React.useState<T>(defaultValue as T);
 
-  React.useEffect(() => {
-    if (value !== undefined) setInternalState(value);
-  }, [value]);
+  // Controlled value wins during render; syncing it into state from an effect
+  // would render once with the stale value first.
+  const state = value !== undefined ? value : internalState;
 
   const setState = React.useCallback(
     (next: T, ...args: Rest) => {

@@ -71,6 +71,9 @@ function Slot<T extends HTMLElement = HTMLElement>({ children, ref, ...props }: 
 
   const mergedProps = mergeProps(childProps, props);
 
+  // Vendored animate-ui code; Base is memoized on children.type, which is the
+  // upstream mitigation the rule cannot see.
+  // oxlint-disable-next-line react/static-components
   return <Base {...mergedProps} ref={mergeRefs(childRef as React.Ref<T>, ref)} />;
 }
 

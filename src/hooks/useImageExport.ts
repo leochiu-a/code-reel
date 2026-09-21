@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import { domToJpeg, domToPng, domToWebp } from "modern-screenshot";
 import { toast } from "sonner";
 
@@ -50,11 +50,19 @@ const nextFrame = () =>
 const isClipboardImageSupported = () =>
   typeof window !== "undefined" && "clipboard" in navigator && "ClipboardItem" in window;
 
+// Browser capability, so it never changes while mounted: no subscription, and a
+// server snapshot of false so the markup matches before hydration.
+const subscribeToNothing = () => () => {};
+
 const useImageExport = () => {
   const [isCopying, setIsCopying] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [copyStatus, setCopyStatus] = useState<CopyStatus>(null);
-  const [isCopySupported, setIsCopySupported] = useState(false);
+  const isCopySupported = useSyncExternalStore(
+    subscribeToNothing,
+    isClipboardImageSupported,
+    () => false,
+  );
 
   const onExport = useCallback(async (options: ImageExportOptions = {}) => {
     const node = getCaptureNode();
@@ -130,10 +138,6 @@ const useImageExport = () => {
     }, 2200);
     return () => window.clearTimeout(timer);
   }, [copyStatus]);
-
-  useEffect(() => {
-    setIsCopySupported(isClipboardImageSupported());
-  }, []);
 
   return {
     onExport,

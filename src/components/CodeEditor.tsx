@@ -171,6 +171,10 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
 
     if (!showPreview) {
       prevHighlightLinesRef.current = [];
+      // The highlight animation is a state machine driven by prop changes:
+      // each transition is computed against the previous step, so it cannot be
+      // derived during render.
+      // oxlint-disable-next-line react/set-state-in-effect
       setMoveTargets((prev) => (prev.length === 0 ? prev : []));
       setFadeInLines((prev) => (prev.length === 0 ? prev : []));
       setFadeOutLines((prev) => (prev.length === 0 ? prev : []));
@@ -246,6 +250,9 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
 
   useLayoutEffect(() => {
     if (!showPreview || moveTargets.length === 0) {
+      // Bars must paint at their start position before the next frame flips
+      // them to active; that ordering is the animation.
+      // oxlint-disable-next-line react/set-state-in-effect
       setMoveActive(false);
       return;
     }
