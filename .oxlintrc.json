@@ -1,0 +1,24 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["react", "typescript", "jsx-a11y", "nextjs", "import", "unicorn", "vitest"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn",
+    "perf": "warn"
+  },
+  "env": {
+    "browser": true,
+    "es2024": true
+  },
+  "rules": {
+    // Next.js uses the automatic JSX runtime, so React needs no import.
+    "react/react-in-jsx-scope": "off",
+    // Side-effect imports are how global CSS is loaded.
+    "import/no-unassigned-import": "off",
+    // Not enforced by the eslint-config-next setup this replaced; kept visible
+    // as warnings instead of failing the lint on pre-existing markup.
+    "jsx-a11y/click-events-have-key-events": "warn",
+    "jsx-a11y/no-static-element-interactions": "warn"
+  },
+  "ignorePatterns": [".next", "out", "build", "next-env.d.ts"]
+}

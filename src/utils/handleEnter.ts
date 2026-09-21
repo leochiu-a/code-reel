@@ -17,7 +17,7 @@ export function computeEnterInsert(value: string, selectionStart: number): strin
   const indentMatch = currentLineBeforeCursor.match(/^(\s+)/);
   let indent = indentMatch ? indentMatch[0] : "";
 
-  if (currentLineBeforeCursor.match(/([{\[:>])$/)) {
+  if (currentLineBeforeCursor.match(/([{[:>])$/)) {
     indent += "  ";
   }
 
