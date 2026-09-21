@@ -5,26 +5,15 @@ import { AnimatedIconHandle, AnimatedIconProps } from "./types";
 import { motion, useAnimate } from "motion/react";
 
 const GearIcon = forwardRef<AnimatedIconHandle, AnimatedIconProps>(
-  (
-    { size = 24, color = "currentColor", strokeWidth = 2, className = "" },
-    ref,
-  ) => {
+  ({ size = 24, color = "currentColor", strokeWidth = 2, className = "" }, ref) => {
     const [scope, animate] = useAnimate();
 
     const start = () => {
       animate(".gear-body", { scale: [1, 1.02, 1] }, { duration: 0.6 });
 
-      animate(
-        ".gear-center",
-        { scale: [1, 1.1, 1] },
-        { duration: 0.3, ease: "easeOut" },
-      );
+      animate(".gear-center", { scale: [1, 1.1, 1] }, { duration: 0.3, ease: "easeOut" });
 
-      animate(
-        ".gear-rotator",
-        { rotate: 360 },
-        { duration: 0.9, ease: "easeInOut" },
-      );
+      animate(".gear-rotator", { rotate: 360 }, { duration: 0.9, ease: "easeInOut" });
     };
 
     const stop = () => {

@@ -9,10 +9,7 @@ type LogoTextProps = {
 };
 
 const LogoText = ({ size, className }: LogoTextProps) => (
-  <span
-    className={className}
-    style={{ fontSize: LOGO_SIZES[size].fontSize, fontWeight: 600 }}
-  >
+  <span className={className} style={{ fontSize: LOGO_SIZES[size].fontSize, fontWeight: 600 }}>
     CodeReel
   </span>
 );

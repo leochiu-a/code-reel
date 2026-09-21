@@ -7,7 +7,11 @@ import {
   PopoverContent,
 } from "@/components/animate-ui/components/radix/popover";
 import { Button } from "./ui/button";
-import { computeHighlightRect, HIGHLIGHT_PADDING_PX, type OnboardingRect } from "@/utils/highlightRegion";
+import {
+  computeHighlightRect,
+  HIGHLIGHT_PADDING_PX,
+  type OnboardingRect,
+} from "@/utils/highlightRegion";
 
 type VideoOnboardingProps = {
   open: boolean;

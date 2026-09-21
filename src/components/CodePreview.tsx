@@ -33,8 +33,7 @@ export function CodePreview() {
   );
 
   const highlightDelayMs = useMemo(
-    () =>
-      previewIndex === 0 ? HIGHLIGHT_STEP_DELAY_MS : previewIndex * HIGHLIGHT_STEP_DELAY_MS,
+    () => (previewIndex === 0 ? HIGHLIGHT_STEP_DELAY_MS : previewIndex * HIGHLIGHT_STEP_DELAY_MS),
     [previewIndex],
   );
 

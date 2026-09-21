@@ -3,7 +3,9 @@ import { computeThemePreviewBackground } from "./themePreviewBackground";
 
 describe("computeThemePreviewBackground", () => {
   test("uses mappedBackground when available", () => {
-    expect(computeThemePreviewBackground("gradient-pink", undefined, "#272822")).toBe("gradient-pink");
+    expect(computeThemePreviewBackground("gradient-pink", undefined, "#272822")).toBe(
+      "gradient-pink",
+    );
   });
 
   test("uses themeDefaultBackground when no mappedBackground", () => {

@@ -5,10 +5,7 @@ import type { AnimatedIconHandle, AnimatedIconProps } from "./types";
 import { motion, useAnimate } from "motion/react";
 
 const MessageCircleIcon = forwardRef<AnimatedIconHandle, AnimatedIconProps>(
-  (
-    { size = 24, color = "currentColor", strokeWidth = 2, className = "" },
-    ref,
-  ) => {
+  ({ size = 24, color = "currentColor", strokeWidth = 2, className = "" }, ref) => {
     const [scope, animate] = useAnimate();
 
     const start = async () => {
@@ -21,19 +18,11 @@ const MessageCircleIcon = forwardRef<AnimatedIconHandle, AnimatedIconProps>(
         { duration: 0.6, ease: "easeInOut" },
       );
 
-      animate(
-        ".message-path",
-        { scale: [1, 1.05, 1] },
-        { duration: 0.3, ease: "easeOut" },
-      );
+      animate(".message-path", { scale: [1, 1.05, 1] }, { duration: 0.3, ease: "easeOut" });
     };
 
     const stop = () => {
-      animate(
-        ".message-path",
-        { pathLength: 1, opacity: 1, scale: 1 },
-        { duration: 0.2 },
-      );
+      animate(".message-path", { pathLength: 1, opacity: 1, scale: 1 }, { duration: 0.2 });
     };
 
     useImperativeHandle(ref, () => ({

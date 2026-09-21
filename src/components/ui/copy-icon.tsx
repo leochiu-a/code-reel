@@ -5,10 +5,7 @@ import type { AnimatedIconHandle, AnimatedIconProps } from "./types";
 import { motion, useAnimate } from "motion/react";
 
 const CopyIcon = forwardRef<AnimatedIconHandle, AnimatedIconProps>(
-  (
-    { size = 24, color = "currentColor", strokeWidth = 2, className = "" },
-    ref,
-  ) => {
+  ({ size = 24, color = "currentColor", strokeWidth = 2, className = "" }, ref) => {
     const [scope, animate] = useAnimate();
 
     const start = async () => {
@@ -20,11 +17,7 @@ const CopyIcon = forwardRef<AnimatedIconHandle, AnimatedIconProps>(
     };
 
     const stop = () => {
-      animate(
-        ".front-copy",
-        { x: 0, y: 0 },
-        { duration: 0.2, ease: "easeOut" },
-      );
+      animate(".front-copy", { x: 0, y: 0 }, { duration: 0.2, ease: "easeOut" });
     };
 
     useImperativeHandle(ref, () => {

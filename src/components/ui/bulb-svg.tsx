@@ -3,10 +3,7 @@ import type { AnimatedIconHandle, AnimatedIconProps } from "./types";
 import { motion, useAnimate } from "motion/react";
 
 const BulbSvg = forwardRef<AnimatedIconHandle, AnimatedIconProps>(
-  (
-    { size = 24, color = "currentColor", strokeWidth = 2, className = "" },
-    ref,
-  ) => {
+  ({ size = 24, color = "currentColor", strokeWidth = 2, className = "" }, ref) => {
     const [scope, animate] = useAnimate();
 
     const start = async () => {
@@ -18,27 +15,11 @@ const BulbSvg = forwardRef<AnimatedIconHandle, AnimatedIconProps>(
         animate(".ray-top-right", { opacity: 0 }, { duration: 0.1 }),
       ]);
       await Promise.all([
-        animate(
-          ".ray-left",
-          { opacity: 1 },
-          { duration: 0.4, ease: "easeOut" },
-        ),
+        animate(".ray-left", { opacity: 1 }, { duration: 0.4, ease: "easeOut" }),
         animate(".ray-top", { opacity: 1 }, { duration: 0.4, ease: "easeOut" }),
-        animate(
-          ".ray-right",
-          { opacity: 1 },
-          { duration: 0.4, ease: "easeOut" },
-        ),
-        animate(
-          ".ray-top-left",
-          { opacity: 1 },
-          { duration: 0.4, ease: "easeOut" },
-        ),
-        animate(
-          ".ray-top-right",
-          { opacity: 1 },
-          { duration: 0.4, ease: "easeOut" },
-        ),
+        animate(".ray-right", { opacity: 1 }, { duration: 0.4, ease: "easeOut" }),
+        animate(".ray-top-left", { opacity: 1 }, { duration: 0.4, ease: "easeOut" }),
+        animate(".ray-top-right", { opacity: 1 }, { duration: 0.4, ease: "easeOut" }),
       ]);
     };
 
@@ -66,11 +47,7 @@ const BulbSvg = forwardRef<AnimatedIconHandle, AnimatedIconProps>(
     };
 
     return (
-      <motion.div
-        ref={scope}
-        onHoverStart={handleHoverStart}
-        onHoverEnd={handleHoverEnd}
-      >
+      <motion.div ref={scope} onHoverStart={handleHoverStart} onHoverEnd={handleHoverEnd}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width={size}

@@ -30,8 +30,7 @@ const JSON_LD = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   name: "CodeReel",
-  description:
-    "Animate your code. Share your story. Turn code into polished walkthrough videos.",
+  description: "Animate your code. Share your story. Turn code into polished walkthrough videos.",
   url: "https://codereel.dev",
   applicationCategory: "MultimediaApplication",
   operatingSystem: "Web",

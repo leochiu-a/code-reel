@@ -65,7 +65,13 @@
   height: 1px;
   background: rgba(226, 232, 240, 0.12);
   content: "";
-  mask-image: linear-gradient(to left, transparent, white 40px, white calc(100% - 40px), transparent);
+  mask-image: linear-gradient(
+    to left,
+    transparent,
+    white 40px,
+    white calc(100% - 40px),
+    transparent
+  );
 }
 
 .tailwindGridlinesHorizontal::after {
@@ -83,7 +89,13 @@
   height: calc(100% + 120px);
   background: rgba(226, 232, 240, 0.12);
   content: "";
-  mask-image: linear-gradient(to top, transparent, white 40px, white calc(100% - 40px), transparent);
+  mask-image: linear-gradient(
+    to top,
+    transparent,
+    white 40px,
+    white calc(100% - 40px),
+    transparent
+  );
 }
 
 .tailwindGridlinesVertical::after {
