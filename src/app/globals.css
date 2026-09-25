@@ -295,16 +295,17 @@ body {
     animation: reel-glow-spin 14s linear infinite;
   }
 
+  /* A one-off entrance, not scroll-driven: the preview must sit flat once it
+     settles, or the step-to-step height change reads as a wobble in 3D. The
+     backwards fill releases the transform entirely after the animation. */
+  .reel-tilt {
+    transform-origin: center top;
+    animation: reel-tilt 1.2s cubic-bezier(0.22, 1, 0.36, 1) 300ms backwards;
+  }
+
   /* Scroll-driven effects. Browsers without view timelines keep the static
      layout, which is the correct fallback rather than a hidden one. */
   @supports (animation-timeline: view()) {
-    .reel-tilt {
-      transform-origin: center top;
-      animation: reel-tilt linear both;
-      animation-timeline: view();
-      animation-range: entry 0% cover 40%;
-    }
-
     .reel-reveal {
       animation: reel-reveal linear both;
       animation-timeline: view();
