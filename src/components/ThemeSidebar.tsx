@@ -13,12 +13,21 @@ import type { EditorSettings, Theme } from "../types";
 import CodeEditor from "./CodeEditor";
 
 interface ThemeSidebarProps {
-  settings: EditorSettings;
+  activeTheme: Theme;
+  language: EditorSettings["language"];
   onSettingsChange: (settings: Partial<EditorSettings>) => void;
   highlighter?: Highlighter | null;
 }
 
-const ThemeSidebar: React.FC<ThemeSidebarProps> = ({ settings, onSettingsChange, highlighter }) => {
+// Every theme card renders a full CodeEditor preview, so this only takes the
+// settings the previews depend on and is memoised: unrelated settings changes
+// (shadow, padding, …) would otherwise re-render all of them on each click.
+const ThemeSidebar: React.FC<ThemeSidebarProps> = ({
+  activeTheme,
+  language,
+  onSettingsChange,
+  highlighter,
+}) => {
   const previewCode = `const preview = "Hello";\nconsole.log(preview);`;
   const previewHeight = 140;
   const defaultBorderRadius = 16;
@@ -34,7 +43,7 @@ const ThemeSidebar: React.FC<ThemeSidebarProps> = ({ settings, onSettingsChange,
         const foreground = highlighter ? getThemeForeground(highlighter, shikiTheme) : "#ededed";
         const previewSettings: EditorSettings = {
           theme: key as Theme,
-          language: settings.language,
+          language,
           padding: 20,
           background: computeThemePreviewBackground(
             mappedBackground,
@@ -58,7 +67,7 @@ const ThemeSidebar: React.FC<ThemeSidebarProps> = ({ settings, onSettingsChange,
           previewSettings,
         };
       }),
-    [defaultBorderRadius, highlighter, settings.language],
+    [defaultBorderRadius, highlighter, language],
   );
 
   return (
@@ -69,7 +78,7 @@ const ThemeSidebar: React.FC<ThemeSidebarProps> = ({ settings, onSettingsChange,
       </div>
       <div className="grid gap-3">
         {themeItems.map((theme) => {
-          const isActive = settings.theme === theme.key;
+          const isActive = activeTheme === theme.key;
           return (
             <button
               key={theme.key}
@@ -121,4 +130,4 @@ const ThemeSidebar: React.FC<ThemeSidebarProps> = ({ settings, onSettingsChange,
   );
 };
 
-export default ThemeSidebar;
+export default React.memo(ThemeSidebar);

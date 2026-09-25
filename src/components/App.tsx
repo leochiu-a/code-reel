@@ -90,7 +90,7 @@ const App: React.FC = () => {
   const maxCaptureHeight =
     settings.padding * 2 + chromeHeight + editorVerticalPadding + maxLineCount * lineHeight;
 
-  const handleSettingsChange = (newSettings: Partial<EditorSettings>) => {
+  const handleSettingsChange = useCallback((newSettings: Partial<EditorSettings>) => {
     setSettings((prev) => ({
       ...prev,
       ...newSettings,
@@ -98,7 +98,7 @@ const App: React.FC = () => {
       fontSize: DEFAULT_EDITOR_SETTINGS.fontSize,
       borderRadius: DEFAULT_BORDER_RADIUS,
     }));
-  };
+  }, []);
 
   const shouldShowPreview = Boolean(highlighter) && isPlaying;
 
@@ -237,7 +237,8 @@ const App: React.FC = () => {
         </main>
 
         <ThemeSidebar
-          settings={settings}
+          activeTheme={settings.theme}
+          language={settings.language}
           onSettingsChange={handleSettingsChange}
           highlighter={highlighter}
         />
