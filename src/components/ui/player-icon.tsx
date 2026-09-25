@@ -45,7 +45,7 @@ const PlayerIcon = forwardRef<AnimatedIconHandle, AnimatedIconProps>(
         onTap={start}
         onHoverStart={start}
         onHoverEnd={stop}
-        className={`inline-flex cursor-pointer ${className}`}
+        className={`inline-flex ${className}`}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

@@ -49,7 +49,7 @@ const GearIcon = forwardRef<AnimatedIconHandle, AnimatedIconProps>(
         strokeWidth={strokeWidth}
         strokeLinecap="square"
         strokeMiterlimit="10"
-        className={`cursor-pointer ${className}`}
+        className={className}
         style={{ overflow: "visible" }}
       >
         {/* Rotating group */}
