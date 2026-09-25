@@ -514,12 +514,12 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
                   lang={displayedLanguage}
                   theme={shikiTheme}
                   code={displayedCode}
+                  lineNumbers={settings.showLineNumbers}
                   options={{
                     // duration: 0 means no animation; when the user updates the code snippet,
                     // no animation should be shown. Animation should only play when the play button is clicked.
                     duration: showPreview ? MAGIC_MOVE_DURATION_MS : 0,
                     stagger: 0.2,
-                    lineNumbers: settings.showLineNumbers,
                     delayMove: MAGIC_MOVE_DELAY_MOVE_S,
                   }}
                 />
