@@ -1,0 +1,24 @@
+{
+  "name": "codereel-showreel",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "prepare-assets": "node --experimental-strip-types scripts/tokens.ts && node --experimental-strip-types scripts/score.ts",
+    "studio": "pnpm prepare-assets && remotion studio src/index.tsx",
+    "render": "pnpm prepare-assets && remotion render src/index.tsx Showreel out/codereel-showreel.mp4 --crf=14",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.528",
+    "@remotion/google-fonts": "4.0.528",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "remotion": "4.0.528",
+    "shiki": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.2",
+    "@types/react": "19.3.0",
+    "typescript": "~7.0.2"
+  }
+}
