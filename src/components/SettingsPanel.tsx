@@ -43,7 +43,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
   ];
 
   return (
-    <aside className="flex h-full w-72 shrink-0 flex-col gap-6 overflow-y-auto border-l border-white/5 bg-[#212121] p-5">
+    <aside className="flex h-full w-72 shrink-0 flex-col gap-6 overflow-y-auto bg-[#212121] p-5">
       <div className="space-y-6">
         <div className="grid gap-2">
           <Label className="text-xs font-medium text-white/90">THEME</Label>
