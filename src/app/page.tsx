@@ -231,7 +231,7 @@ export default function Page() {
       {/* Footer */}
       <footer className="mx-auto w-full max-w-6xl px-6 pb-10">
         <div className="flex flex-col items-center justify-center gap-4 border-t border-white/10 pt-6 text-center text-xs text-white/50">
-          <span>© 2025 CodeReel. All rights reserved.</span>
+          <span>© {new Date().getFullYear()} CodeReel. All rights reserved.</span>
         </div>
       </footer>
     </main>
