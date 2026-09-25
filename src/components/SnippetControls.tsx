@@ -12,6 +12,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/animate-ui/components/radix/popover";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 type CodeSnippet = {
   id: string;
@@ -92,16 +93,30 @@ type RemoveButtonProps = {
   onRemoveSnippet: () => void;
 };
 
-const RemoveButton: React.FC<RemoveButtonProps> = ({ snippets, onRemoveSnippet }) => (
-  <button
-    onClick={onRemoveSnippet}
-    disabled={snippets.length === 1}
-    className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-white/10 bg-[#222] text-slate-300 transition-colors hover:bg-white/10 hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-30"
-    title="Remove Step"
-  >
-    <Trash2 className="h-4 w-4" />
-  </button>
-);
+const RemoveButton: React.FC<RemoveButtonProps> = ({ snippets, onRemoveSnippet }) => {
+  const isLastStep = snippets.length === 1;
+  return (
+    <Tooltip>
+      {/* A disabled button fires no pointer events, so the span carries the
+          tooltip and still explains why the last step can't be removed. */}
+      <TooltipTrigger asChild>
+        <span className="inline-flex">
+          <button
+            onClick={onRemoveSnippet}
+            disabled={isLastStep}
+            aria-label="Remove step"
+            className="flex size-8 cursor-pointer items-center justify-center rounded-full border border-white/10 bg-[#222] text-slate-300 transition-colors hover:bg-white/10 hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-30"
+          >
+            <Trash2 className="size-4" />
+          </button>
+        </span>
+      </TooltipTrigger>
+      <TooltipContent side="top" sideOffset={6}>
+        {isLastStep ? "Can't remove the only step" : "Remove step"}
+      </TooltipContent>
+    </Tooltip>
+  );
+};
 
 const ClientOnlyRemoveButton = dynamic(() => Promise.resolve(RemoveButton), {
   ssr: false,
@@ -136,83 +151,103 @@ const SnippetControls: React.FC<SnippetControlsProps> = ({
   isPlaying,
   isPlayDisabled,
 }) => (
-  <section className="mx-auto max-w-fit rounded-2xl border border-white/10 bg-[#1c1c1c] p-2 shadow-[0_18px_40px_-20px_rgba(0,0,0,0.9)]">
-    <div className="flex flex-wrap items-center gap-4">
-      <div className="flex items-center gap-2">
-        <ClientOnlySnippetList
-          snippets={snippets}
-          activeSnippetId={activeSnippetId}
-          onSelectSnippet={onSelectSnippet}
-          onReorderSnippet={onReorderSnippet}
-        />
-        <button
-          onClick={onAddSnippet}
-          className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-white/10 bg-[#222] text-slate-300 transition-colors hover:bg-white/10 hover:text-white"
-          title="Add Step"
-        >
-          <Plus className="h-5 w-5" />
-        </button>
-      </div>
+  <TooltipProvider delayDuration={300}>
+    <section className="mx-auto max-w-fit rounded-2xl border border-white/10 bg-[#1c1c1c] p-2 shadow-[0_18px_40px_-20px_rgba(0,0,0,0.9)]">
+      <div className="flex flex-wrap items-center gap-4">
+        <div className="flex items-center gap-2">
+          <ClientOnlySnippetList
+            snippets={snippets}
+            activeSnippetId={activeSnippetId}
+            onSelectSnippet={onSelectSnippet}
+            onReorderSnippet={onReorderSnippet}
+          />
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={onAddSnippet}
+                aria-label="Add step"
+                className="flex size-8 cursor-pointer items-center justify-center rounded-full border border-white/10 bg-[#222] text-slate-300 transition-colors hover:bg-white/10 hover:text-white"
+              >
+                <Plus className="size-5" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="top" sideOffset={6}>
+              Add step
+            </TooltipContent>
+          </Tooltip>
+        </div>
 
-      <div className="h-6 w-px bg-white/10" />
+        <div className="h-6 w-px bg-white/10" />
 
-      <div className="flex items-center gap-2">
-        <ClientOnlyRemoveButton snippets={snippets} onRemoveSnippet={onRemoveSnippet} />
+        <div className="flex items-center gap-2">
+          <ClientOnlyRemoveButton snippets={snippets} onRemoveSnippet={onRemoveSnippet} />
 
-        <Popover open={isResetOpen} onOpenChange={setIsResetOpen}>
-          <PopoverTrigger asChild>
-            <button className="flex h-8 cursor-pointer items-center gap-1.5 rounded-full border border-white/10 bg-[#222] px-3 text-xs font-medium text-slate-300 transition-colors hover:bg-white/10 hover:text-white">
-              Reset
-            </button>
-          </PopoverTrigger>
-          <PopoverContent
-            align="end"
-            side="top"
-            sideOffset={8}
-            className="w-56 rounded-xl border border-white/10 bg-[#1b1b1b] p-4 shadow-2xl"
+          <Popover open={isResetOpen} onOpenChange={setIsResetOpen}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <PopoverTrigger asChild>
+                  <button className="flex h-8 cursor-pointer items-center gap-1.5 rounded-full border border-white/10 bg-[#222] px-3 text-xs font-medium text-slate-300 transition-colors hover:bg-white/10 hover:text-white">
+                    Reset
+                  </button>
+                </PopoverTrigger>
+              </TooltipTrigger>
+              <TooltipContent side="top" sideOffset={6}>
+                Reset all steps
+              </TooltipContent>
+            </Tooltip>
+            <PopoverContent
+              align="end"
+              side="top"
+              sideOffset={8}
+              // Returning focus to the trigger would reopen its tooltip.
+              onCloseAutoFocus={(event) => event.preventDefault()}
+              className="w-56 rounded-xl border border-white/10 bg-[#1b1b1b] p-4 shadow-2xl"
+            >
+              <p className="mb-4 text-sm text-slate-300">
+                Are you sure you want to reset all steps?
+              </p>
+              <div className="flex items-center justify-end gap-2">
+                <button
+                  onClick={() => setIsResetOpen(false)}
+                  className="cursor-pointer rounded-lg px-3 py-1.5 text-xs font-medium text-slate-400 transition-colors hover:text-white"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => {
+                    onResetConfirm();
+                    setIsResetOpen(false);
+                  }}
+                  className="cursor-pointer rounded-lg bg-rose-500/90 px-3 py-1.5 text-xs font-medium text-white shadow-sm transition-colors hover:bg-rose-500"
+                >
+                  Reset All
+                </button>
+              </div>
+            </PopoverContent>
+          </Popover>
+
+          <button
+            data-testid="play-animation"
+            onClick={onPlay}
+            disabled={isPlayDisabled}
+            className="flex h-8 cursor-pointer items-center gap-1.5 rounded-full bg-emerald-500 px-4 text-xs font-bold text-white shadow-lg shadow-emerald-900/30 transition-all hover:bg-emerald-400 hover:shadow-emerald-900/45 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none"
           >
-            <p className="mb-4 text-sm text-slate-300">Are you sure you want to reset all steps?</p>
-            <div className="flex items-center justify-end gap-2">
-              <button
-                onClick={() => setIsResetOpen(false)}
-                className="cursor-pointer rounded-lg px-3 py-1.5 text-xs font-medium text-slate-400 transition-colors hover:text-white"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => {
-                  onResetConfirm();
-                  setIsResetOpen(false);
-                }}
-                className="cursor-pointer rounded-lg bg-rose-500/90 px-3 py-1.5 text-xs font-medium text-white shadow-sm transition-colors hover:bg-rose-500"
-              >
-                Reset All
-              </button>
-            </div>
-          </PopoverContent>
-        </Popover>
-
-        <button
-          data-testid="play-animation"
-          onClick={onPlay}
-          disabled={isPlayDisabled}
-          className="flex h-8 cursor-pointer items-center gap-1.5 rounded-full bg-emerald-500 px-4 text-xs font-bold text-white shadow-lg shadow-emerald-900/30 transition-all hover:bg-emerald-400 hover:shadow-emerald-900/45 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none"
-        >
-          {isPlaying ? (
-            <>
-              <span className="h-2 w-2 animate-pulse rounded-full bg-white" />
-              Playing...
-            </>
-          ) : (
-            <>
-              <Play className="h-3 w-3" />
-              Play
-            </>
-          )}
-        </button>
+            {isPlaying ? (
+              <>
+                <span className="h-2 w-2 animate-pulse rounded-full bg-white" />
+                Playing...
+              </>
+            ) : (
+              <>
+                <Play className="h-3 w-3" />
+                Play
+              </>
+            )}
+          </button>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
+  </TooltipProvider>
 );
 
 export default SnippetControls;
