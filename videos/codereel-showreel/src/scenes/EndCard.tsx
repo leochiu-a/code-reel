@@ -42,7 +42,7 @@ export const EndCard = () => {
   const lock = tw(f, T.word - 2, T.word + 22, 0, 1, ease.out);
   const s = shake(f, 0, 18, 18);
   const sweep = tw(f, T.url + 6, T.url + 36, -30, 130, ease.inOut);
-  const fadeOut = 1 - tw(f, 112, 120);
+  const fadeOut = 1 - tw(f, 228, 240);
 
   return (
     <AbsoluteFill style={{ background: "#050505", overflow: "hidden", opacity: fadeOut }}>

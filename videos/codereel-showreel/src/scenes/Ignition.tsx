@@ -67,7 +67,7 @@ export const Ignition = () => {
   const draw = tw(f, T.draw, T.triangle + 4, 0, 1, ease.inOut);
   const pop = spring({ frame: f - T.triangle, fps, config: { damping: 9, stiffness: 160 } });
   // Punch into the play triangle: its white fills the frame for the match cut.
-  const zoom = tw(f, T.zoom, 90, 0, 1, ease.in);
+  const zoom = tw(f, T.zoom, 120, 0, 1, ease.in);
   const scale =
     1 +
     zoom * 70 +

@@ -3,11 +3,12 @@ import { DURATION, FPS, SCENES } from "../timeline";
 import { MONO } from "../lib";
 
 const LABELS: [number, string][] = [
-  [SCENES.ignition.from, "01 / 05  IGNITION"],
-  [SCENES.kinetic.from, "02 / 05  TYPE"],
-  [SCENES.product.from, "03 / 05  PRODUCT"],
-  [SCENES.themes.from, "04 / 05  THEMES"],
-  [SCENES.end.from, "05 / 05  CODEREEL"],
+  [SCENES.ignition.from, "01 / 06  IGNITION"],
+  [SCENES.kinetic.from, "02 / 06  TYPE"],
+  [SCENES.product.from, "03 / 06  MAGIC MOVE"],
+  [SCENES.themes.from, "04 / 06  THEMES"],
+  [SCENES.export.from, "05 / 06  EXPORT"],
+  [SCENES.end.from, "06 / 06  CODEREEL"],
 ];
 
 const tc = (f: number) => {

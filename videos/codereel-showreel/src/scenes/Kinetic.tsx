@@ -112,11 +112,12 @@ export const Kinetic = () => {
     { x: 0, y: 0 },
   );
   // Lines stack and climb as each new line lands.
-  const climb = tw(f, w3, w3 + 10, 0, 1) * 150 + tw(f, w5, w5 + 12, 0, 1) * 120;
-  const slice = tw(f, T.slice, T.iris + 6, 0, 1, ease.in);
-  const iris = tw(f, T.iris, T.iris + 18, 0, 1, ease.inOut);
-  const caret = Math.floor(f / 8) % 2 === 0;
-  const strips = 7;
+  const climb = tw(f, w3, w3 + 10, 0, 1) * 130 + tw(f, w5, w5 + 12, 0, 1) * 110;
+  const iris = tw(f, T.iris, T.iris + 20, 0, 1, ease.inOut);
+  const caret = Math.floor(f / 15) % 2 === 0;
+  // Holds keep breathing: a slow push-in instead of a frozen frame.
+  const push = 1 + tw(f, w5, T.iris + 20, 0, 0.06, (t) => t);
+  const introPush = 1.04 - tw(f, T.iris, 330, 0, 0.04, (t) => t);
 
   const type = (
     <div
@@ -124,7 +125,7 @@ export const Kinetic = () => {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        transform: `translate(${hit.x}px, ${hit.y - climb + 120}px)`,
+        transform: `translate(${hit.x}px, ${hit.y - climb + 170}px)`,
         color: INK,
         lineHeight: 0.86,
       }}
@@ -132,7 +133,7 @@ export const Kinetic = () => {
       <Slam
         f={f}
         at={w1}
-        style={{ fontFamily: SANS, fontWeight: 900, fontSize: 230, letterSpacing: "-0.05em" }}
+        style={{ fontFamily: SANS, fontWeight: 900, fontSize: 205, letterSpacing: "-0.05em" }}
       >
         WRITE
       </Slam>
@@ -142,7 +143,7 @@ export const Kinetic = () => {
         style={{
           fontFamily: MONO,
           fontWeight: 500,
-          fontSize: 190,
+          fontSize: 170,
           letterSpacing: "-0.04em",
           display: "flex",
           alignItems: "center",
@@ -154,7 +155,7 @@ export const Kinetic = () => {
           style={{
             display: "inline-block",
             width: 26,
-            height: 170,
+            height: 150,
             marginLeft: 16,
             background: caret ? INK : "transparent",
           }}
@@ -167,7 +168,7 @@ export const Kinetic = () => {
           alignItems: "baseline",
           fontFamily: SANS,
           fontWeight: 900,
-          fontSize: 230,
+          fontSize: 205,
           letterSpacing: "-0.05em",
         }}
       >
@@ -184,7 +185,7 @@ export const Kinetic = () => {
             position: "relative",
             fontFamily: SERIF,
             fontStyle: "italic",
-            fontSize: 330,
+            fontSize: 300,
             letterSpacing: "-0.02em",
             marginTop: -20,
           }}
@@ -226,24 +227,11 @@ export const Kinetic = () => {
           opacity: tw(f, 0, 20),
         }}
       />
-      {/* Sliced exit: horizontal strips shear apart before the iris. */}
-      {Array.from({ length: strips }, (_, i) => {
-        const dir = i % 2 ? 1 : -1;
-        const top = (i / strips) * 100;
-        return (
-          <AbsoluteFill
-            key={i}
-            style={{
-              clipPath: `inset(${top}% 0 ${100 - top - 100 / strips}% 0)`,
-              transform: `translateX(${dir * slice * (900 + i * 90)}px)`,
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            {type}
-          </AbsoluteFill>
-        );
-      })}
+      <AbsoluteFill
+        style={{ alignItems: "center", justifyContent: "center", transform: `scale(${push})` }}
+      >
+        {type}
+      </AbsoluteFill>
       {/* Iris into the dark product world. */}
       <AbsoluteFill
         style={{
@@ -253,43 +241,51 @@ export const Kinetic = () => {
           justifyContent: "center",
         }}
       >
-        <div
+        <AbsoluteFill
           style={{
-            fontFamily: MONO,
-            fontSize: 30,
-            color: "rgba(255,255,255,0.55)",
-            letterSpacing: "0.3em",
-            marginBottom: 26,
-            opacity: tw(f, T.meet - 4, T.meet + 4),
+            alignItems: "center",
+            justifyContent: "center",
+            transform: `scale(${introPush})`,
           }}
         >
-          <Decode text="INTRODUCING" f={f} at={T.meet - 4} />
-        </div>
-        <Letters
-          text="CodeReel"
-          f={f}
-          at={T.meet}
-          step={2.2}
-          style={{
-            fontFamily: SANS,
-            fontWeight: 800,
-            fontSize: 210,
-            letterSpacing: "-0.055em",
-            color: "#fff",
-            lineHeight: 1.05,
-          }}
-        />
-        <div
-          style={{
-            fontFamily: SANS,
-            fontSize: 40,
-            color: "rgba(255,255,255,0.7)",
-            marginTop: 26,
-            opacity: tw(f, T.sub, T.sub + 6),
-          }}
-        >
-          <Decode text="Turn code into polished walkthroughs." f={f} at={T.sub} speed={0.45} />
-        </div>
+          <div
+            style={{
+              fontFamily: MONO,
+              fontSize: 30,
+              color: "rgba(255,255,255,0.55)",
+              letterSpacing: "0.3em",
+              marginBottom: 26,
+              opacity: tw(f, T.meet - 4, T.meet + 4),
+            }}
+          >
+            <Decode text="INTRODUCING" f={f} at={T.meet - 4} />
+          </div>
+          <Letters
+            text="CodeReel"
+            f={f}
+            at={T.meet}
+            step={3}
+            style={{
+              fontFamily: SANS,
+              fontWeight: 800,
+              fontSize: 210,
+              letterSpacing: "-0.055em",
+              color: "#fff",
+              lineHeight: 1.05,
+            }}
+          />
+          <div
+            style={{
+              fontFamily: SANS,
+              fontSize: 40,
+              color: "rgba(255,255,255,0.7)",
+              marginTop: 26,
+              opacity: tw(f, T.sub, T.sub + 6),
+            }}
+          >
+            <Decode text="Turn code into polished walkthroughs." f={f} at={T.sub} speed={0.8} />
+          </div>
+        </AbsoluteFill>
       </AbsoluteFill>
     </AbsoluteFill>
   );

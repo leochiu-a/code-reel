@@ -1,13 +1,13 @@
-import { AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
+import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
 import data from "../tokens.json";
-import { ACCENT, MONO, SANS, ease, shake, tw } from "../lib";
+import { ACCENT, SANS, ease, tw } from "../lib";
 import { THEME_CUTS as CUTS, THEMES_T as T } from "../timeline";
 import { StaticCode, type Tok } from "../components/Code";
 import { Caption } from "../components/Caption";
 import { FRAME_W, VercelFrame } from "./Product";
 
 type Theme = { id: string; label: string; fg: string; bg: string; tokens: Tok[] };
-const THEMES = data.themes as Theme[];
+export const THEMES = data.themes as Theme[];
 const M = { size: 44, lh: 74 };
 const W = 1920;
 const H = 1080;
@@ -79,7 +79,15 @@ const Window = ({ theme }: { theme: Theme }) => {
 };
 
 /** A full-bleed theme plate: the theme's backdrop with its window centred. */
-const Plate = ({ theme, dots }: { theme: Theme; dots?: boolean }) => (
+export const Plate = ({
+  theme,
+  dots,
+  shift = 0,
+}: {
+  theme: Theme;
+  dots?: boolean;
+  shift?: number;
+}) => (
   <AbsoluteFill
     style={{ background: OUTER[theme.id], alignItems: "center", justifyContent: "center" }}
   >
@@ -91,9 +99,109 @@ const Plate = ({ theme, dots }: { theme: Theme; dots?: boolean }) => (
         }}
       />
     )}
-    <Window theme={theme} />
+    {/* `shift` makes room for the theme drawer on the right. */}
+    <div style={{ transform: `translateX(${-250 * shift}px) scale(${1 - 0.24 * shift})` }}>
+      <Window theme={theme} />
+    </div>
   </AbsoluteFill>
 );
+
+const ITEM = 96;
+
+/** The editor's theme drawer: a sheet on the right with a sliding selection. */
+const Drawer = ({ f, open }: { f: number; open: number }) => {
+  const sel = CUTS.reduce(
+    (acc, c, i) => (i === 0 ? 0 : acc + tw(f, c, c + 10, 0, 1, ease.inOut)),
+    0,
+  );
+  return (
+    <div
+      style={{
+        position: "absolute",
+        top: 0,
+        right: 0,
+        bottom: 0,
+        width: 460,
+        padding: "150px 28px 0",
+        background: "rgba(20,20,20,0.94)",
+        borderLeft: "1px solid rgba(255,255,255,0.1)",
+        boxShadow: "-40px 0 120px rgba(0,0,0,0.5)",
+        transform: `translateX(${(1 - open) * 520}px)`,
+        fontFamily: SANS,
+      }}
+    >
+      <div
+        style={{
+          fontSize: 18,
+          fontWeight: 600,
+          letterSpacing: "0.14em",
+          color: "rgba(255,255,255,0.5)",
+          marginBottom: 22,
+        }}
+      >
+        THEMES
+      </div>
+      <div style={{ position: "relative" }}>
+        <div
+          style={{
+            position: "absolute",
+            left: 0,
+            right: 0,
+            top: sel * ITEM,
+            height: ITEM - 12,
+            borderRadius: 16,
+            background: "rgba(255,255,255,0.1)",
+            border: "1.5px solid rgba(255,255,255,0.7)",
+          }}
+        />
+        {THEMES.map((t, i) => {
+          const active = Math.abs(sel - i) < 0.5;
+          return (
+            <div
+              key={t.id}
+              style={{
+                position: "relative",
+                height: ITEM - 12,
+                marginBottom: 12,
+                display: "flex",
+                alignItems: "center",
+                gap: 20,
+                padding: "0 18px",
+                color: active ? "#fff" : "rgba(255,255,255,0.55)",
+                fontSize: 28,
+                fontWeight: active ? 600 : 500,
+              }}
+            >
+              <div
+                style={{
+                  width: 60,
+                  height: 60,
+                  borderRadius: 12,
+                  background: OUTER[t.id],
+                  border: "1px solid rgba(255,255,255,0.15)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <div
+                  style={{
+                    width: 34,
+                    height: 22,
+                    borderRadius: 5,
+                    background: t.bg,
+                    border: "1px solid rgba(255,255,255,0.2)",
+                  }}
+                />
+              </div>
+              {t.label}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
 
 // Whip direction per cut: right, up, left, down, and around again.
 const DIRS = [
@@ -117,30 +225,25 @@ const offsetAt = (i: number, f: number) => {
 
 export const Themes = () => {
   const f = useCurrentFrame();
-  const { fps } = useVideoConfig();
 
-  // Deck: every plate becomes a card in a 3D fan, then they stack and flash.
+  const open =
+    tw(f, T.drawer, T.drawer + 24, 0, 1, ease.out) *
+    (1 - tw(f, T.deck - 12, T.deck + 6, 0, 1, ease.in));
+  // Deck: every plate becomes a card in a 3D fan, then they fold into one.
   const deck = tw(f, T.deck, T.deck + 26, 0, 1, ease.inOut);
-  const collapse = tw(f, T.collapse, T.flash, 0, 1, ease.in);
-  const flash = tw(f, T.flash, T.flash + 2) * (1 - tw(f, T.flash + 2, T.flash + 14));
-  const post = f >= T.flash;
-  const orbit = interpolate(f, [T.deck, T.collapse], [-16, 10], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-  const s = shake(f, T.flash, 22, 20);
-
-  const roll = CUTS.reduce(
-    (acc, c, i) => acc + (i === 0 ? 0 : tw(f, c, c + WHIP, 0, 1, ease.inOut)),
-    0,
-  );
-
-  const shot = spring({ frame: f - T.flash - 4, fps, config: { damping: 16, stiffness: 90 } });
+  const collapse = tw(f, T.collapse, 330, 0, 1, ease.inOut);
+  const orbit =
+    interpolate(f, [T.deck, T.collapse], [-16, 10], {
+      extrapolateLeft: "clamp",
+      extrapolateRight: "clamp",
+    }) *
+    (1 - collapse);
+  // The card that survives the fold, and opens the export scene.
+  const hero = THEMES.findIndex((t) => t.id === "dracula");
 
   return (
     <AbsoluteFill style={{ background: "#050505", overflow: "hidden" }}>
-      {!post &&
-        deck < 1 &&
+      {deck < 1 &&
         THEMES.map((theme, i) => {
           if (f < CUTS[i] - 1) return null;
           const o = offsetAt(i, f);
@@ -163,25 +266,31 @@ export const Themes = () => {
                   <feGaussianBlur stdDeviation={`${blurX} ${blurY}`} />
                 </filter>
               </svg>
-              <Plate theme={theme} dots />
+              <Plate theme={theme} dots shift={open} />
             </AbsoluteFill>
           );
         })}
 
-      {/* The fan of every theme, orbiting in 3D. */}
-      {deck > 0 && !post && (
+      {deck > 0 && (
         <AbsoluteFill style={{ alignItems: "center", justifyContent: "center", perspective: 2400 }}>
           <AbsoluteFill
             style={{
               background:
                 "radial-gradient(ellipse at 50% 60%, rgba(71,168,255,0.22), transparent 60%)",
-              opacity: deck,
+              opacity: deck * (1 - collapse),
+            }}
+          />
+          <AbsoluteFill
+            style={{
+              background:
+                "radial-gradient(ellipse at 50% 45%, rgba(255,77,141,0.18), transparent 60%)",
+              opacity: collapse,
             }}
           />
           <div
             style={{
               transformStyle: "preserve-3d",
-              transform: `rotateX(14deg) rotateY(${orbit}deg) translateZ(${collapse * 300}px)`,
+              transform: `rotateX(${14 * (1 - collapse)}deg) rotateY(${orbit}deg)`,
             }}
           >
             {THEMES.map((theme, i) => {
@@ -190,6 +299,7 @@ export const Themes = () => {
                 tw(f, T.deck + Math.abs(c) * 2, T.deck + 30 + Math.abs(c) * 2, 0, 1, (t) => t),
               );
               const spread = d * (1 - collapse);
+              const isHero = i === hero;
               return (
                 <div
                   key={theme.id}
@@ -202,8 +312,10 @@ export const Themes = () => {
                     borderRadius: 40,
                     overflow: "hidden",
                     boxShadow: "0 40px 120px rgba(0,0,0,0.6)",
-                    transform: `translateX(${c * 250 * spread}px) translateZ(${-Math.abs(c) * 160 * spread + i * 2}px) rotateY(${c * -9 * spread}deg) translateY(${Math.abs(c) * 24 * spread}px) scale(${interpolate(d, [0, 1], [0.9, 0.34])})`,
-                    opacity: tw(f, T.deck + Math.abs(c) * 2 - 2, T.deck + Math.abs(c) * 2 + 4),
+                    transform: `translateX(${c * 250 * spread}px) translateZ(${-Math.abs(c) * 160 * spread + (isHero ? 20 * collapse : i * 2)}px) rotateY(${c * -9 * spread}deg) translateY(${Math.abs(c) * 24 * spread}px) scale(${interpolate(d, [0, 1], [0.9, 0.34]) + collapse * 0.1})`,
+                    opacity:
+                      tw(f, T.deck + Math.abs(c) * 2 - 2, T.deck + Math.abs(c) * 2 + 4) *
+                      (isHero ? 1 : 1 - collapse),
                   }}
                 >
                   <Plate theme={theme} />
@@ -214,126 +326,11 @@ export const Themes = () => {
         </AbsoluteFill>
       )}
 
-      {/* Export: the shutter snaps a still, which drops into a thumbnail. */}
-      {post && (
-        <AbsoluteFill
-          style={{
-            alignItems: "center",
-            justifyContent: "center",
-            transform: `translate(${s.x}px, ${s.y}px)`,
-          }}
-        >
-          <AbsoluteFill
-            style={{
-              background:
-                "radial-gradient(ellipse at 50% 45%, rgba(255,77,141,0.18), transparent 60%)",
-            }}
-          />
-          <div
-            style={{
-              width: W,
-              height: H,
-              position: "absolute",
-              borderRadius: 40,
-              overflow: "hidden",
-              transform: `translateY(${-70 * shot}px) scale(${interpolate(shot, [0, 1], [0.5, 0.44])}) rotate(${(1 - shot) * -3}deg)`,
-              boxShadow: "0 60px 160px rgba(0,0,0,0.8)",
-            }}
-          >
-            <Plate theme={THEMES[6]} />
-          </div>
-          <div style={{ position: "absolute", bottom: 190, display: "flex", gap: 22 }}>
-            {["PNG", "JPEG", "WebP"].map((fmt, i) => {
-              const p = spring({
-                frame: f - T.chips - i * 5,
-                fps,
-                config: { damping: 10, stiffness: 170 },
-              });
-              return (
-                <div
-                  key={fmt}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 14,
-                    padding: "16px 30px",
-                    borderRadius: 999,
-                    background: i === 0 ? "#fff" : "#141414",
-                    border: "1px solid #2c2c2c",
-                    color: i === 0 ? "#000" : "#fff",
-                    fontFamily: SANS,
-                    fontWeight: 600,
-                    fontSize: 30,
-                    transform: `translateY(${(1 - p) * 90}px) scale(${0.6 + 0.4 * p})`,
-                    opacity: Math.min(1, p * 2),
-                  }}
-                >
-                  <svg
-                    width="26"
-                    height="26"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M12 3v12m0 0-5-5m5 5 5-5M5 21h14" />
-                  </svg>
-                  .{fmt.toLowerCase()}
-                </div>
-              );
-            })}
-          </div>
-        </AbsoluteFill>
-      )}
-
-      {/* Theme name slot under the window. */}
-      {deck < 1 && !post && (
-        <div
-          style={{
-            position: "absolute",
-            bottom: 150,
-            left: 0,
-            right: 0,
-            height: 44,
-            overflow: "hidden",
-            opacity: 1 - deck,
-          }}
-        >
-          <div style={{ transform: `translateY(${-roll * 44}px)` }}>
-            {THEMES.map((t, i) => (
-              <div
-                key={t.id}
-                style={{
-                  height: 44,
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  gap: 16,
-                  fontFamily: MONO,
-                  fontSize: 24,
-                  color: "#fff",
-                  letterSpacing: "0.08em",
-                  textShadow: "0 2px 12px rgba(0,0,0,0.4)",
-                }}
-              >
-                <span style={{ opacity: 0.6 }}>theme:</span>
-                {t.label.toUpperCase()}
-                <span style={{ opacity: 0.6 }}>{String(i + 1).padStart(2, "0")}/30</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      {open > 0 && <Drawer f={f} open={open} />}
       <Caption
         f={f}
-        cues={[
-          { at: 4, num: "04", text: "30 themes. Make it yours.", color: ACCENT.blue },
-          { at: T.flash + 4, num: "05", text: "Export in one click", color: ACCENT.orange },
-        ]}
+        cues={[{ at: 8, num: "04", text: "30 themes. Make it yours.", color: ACCENT.blue }]}
       />
-      <AbsoluteFill style={{ background: "#fff", opacity: flash, pointerEvents: "none" }} />
     </AbsoluteFill>
   );
 };

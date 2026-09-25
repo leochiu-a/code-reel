@@ -4,6 +4,7 @@ import { Ignition } from "./scenes/Ignition";
 import { Kinetic } from "./scenes/Kinetic";
 import { Product } from "./scenes/Product";
 import { Themes } from "./scenes/Themes";
+import { Export } from "./scenes/Export";
 import { EndCard } from "./scenes/EndCard";
 import { Grain, Hud } from "./components/Overlay";
 
@@ -12,6 +13,7 @@ const SCENE_COMPONENTS = {
   kinetic: Kinetic,
   product: Product,
   themes: Themes,
+  export: Export,
   end: EndCard,
 };
 

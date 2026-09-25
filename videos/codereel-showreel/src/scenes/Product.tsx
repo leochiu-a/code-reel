@@ -1,7 +1,7 @@
 import { AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
 import data from "../tokens.json";
-import { ACCENT, CHAR, MONO, SANS, ease, shake, tw } from "../lib";
-import { PRODUCT as T } from "../timeline";
+import { ACCENT, CHAR, SANS, ease, tw } from "../lib";
+import { PRODUCT as T, SCENES } from "../timeline";
 import { MagicCode, StaticCode, type Tok } from "../components/Code";
 import { Caption } from "../components/Caption";
 
@@ -225,32 +225,31 @@ export const Product = () => {
     f < m0 &&
     (f < T.typeStart + p0.from.length * T.typePerToken + 4 || Math.floor(f / 15) % 2 === 0);
 
-  // Camera: 3D fly-in, slow drift, snap-zoom onto `fps: 60`, whip out.
+  // Camera: 3D fly-in, slow drift, push in on the highlighted line, whip out.
   const fly = spring({
     frame: f - T.flyIn,
     fps,
     config: { damping: 18, stiffness: 70, mass: 1.1 },
   });
   const focus =
-    tw(f, T.focus, T.focus + 16, 0, 1, ease.out) *
-    (1 - tw(f, T.focusOut, T.focusOut + 16, 0, 1, ease.inOut));
-  const exit = tw(f, T.exit, 300, 0, 1, ease.in);
-  const drift = interpolate(f, [0, 300], [-9, 7]);
+    tw(f, T.focus, T.focus + 30, 0, 1, ease.inOut) *
+    (1 - tw(f, T.focusOut, T.focusOut + 30, 0, 1, ease.inOut));
+  const LEN = SCENES.product.duration;
+  const exit = tw(f, T.exit, LEN, 0, 1, ease.in);
+  const drift = interpolate(f, [0, LEN], [-9, 7]);
   const rx = interpolate(fly, [0, 1], [62, 10]) * (1 - focus) + exit * 4;
   const ry = drift * (1 - focus) - exit * 60;
   const rz = interpolate(fly, [0, 1], [-14, 0]);
   const z = interpolate(fly, [0, 1], [-2600, 0]) + focus * 0;
-  const scale = 1 + focus * 0.95 + tw(f, 0, 300, 0, 0.05, (t) => t);
-  // Zoom target: the `{ fps: 60 }` literal (line 2, cols 38–50).
-  const tx = -focus * (44 * CW + PAD - FRAME_W / 2) * scale - exit * 2400;
+  const scale = 1 + focus * 0.3 + tw(f, 0, LEN, 0, 0.06, (t) => t);
+  // Push-in target: the centre of the highlighted line 2 (cols 2–51).
+  const tx = -focus * (26.5 * CW + PAD - FRAME_W / 2) * scale - exit * 2400;
   const ty =
     -focus * (2 * M.lh + M.lh / 2 + PAD - FRAME_H / 2) * scale + interpolate(fly, [0, 1], [500, 0]);
-  const s = shake(f, T.focus, 8, 14);
+  const glow = focus;
 
   // Lines of the stage grid extend outward as the scene opens.
   const grid = tw(f, 4, 60, 0, 1, ease.out);
-  const sixty = spring({ frame: f - T.focus - 4, fps, config: { damping: 8, stiffness: 200 } });
-  const callout = tw(f, T.focus + 6, T.focus + 20) * (1 - tw(f, T.focusOut, T.focusOut + 8));
 
   return (
     <AbsoluteFill style={{ background: "#050505", overflow: "hidden" }}>
@@ -269,14 +268,6 @@ export const Product = () => {
           transform: `translateX(${-exit * 600}px)`,
         }}
       />
-      <Caption
-        f={f}
-        cues={[
-          { at: T.typeStart, num: "01", text: "Write each step", color: ACCENT.green },
-          { at: m0 - 6, num: "02", text: "Hit play. Watch it Magic Move.", color: ACCENT.pink },
-          { at: T.focus - 30, num: "03", text: "Highlight what matters", color: ACCENT.purple },
-        ]}
-      />
       <AbsoluteFill
         style={{
           alignItems: "center",
@@ -287,7 +278,7 @@ export const Product = () => {
       >
         <div
           style={{
-            transform: `translate3d(${tx + s.x}px, ${ty + s.y + 40}px, ${z}px) rotateX(${rx}deg) rotateY(${ry}deg) rotateZ(${rz}deg) scale(${scale})`,
+            transform: `translate3d(${tx}px, ${ty + 40}px, ${z}px) rotateX(${rx}deg) rotateY(${ry}deg) rotateZ(${rz}deg) scale(${scale})`,
             transformStyle: "preserve-3d",
             display: "flex",
             flexDirection: "column",
@@ -310,6 +301,7 @@ export const Product = () => {
                     borderRadius: 10,
                     background: "rgba(255,255,255,0.07)",
                     borderLeft: `4px solid ${ACCENT.pink}`,
+                    boxShadow: `0 0 ${40 * glow}px rgba(255,77,141,${0.35 * glow})`,
                     opacity: barOn,
                   }}
                 />
@@ -326,48 +318,6 @@ export const Product = () => {
                     }}
                   />
                 )}
-                {/* Callout pinned to the `60` literal during the focus zoom. */}
-                <div
-                  style={{ position: "absolute", left: 46 * CW, top: 2 * M.lh, opacity: callout }}
-                >
-                  <div
-                    style={{
-                      position: "absolute",
-                      left: -CW,
-                      top: 6,
-                      width: CW * 2.6,
-                      height: M.lh - 12,
-                      borderRadius: 8,
-                      border: `2px solid ${ACCENT.blue}`,
-                      transform: `scale(${0.6 + 0.4 * sixty})`,
-                      boxShadow: `0 0 24px ${ACCENT.blue}`,
-                    }}
-                  />
-                  <div
-                    style={{
-                      position: "absolute",
-                      left: CW * 0.3,
-                      bottom: M.lh - 6,
-                      width: 2,
-                      height: 70 * callout,
-                      background: ACCENT.blue,
-                    }}
-                  />
-                  <div
-                    style={{
-                      position: "absolute",
-                      left: -CW * 1.5,
-                      bottom: M.lh + 64,
-                      whiteSpace: "nowrap",
-                      fontFamily: MONO,
-                      fontSize: 18,
-                      color: ACCENT.blue,
-                      letterSpacing: "0.12em",
-                    }}
-                  >
-                    BUTTERY 60 FPS
-                  </div>
-                </div>
               </div>
             </VercelFrame>
           </div>
@@ -376,6 +326,19 @@ export const Product = () => {
           </div>
         </div>
       </AbsoluteFill>
+      <Caption
+        f={f}
+        cues={[
+          { at: T.typeStart, num: "01", text: "Write each step", color: ACCENT.green },
+          {
+            at: T.play - 10,
+            num: "02",
+            text: "Hit play. Watch it Magic Move.",
+            color: ACCENT.pink,
+          },
+          { at: m1 + L, num: "03", text: "Highlight what matters", color: ACCENT.purple },
+        ]}
+      />
     </AbsoluteFill>
   );
 };

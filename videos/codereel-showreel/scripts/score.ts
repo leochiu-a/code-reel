@@ -5,6 +5,7 @@ import {
   BEAT,
   DURATION,
   END,
+  EXPORT_T,
   FPS,
   IGNITION,
   KINETIC,
@@ -156,22 +157,31 @@ const whoosh = (a: number, b: number, g = 1, rising = true, pan = 0) => {
   );
 };
 
+// Tone plus noise that both peak on the downbeat, so the hit catches the build
+// instead of the build fading out first. The last 25 ms taper avoids a click.
 const riser = (a: number, b: number, g = 1) => {
   const len = at(b) - at(a);
+  const taper = SR * 0.025;
   let ph = 0;
+  let lp1 = 0;
+  let lp2 = 0;
   add(
     at(a),
     len,
     (_t, i) => {
       const p = i / len;
+      const env = p * p * Math.min(1, (len - i) / taper);
       ph += (2 * Math.PI * (180 + 1400 * p * p)) / SR;
-      return (Math.sin(ph) * 0.4 + Math.sin(ph * 1.5) * 0.2) * p * p;
+      const tone = (Math.sin(ph) * 0.4 + Math.sin(ph * 1.5) * 0.2) * 0.25;
+      const cut = 0.01 + 0.3 * p * p;
+      lp1 += (rnd() - lp1) * cut;
+      lp2 += (lp1 - lp2) * cut;
+      return (tone + (lp1 - lp2) * 2.6) * env;
     },
-    0.25 * g,
+    g,
     0,
     0.5,
   );
-  whoosh(a, b, 0.9 * g, true);
 };
 
 // Detuned saw pad through a one-pole lowpass.
@@ -226,6 +236,7 @@ const hz = (midi: number) => 440 * 2 ** ((midi - 69) / 12);
 const K = SCENES.kinetic.from;
 const P = SCENES.product.from;
 const TH = SCENES.themes.from;
+const EX = SCENES.export.from;
 const E = SCENES.end.from;
 
 // 1. Ignition
@@ -234,23 +245,32 @@ blip(IGNITION.dot, 1760, 0.8);
 whoosh(IGNITION.draw, IGNITION.triangle + 4, 0.5, true, -0.3);
 blip(IGNITION.triangle, 880, 1.1, 0.4);
 boom(IGNITION.burst, 0.45);
-riser(IGNITION.zoom - 10, K, 1.2);
+riser(IGNITION.zoom - 16, K, 1.2);
 
-// 2. Kinetic type — every word is a hit
+// 2. Kinetic type: every word is a hit, then the iris opens on the name
 boom(K, 0.9);
 KINETIC.words.forEach((w, i) => {
   kick(K + w, i === 4 ? 1.2 : 0.8);
   snap(K + w, i === 4 ? 1.4 : 0.9, i % 2 ? 0.3 : -0.3);
 });
-bass(K + KINETIC.words[4], hz(33), 0.9, 1.2);
-for (let i = 0; i < 6; i++) click(K + KINETIC.slice - 8 + i * 2, 1.2, i % 2 ? 0.6 : -0.6);
-whoosh(K + KINETIC.slice, K + KINETIC.iris + 14, 1.2, false);
-for (let i = 0; i < 11; i++) click(K + KINETIC.meet - 4 + i * 1.2, 0.6, 0.4);
-blip(K + KINETIC.meet + 10, 1320, 0.7);
-pad(K + KINETIC.meet, P + 30, [hz(57), hz(64), hz(71)], 0.7, 0.05);
-riser(K + KINETIC.sub, P, 0.7);
+bass(K + KINETIC.words[4], hz(33), 1.4, 1.2);
+whoosh(K + KINETIC.iris - 10, K + KINETIC.iris + 20, 1.1, false);
+for (let i = 0; i < 11; i++) click(K + KINETIC.meet - 4 + i * 1.4, 0.6, 0.4);
+blip(K + KINETIC.meet + 24, 1320, 0.7);
+// Breakdown under the name: quieter than the groove, but it keeps building.
+const breakdown = K + KINETIC.words[4] + BEAT;
+pad(breakdown, P + 12, [hz(45), hz(57), hz(64), hz(69)], 0.9, 0.05);
+for (let f = K + KINETIC.iris; f < P; f += BEAT * 2) {
+  kick(f, 0.45);
+  bass(f, hz(33), 0.9, 0.7);
+}
+riser(K + KINETIC.meet, P, 1.1);
+// Snare roll into the drop, tightening from eighths to thirty-seconds.
+for (let f = P - 60, gap = 15; f < P; f += gap, gap = Math.max(4, gap - 2)) {
+  snap(f, 0.3 + 0.7 * (1 - (P - f) / 60), f % 2 ? 0.3 : -0.3);
+}
 
-// 3–4. Product + themes: the beat drops
+// 3–5. Product, themes and export ride one groove
 boom(P, 1);
 const progression = [45, 45, 41, 43];
 for (let b = 0; P + b * BEAT < E; b++) {
@@ -263,7 +283,7 @@ for (let b = 0; P + b * BEAT < E; b++) {
   bass(f, hz(progression[Math.floor(b / 2) % 4] - 12), 0.4);
   bass(f + BEAT / 2, hz(progression[Math.floor(b / 2) % 4]), 0.2, 0.6);
 }
-pad(P, TH, [hz(57), hz(60), hz(64), hz(69)], 0.8, 0.03);
+pad(P - 18, TH, [hz(45), hz(57), hz(60), hz(64), hz(69)], 1.1, 0.04);
 pad(TH, E, [hz(53), hz(57), hz(60), hz(65)], 0.8, 0.05);
 
 const tokens = 15;
@@ -275,27 +295,41 @@ PRODUCT.moves.forEach((m) => {
   whoosh(P + m - 2, P + m + PRODUCT.moveLength, 0.55, false, 0.2);
   blip(P + m + PRODUCT.moveLength - 6, 1568, 0.35);
 });
-whoosh(P + PRODUCT.focus - 12, P + PRODUCT.focus + 2, 0.9, true);
-snap(P + PRODUCT.focus, 1.2);
-blip(P + PRODUCT.focus + 4, 2093, 0.6, 0.5);
+whoosh(P + PRODUCT.focus - 6, P + PRODUCT.focus + 30, 0.6, true);
+blip(P + PRODUCT.focus + 28, 2093, 0.5, 0.5);
 whoosh(P + PRODUCT.exit - 6, TH + 8, 1.1, true);
 
+click(TH + THEMES_T.drawer + 4, 0.9, 0.6);
 THEME_CUTS.forEach((c, i) => {
   whoosh(TH + c - 5, TH + c + 8, 0.7, false, i % 2 ? 0.5 : -0.5);
   click(TH + c + 4, 0.8, i % 2 ? -0.4 : 0.4);
 });
 whoosh(TH + THEMES_T.deck - 4, TH + THEMES_T.deck + 30, 0.9, false);
-riser(TH + THEMES_T.deck + 10, TH + THEMES_T.flash, 0.9);
-// Shutter: two sharp clicks and a burst.
-click(TH + THEMES_T.flash, 2.2);
-click(TH + THEMES_T.flash + 3, 1.6);
-boom(TH + THEMES_T.flash, 0.6);
-[0, 5, 10].forEach((d, i) => blip(TH + THEMES_T.chips + d, [1318, 1568, 2093][i], 0.6));
-riser(TH + THEMES_T.chips + 10, E, 1.1);
+whoosh(TH + THEMES_T.collapse - 6, EX + 6, 0.8, true);
 
-// 5. End card: final hit and a resolving chord that rings out
+[EXPORT_T.open, EXPORT_T.scale, EXPORT_T.click].forEach((c) => click(EX + c, 1.4, 0.3));
+blip(EX + EXPORT_T.open + 2, 1318, 0.4);
+// Shutter: two sharp clicks and a burst as the image is saved.
+click(EX + EXPORT_T.flash, 2.2);
+click(EX + EXPORT_T.flash + 3, 1.6);
+boom(EX + EXPORT_T.flash, 0.6);
+whoosh(EX + EXPORT_T.lift - 2, EX + EXPORT_T.drop + 4, 0.6, true, 0.2);
+whoosh(EX + EXPORT_T.drop, EX + EXPORT_T.shut + 2, 0.5, false);
+kick(EX + EXPORT_T.shut, 0.5);
+snap(EX + EXPORT_T.shut + 2, 0.6);
+blip(EX + EXPORT_T.shut + 10, 2093, 0.6);
+riser(E - 60, E, 1.1);
+
+// 6. End card: final hit and a resolving chord that rings out
 boom(E, 1.3);
-pad(E, DURATION + 10, [hz(45), hz(57), hz(64), hz(69), hz(71), hz(76)], 1.1, 0.06);
+// The groove walks the logo in for three beats before the chord rings out.
+for (let b = 1; b <= 3; b++) {
+  kick(E + b * BEAT, 0.6);
+  hat(E + b * BEAT + BEAT / 2, 0.8, 0.25);
+  bass(E + b * BEAT, hz(33), 0.4, 0.7);
+}
+pad(E, DURATION + 10, [hz(45), hz(57), hz(64), hz(69), hz(71), hz(76)], 1.4, 0.06);
+pad(E + 3 * BEAT, DURATION + 10, [hz(81), hz(88)], 0.5, 0.08);
 blip(E + END.mark + 8, 880, 0.9, 0.6);
 [0, 2, 4, 6, 8, 10, 12, 14].forEach((d, i) =>
   blip(E + END.word + d, hz([81, 83, 88, 93][i % 4]), 0.25, 0.4),
@@ -334,7 +368,7 @@ const wl = reverb(verbL, 0);
 const wr = reverb(verbR, 23);
 
 // --- Master: soft clip, fade, write 16-bit PCM ------------------------------
-const fadeStart = at(DURATION - 24);
+const fadeStart = at(DURATION - 60);
 const pcm = Buffer.alloc(44 + N * 4);
 let peak = 0;
 for (let i = 0; i < N; i++) {
