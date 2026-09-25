@@ -2,7 +2,6 @@
 
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { Highlighter } from "shiki";
-import { ShikiMagicMove } from "@shikijs/magic-move/react";
 import { Fira_Code } from "next/font/google";
 
 import { EditorSettings } from "../types";
@@ -16,6 +15,7 @@ import {
 import { getThemeBackground, getThemeForeground } from "../services/shiki";
 import Frame, { FRAME_PRESENTATION } from "./Frame";
 import CodeTextarea from "./CodeTextarea";
+import MagicMoveCode from "./MagicMoveCode";
 
 const firaCode = Fira_Code();
 
@@ -507,7 +507,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
                   padding: `${editorPadding.top}px ${editorPadding.right}px ${editorPadding.bottom}px ${editorPadding.left}px`,
                 }}
               >
-                <ShikiMagicMove
+                <MagicMoveCode
                   className={firaCode.className}
                   key={`${shikiTheme}-${displayedLanguage}`}
                   highlighter={highlighter}

@@ -26,6 +26,7 @@
     "@shikijs/magic-move": "^4.4.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "diff-match-patch-es": "^2.0.1",
     "lucide-react": "^1.47.0",
     "modern-screenshot": "^4.7.0",
     "motion": "^13.4.0",

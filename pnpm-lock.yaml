@@ -45,6 +45,9 @@ importers:
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
+      diff-match-patch-es:
+        specifier: ^2.0.1
+        version: 2.0.1
       lucide-react:
         specifier: ^1.47.0
         version: 1.47.0(react@19.3.0)
