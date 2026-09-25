@@ -6,6 +6,7 @@ import { useLocalStorage } from "usehooks-ts";
 import { EditorSettings } from "../types";
 import {
   DEFAULT_EDITOR_SETTINGS,
+  FEEDBACK_URL,
   HIGHLIGHT_STEP_DELAY_MS,
   PLAY_ANIMATION_INTERVAL_MS,
   PREVIEW_STEPS,
@@ -150,7 +151,7 @@ const App: React.FC = () => {
             animatedIcon={<MessageCircleIcon size={14} className="text-slate-200" />}
           >
             <a
-              href="https://forms.gle/KJSCGjiNPxRqjbrg6"
+              href={FEEDBACK_URL}
               target="_blank"
               rel="noreferrer"
               className="h-8 cursor-pointer border border-white/10 bg-white/5 px-3 text-xs text-slate-100 hover:bg-white/10 hover:text-white"

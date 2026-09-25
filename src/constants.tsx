@@ -458,3 +458,6 @@ export const DEFAULT_EDITOR_SETTINGS: EditorSettings = {
   borderShadow:
     "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
 };
+
+export const REPOSITORY_URL = "https://github.com/leochiu-a/code-reel";
+export const FEEDBACK_URL = `${REPOSITORY_URL}/issues/new`;

@@ -5,14 +5,13 @@ import { ArrowRight } from "lucide-react";
 
 import { Button } from "@/components/animate-ui/components/buttons/button";
 import GithubIcon from "@/components/ui/github-icon";
+import { REPOSITORY_URL } from "@/constants";
 
 // These live in a client component on purpose. Button's asChild path hands the
 // child to animate-ui's Slot, which reads children.type during render to build
 // a motion component. A Server Component's children cross the RSC boundary as a
 // lazy reference with no .type yet, so Slot throws. Creating the elements on
 // the client keeps them plain React elements.
-
-const REPOSITORY_URL = "https://github.com/leochiu-a/code-reel";
 
 export const NavActions = () => (
   <div className="absolute top-7 right-5 hidden items-center gap-3 md:flex">
