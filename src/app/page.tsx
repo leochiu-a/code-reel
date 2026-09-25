@@ -110,11 +110,11 @@ export default function Page() {
         </div>
 
         {/* Code preview (client island) */}
-        <div className="mx-auto w-full max-w-6xl px-6 pb-20 [perspective:1600px]">
+        <div className="mx-auto w-full max-w-6xl px-6 pb-20">
           <div className="reel-tilt relative">
             <div
               aria-hidden="true"
-              className="reel-glow absolute -inset-10 -z-10 rounded-[48px] opacity-60 blur-3xl"
+              className="reel-glow pointer-events-none absolute -inset-10 -z-10 rounded-[48px] opacity-60 blur-3xl"
             />
             <CodePreview />
           </div>
@@ -215,7 +215,10 @@ export default function Page() {
       {/* Closing call to action */}
       <section className="mx-auto w-full max-w-6xl px-6 pb-24">
         <div className="reel-reveal relative overflow-hidden rounded-3xl border border-white/10 bg-[#1e1e1e] px-6 py-14 text-center">
-          <div aria-hidden="true" className="reel-glow absolute inset-0 -z-0 opacity-25 blur-3xl" />
+          <div
+            aria-hidden="true"
+            className="reel-glow pointer-events-none absolute inset-0 opacity-25 blur-3xl"
+          />
           <div className="relative flex flex-col items-center gap-5">
             <h2 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
               Your next code walkthrough starts here

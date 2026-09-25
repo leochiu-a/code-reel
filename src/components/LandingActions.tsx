@@ -1,10 +1,12 @@
 "use client";
 
+import { useRef } from "react";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 
 import { Button } from "@/components/animate-ui/components/buttons/button";
+import ArrowRightIcon from "@/components/ui/arrow-right-icon";
 import GithubIcon from "@/components/ui/github-icon";
+import type { AnimatedIconHandle } from "@/components/ui/types";
 import { REPOSITORY_URL } from "@/constants";
 
 // These live in a client component on purpose. Button's asChild path hands the
@@ -35,10 +37,19 @@ export const NavActions = () => (
   </div>
 );
 
-export const HeroCta = () => (
-  <Button size="lg" className="w-full pr-5 sm:w-auto" asChild>
-    <Link href="/app" prefetch>
-      Get started <ArrowRight className="inline-flex size-5" />
-    </Link>
-  </Button>
-);
+export const HeroCta = () => {
+  const arrowRef = useRef<AnimatedIconHandle>(null);
+
+  return (
+    <Button size="lg" className="w-full pr-5 sm:w-auto" asChild>
+      <Link
+        href="/app"
+        prefetch
+        onMouseEnter={() => arrowRef.current?.startAnimation()}
+        onMouseLeave={() => arrowRef.current?.stopAnimation()}
+      >
+        Get started <ArrowRightIcon ref={arrowRef} className="inline-flex size-5" />
+      </Link>
+    </Button>
+  );
+};

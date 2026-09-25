@@ -238,9 +238,12 @@ body {
   }
 }
 
+/* perspective() lives in the transform, not on a wrapper: a perspective
+   property would open a stacking context that paints the preview's glow over
+   the hero CTA. */
 @keyframes reel-tilt {
   from {
-    transform: rotateX(18deg) scale(0.94);
+    transform: perspective(1600px) rotateX(18deg) scale(0.94);
   }
 }
 
