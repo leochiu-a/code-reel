@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import type { Highlighter } from "shiki";
 import { EditorSettings, Language } from "../types";
 import { DEFAULT_EDITOR_SETTINGS, LANGUAGES } from "../constants";
 import {
@@ -16,16 +17,19 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import ThemePicker from "./ThemePicker";
 
 interface SettingsPanelProps {
   settings: EditorSettings;
   onSettingsChange: (settings: Partial<EditorSettings>) => void;
+  highlighter?: Highlighter | null;
   copyStatus?: { tone: "success" | "error"; message: string } | null;
 }
 
 const SettingsPanel: React.FC<SettingsPanelProps> = ({
   settings,
   onSettingsChange,
+  highlighter,
   copyStatus,
 }) => {
   const paddingOptions = [16, 32, 64, 96];
@@ -39,8 +43,18 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
   ];
 
   return (
-    <div className="flex h-full w-60 flex-col gap-6 overflow-y-auto bg-[#212121] p-5 shadow-[0_20px_40px_-20px_rgba(0,0,0,0.9)]">
+    <aside className="flex h-full w-72 shrink-0 flex-col gap-6 overflow-y-auto border-l border-white/5 bg-[#212121] p-5">
       <div className="space-y-6">
+        <div className="grid gap-2">
+          <Label className="text-xs font-medium text-white/90">THEME</Label>
+          <ThemePicker
+            activeTheme={settings.theme}
+            language={settings.language}
+            highlighter={highlighter}
+            onSettingsChange={onSettingsChange}
+          />
+        </div>
+
         {/* Core Settings */}
         <div className="grid gap-2">
           <Label className="text-xs font-medium text-white/90">LANGUAGE</Label>
@@ -144,7 +158,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
           </div>
         )}
       </div>
-    </div>
+    </aside>
   );
 };
 

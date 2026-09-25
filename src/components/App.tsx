@@ -15,7 +15,6 @@ import useImageExport from "../hooks/useImageExport";
 import useHighlighter from "../hooks/useHighlighter";
 import SnippetControls from "./SnippetControls";
 import SettingsPanel from "./SettingsPanel";
-import ThemeSidebar from "./ThemeSidebar";
 import CodeEditor from "./CodeEditor";
 import VideoOnboarding from "./VideoOnboarding";
 import LogoText from "./LogoText";
@@ -190,13 +189,6 @@ const App: React.FC = () => {
       </header>
 
       <div className="flex min-h-0 flex-1 overflow-hidden">
-        {/* Settings Panel on the Left */}
-        <SettingsPanel
-          settings={settings}
-          onSettingsChange={handleSettingsChange}
-          copyStatus={copyStatus}
-        />
-
         {/* Main Preview Area */}
         <main
           ref={mainRef}
@@ -236,11 +228,11 @@ const App: React.FC = () => {
           </div>
         </main>
 
-        <ThemeSidebar
-          activeTheme={settings.theme}
-          language={settings.language}
+        <SettingsPanel
+          settings={settings}
           onSettingsChange={handleSettingsChange}
           highlighter={highlighter}
+          copyStatus={copyStatus}
         />
       </div>
 
