@@ -53,6 +53,11 @@ const App: React.FC = () => {
     intervalMs: PLAY_ANIMATION_INTERVAL_MS,
   });
   const highlighter = useHighlighter();
+  // null until the frame is first resized, so it keeps the editor's default width.
+  const [editorWidth, setEditorWidth] = useLocalStorage<number | null>(
+    "codesnap-editor-width",
+    null,
+  );
   const [storedSettings, setStoredSettings] = useLocalStorage<EditorSettings>(
     "codesnap-settings",
     DEFAULT_EDITOR_SETTINGS,
@@ -196,6 +201,8 @@ const App: React.FC = () => {
                 onHighlightLineChange={handleHighlightLineChange}
                 minCaptureHeight={maxCaptureHeight}
                 containerHeight={maxCaptureHeight}
+                containerWidth={editorWidth ?? undefined}
+                onWidthChange={setEditorWidth}
                 highlighter={highlighter}
                 debugHighlight={DEBUG_HIGHLIGHT}
               />

@@ -40,7 +40,8 @@ interface CodeEditorProps {
   containerWidth?: number | string;
   containerHeight?: number;
   minWidth?: number | string;
-  resizable?: boolean;
+  /** Makes the frame resizable from its side handles; the parent owns the width via `containerWidth`. */
+  onWidthChange?: (width: number) => void;
   /** CSS transform scale applied by an ancestor; magic-move divides its measurements by it. */
   scale?: number;
   debugHighlight?: boolean;
@@ -84,13 +85,12 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   containerWidth = 860,
   containerHeight,
   minWidth = "320px",
-  resizable = true,
+  onWidthChange,
   scale = 1,
   debugHighlight = false,
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
-  const [resizedWidth, setResizedWidth] = useState<number | null>(null);
   const [isResizing, setIsResizing] = useState(false);
   const [dynamicEditorHeight, setDynamicEditorHeight] = useState(180);
 
@@ -303,7 +303,6 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
     };
   }, [moveTargets, showPreview]);
 
-  const resolvedWidth = resizedWidth ?? containerWidth;
   const minResizeWidth = typeof minWidth === "number" ? minWidth : Number.parseFloat(minWidth) || 0;
 
   const resizeBy = useCallback(
@@ -311,12 +310,10 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
       const wrapper = wrapperRef.current;
       if (!wrapper) return;
       const max = getAvailableWidth(wrapper);
-      setResizedWidth((previous) => {
-        const current = previous ?? wrapper.getBoundingClientRect().width;
-        return Math.round(Math.min(Math.max(current + delta, minResizeWidth), max));
-      });
+      const current = wrapper.getBoundingClientRect().width;
+      onWidthChange?.(Math.round(Math.min(Math.max(current + delta, minResizeWidth), max)));
     },
-    [minResizeWidth],
+    [minResizeWidth, onWidthChange],
   );
 
   const startResize =
@@ -335,7 +332,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
         // The frame stays centred, so each edge only travels half of any width
         // change. Doubling the delta keeps the bar under the pointer.
         const next = startWidth + direction * (moveEvent.clientX - startX) * 2;
-        setResizedWidth(Math.round(Math.min(Math.max(next, minResizeWidth), max)));
+        onWidthChange?.(Math.round(Math.min(Math.max(next, minResizeWidth), max)));
       };
       const onEnd = () => {
         setIsResizing(false);
@@ -385,7 +382,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
       ref={wrapperRef}
       className="relative mx-auto"
       style={{
-        width: typeof resolvedWidth === "number" ? `${resolvedWidth}px` : resolvedWidth,
+        width: typeof containerWidth === "number" ? `${containerWidth}px` : containerWidth,
         maxWidth: "100%",
         minWidth: typeof minWidth === "number" ? `${minWidth}px` : minWidth,
       }}
@@ -554,7 +551,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
         </Frame>
       </div>
 
-      {resizable && (
+      {onWidthChange && (
         <>
           {(["left", "right"] as const).map((edge) => (
             <button

@@ -77,7 +77,6 @@ export function CodePreview() {
           highlighter={highlighter}
           containerWidth={PREVIEW_WIDTH}
           containerHeight={PREVIEW_HEIGHT}
-          resizable={false}
           scale={scale}
         />
       </div>

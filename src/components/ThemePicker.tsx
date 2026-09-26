@@ -159,7 +159,6 @@ const ThemePreviewList = React.memo<ThemePreviewListProps>(
                 containerHeight={PREVIEW_HEIGHT}
                 minCaptureHeight={PREVIEW_HEIGHT}
                 minWidth="0"
-                resizable={false}
               />
             </div>
           </button>
