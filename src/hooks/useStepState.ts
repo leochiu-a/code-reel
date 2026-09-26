@@ -11,20 +11,29 @@ type CodeSnippet = {
 };
 
 type UseStepStateOptions = {
-  defaultCode: string;
-  defaultSnippets?: Array<{
+  defaultSnippets: Array<{
     code: string;
     highlightLines?: number[];
   }>;
   intervalMs: number;
 };
 
-const useStepState = ({ defaultCode, defaultSnippets, intervalMs }: UseStepStateOptions) => {
+const useStepState = ({ defaultSnippets, intervalMs }: UseStepStateOptions) => {
   const normalizeStepTitles = (list: CodeSnippet[]) =>
     list.map((snippet, index) => ({
       ...snippet,
       title: `Step ${index + 1}`,
     }));
+
+  const createDefaultSnippets = (firstId: string) =>
+    normalizeStepTitles(
+      defaultSnippets.map((snippet, index) => ({
+        id: index === 0 ? firstId : crypto.randomUUID(),
+        title: "",
+        code: snippet.code,
+        highlightLines: snippet.highlightLines ?? [],
+      })),
+    );
 
   const [storedSnippets, setStoredSnippets] = useLocalStorage<CodeSnippet[]>(
     "codesnap-snippets",
@@ -43,18 +52,7 @@ const useStepState = ({ defaultCode, defaultSnippets, intervalMs }: UseStepState
     if (storedSnippets.length > 0) {
       return normalizeStepTitles(storedSnippets);
     }
-    const baseSnippets =
-      defaultSnippets && defaultSnippets.length > 0
-        ? defaultSnippets
-        : [{ code: defaultCode, highlightLines: [] }];
-    return normalizeStepTitles(
-      baseSnippets.map((snippet, index) => ({
-        id: index === 0 ? initialId : crypto.randomUUID(),
-        title: "",
-        code: snippet.code,
-        highlightLines: snippet.highlightLines ?? [],
-      })),
-    );
+    return createDefaultSnippets(initialId);
   });
   const [activeSnippetId, setActiveSnippetId] = useState(initialId);
   const [previewIndex, setPreviewIndex] = useState(0);
@@ -221,7 +219,7 @@ const useStepState = ({ defaultCode, defaultSnippets, intervalMs }: UseStepState
 
   const handleResetConfirm = () => {
     const resetId = crypto.randomUUID();
-    const nextSnippets = [{ id: resetId, title: "Step 1", code: defaultCode, highlightLines: [] }];
+    const nextSnippets = createDefaultSnippets(resetId);
     setSnippets(nextSnippets);
     setStoredSnippets(nextSnippets);
     setActiveSnippetId(resetId);

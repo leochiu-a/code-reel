@@ -26,16 +26,6 @@ import BulbSvg from "@/components/ui/bulb-svg";
 import CopyIcon from "@/components/ui/copy-icon";
 import MessageCircleIcon from "@/components/ui/message-circle-icon";
 
-const DEFAULT_CODE = `function helloWorld() {
-  console.log("Hello from CodeReel!");
-  
-  const greeting = {
-    message: "Create beautiful snippets",
-  };
-  
-  return greeting;
-}`;
-
 const DEBUG_HIGHLIGHT = false;
 const DEFAULT_BORDER_RADIUS = 16;
 
@@ -59,7 +49,6 @@ const App: React.FC = () => {
     handleSelectSnippet,
     handleResetConfirm,
   } = useStepState({
-    defaultCode: DEFAULT_CODE,
     defaultSnippets: PREVIEW_STEPS,
     intervalMs: PLAY_ANIMATION_INTERVAL_MS,
   });
