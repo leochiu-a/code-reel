@@ -6,8 +6,10 @@ backend, no API route, and no server-side rendering of user data.
 
 ## The editor
 
-Write each step on the left, pick a theme on the right, then play the sequence
-to see the highlight animate between steps.
+Type your code straight into the frame and click line numbers to highlight
+them. Add and switch steps from the toolbar below, pick a theme and layout in
+the panel on the right, then play the sequence to see the code morph between
+steps.
 
 ![CodeReel editor](docs/editor.png)
 
