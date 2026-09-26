@@ -41,6 +41,8 @@ interface CodeEditorProps {
   containerHeight?: number;
   minWidth?: number | string;
   resizable?: boolean;
+  /** CSS transform scale applied by an ancestor; magic-move divides its measurements by it. */
+  scale?: number;
   debugHighlight?: boolean;
 }
 
@@ -83,6 +85,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   containerHeight,
   minWidth = "320px",
   resizable = true,
+  scale = 1,
   debugHighlight = false,
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -521,6 +524,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
                     duration: showPreview ? MAGIC_MOVE_DURATION_MS : 0,
                     stagger: 0.2,
                     delayMove: MAGIC_MOVE_DELAY_MOVE_S,
+                    globalScale: scale,
                   }}
                 />
               </div>

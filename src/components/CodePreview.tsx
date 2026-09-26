@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
+import { useResizeObserver } from "usehooks-ts";
 import {
   DEFAULT_EDITOR_SETTINGS,
   HIGHLIGHT_STEP_DELAY_MS,
@@ -15,7 +16,15 @@ const CodeEditor = dynamic(() => import("@/components/CodeEditor"), {
   ssr: false,
 });
 
+// The preview renders at a fixed size and scales down as a whole on narrow
+// screens, so the font, line height and padding keep their proportions.
+const PREVIEW_WIDTH = 860;
+const PREVIEW_HEIGHT = 420;
+
 export function CodePreview() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { width = PREVIEW_WIDTH } = useResizeObserver({ ref: containerRef });
+  const scale = Math.min(1, width / PREVIEW_WIDTH);
   const [previewIndex, setPreviewIndex] = useState(0);
   const highlighter = useHighlighter();
 
@@ -48,18 +57,30 @@ export function CodePreview() {
   }, [shouldShowPreview]);
 
   return (
-    <div className="flex min-h-[420px] justify-center">
-      <CodeEditor
-        code={previewCode}
-        settings={previewSettings}
-        showPreview={shouldShowPreview}
-        highlightLines={previewHighlightLines}
-        highlightDelayMs={highlightDelayMs}
-        highlighter={highlighter}
-        containerWidth={860}
-        containerHeight={420}
-        resizable={false}
-      />
+    // aspect-ratio reserves the scaled height in CSS, before hydration, so the
+    // page does not shift when the scale is measured.
+    <div
+      ref={containerRef}
+      className="flex w-full justify-center"
+      style={{ aspectRatio: `${PREVIEW_WIDTH} / ${PREVIEW_HEIGHT}`, maxHeight: PREVIEW_HEIGHT }}
+    >
+      <div
+        className="shrink-0 origin-top"
+        style={{ width: PREVIEW_WIDTH, transform: scale < 1 ? `scale(${scale})` : undefined }}
+      >
+        <CodeEditor
+          code={previewCode}
+          settings={previewSettings}
+          showPreview={shouldShowPreview}
+          highlightLines={previewHighlightLines}
+          highlightDelayMs={highlightDelayMs}
+          highlighter={highlighter}
+          containerWidth={PREVIEW_WIDTH}
+          containerHeight={PREVIEW_HEIGHT}
+          resizable={false}
+          scale={scale}
+        />
+      </div>
     </div>
   );
 }
