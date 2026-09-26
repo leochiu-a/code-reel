@@ -72,8 +72,6 @@ const useStepState = ({ defaultCode, defaultSnippets, intervalMs }: UseStepState
   const activeSnippet = snippets[activeSnippetIndex] ?? snippets[0];
   const previewSnippet = snippets[previewIndex] ?? snippets[0];
 
-  const firstSnippetId = snippets[0]?.id;
-
   useEffect(() => {
     if (!isPlaying) return;
     if (snippets.length < 2) {
@@ -86,25 +84,18 @@ const useStepState = ({ defaultCode, defaultSnippets, intervalMs }: UseStepState
     // Add 1 second to the last step to ensure the last step is displayed for at least 1 second
     const timerDuration = isLastStep ? intervalMs + 1000 : intervalMs;
     const timer = window.setTimeout(() => {
-      setPreviewIndex((prev) => {
-        const next = prev + 1;
-        if (next >= snippets.length) {
-          startTransition(() => {
-            setIsPlaying(false);
-
-            // Reset to the first snippet when the last snippet is reached
-            if (firstSnippetId) {
-              setActiveSnippetId(firstSnippetId);
-            }
-          });
-          return 0;
-        }
-        return next;
-      });
+      // Playback ends on the last step, which stays selected.
+      if (isLastStep) {
+        setIsPlaying(false);
+        return;
+      }
+      const next = previewIndex + 1;
+      setPreviewIndex(next);
+      setActiveSnippetId(snippets[next].id);
     }, timerDuration);
 
     return () => window.clearTimeout(timer);
-  }, [firstSnippetId, intervalMs, isPlaying, previewIndex, snippets.length]);
+  }, [intervalMs, isPlaying, previewIndex, snippets]);
 
   useEffect(() => {
     if (hasAppliedStoredRef.current) return;
@@ -219,6 +210,7 @@ const useStepState = ({ defaultCode, defaultSnippets, intervalMs }: UseStepState
   const handlePlay = () => {
     if (snippets.length < 2) return;
     setPreviewIndex(0);
+    setActiveSnippetId(snippets[0].id);
     setIsPlaying(true);
   };
 
