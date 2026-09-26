@@ -23,6 +23,7 @@ type CodeSnippet = {
 type SnippetListProps = {
   snippets: CodeSnippet[];
   activeSnippetId: string;
+  isPlaying: boolean;
   onSelectSnippet: (id: string, index: number) => void;
   onReorderSnippet: (fromIndex: number, toIndex: number) => void;
 };
@@ -30,6 +31,7 @@ type SnippetListProps = {
 const SnippetList: React.FC<SnippetListProps> = ({
   snippets,
   activeSnippetId,
+  isPlaying,
   onSelectSnippet,
   onReorderSnippet,
 }) => {
@@ -42,6 +44,8 @@ const SnippetList: React.FC<SnippetListProps> = ({
     <ToggleGroup
       type="single"
       value={activeSnippetId}
+      // Playback drives the selection, so the steps can't be picked or dragged.
+      disabled={isPlaying}
       onValueChange={(nextValue) => {
         if (!nextValue) return;
         const index = snippetIndex.get(nextValue);
@@ -53,7 +57,9 @@ const SnippetList: React.FC<SnippetListProps> = ({
         <ToggleGroupItem
           key={snippet.id}
           value={snippet.id}
-          draggable
+          // Stay at full strength while disabled so the playing step reads clearly.
+          className="disabled:opacity-100"
+          draggable={!isPlaying}
           onDragStart={(event) => {
             event.dataTransfer.effectAllowed = "move";
             event.dataTransfer.dropEffect = "move";
@@ -158,6 +164,7 @@ const SnippetControls: React.FC<SnippetControlsProps> = ({
           <ClientOnlySnippetList
             snippets={snippets}
             activeSnippetId={activeSnippetId}
+            isPlaying={isPlaying}
             onSelectSnippet={onSelectSnippet}
             onReorderSnippet={onReorderSnippet}
           />
