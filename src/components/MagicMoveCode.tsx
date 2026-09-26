@@ -13,6 +13,8 @@ interface MagicMoveCodeProps {
   lang: BundledLanguage;
   theme: string;
   lineNumbers: boolean;
+  /** When false, steps swap in place instead of running the leave/enter/move transition. */
+  animate: boolean;
   options: MagicMoveRenderOptions;
   className?: string;
 }
@@ -28,23 +30,38 @@ const MagicMoveCode: React.FC<MagicMoveCodeProps> = ({
   lang,
   theme,
   lineNumbers,
+  animate,
   options,
   className,
 }) => {
   const tokenize = () => codeToScopedKeyedTokens(highlighter, code, lang, theme, lineNumbers);
+  // The mount goes through the renderer's animated path: with nothing on
+  // screen yet it shows the code in place, and it clears the renderer's
+  // first-render flag, which in-place swaps never do. Left set, the first
+  // animated step would skip its enter transition.
   const [step, setStep] = useState<{
     from?: KeyedTokensInfo;
     to: KeyedTokensInfo;
-  }>(() => ({ to: tokenize() }));
+    animate: boolean;
+  }>(() => ({ to: tokenize(), animate: true }));
+  const [wasAnimating, setWasAnimating] = useState(animate);
+
+  if (animate !== wasAnimating) {
+    setWasAnimating(animate);
+  }
 
   // Each step is diffed against the previous one, so it is derived from the
   // last rendered step during render rather than memoised from props alone.
+  // Only a change made while animation was already on animates: the step that
+  // arrives together with `animate` turning on (playback jumping to its first
+  // step) swaps in place, so it costs none of the playback's time.
   if (step.to.code !== code || step.to.lineNumbers !== lineNumbers) {
-    setStep(syncMagicMoveStep(step.to, tokenize()));
+    setStep({ ...syncMagicMoveStep(step.to, tokenize()), animate: animate && wasAnimating });
   }
 
   return (
     <ShikiMagicMoveRenderer
+      animate={step.animate}
       tokens={step.to}
       previous={step.from}
       options={options}

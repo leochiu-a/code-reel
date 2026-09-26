@@ -518,10 +518,10 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
                   theme={shikiTheme}
                   code={displayedCode}
                   lineNumbers={settings.showLineNumbers}
+                  // Editing or switching steps swaps the code in place; only playback animates.
+                  animate={showPreview}
                   options={{
-                    // duration: 0 means no animation; when the user updates the code snippet,
-                    // no animation should be shown. Animation should only play when the play button is clicked.
-                    duration: showPreview ? MAGIC_MOVE_DURATION_MS : 0,
+                    duration: MAGIC_MOVE_DURATION_MS,
                     stagger: 0.2,
                     delayMove: MAGIC_MOVE_DELAY_MOVE_S,
                     globalScale: scale,
