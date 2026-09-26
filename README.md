@@ -4,6 +4,25 @@ A browser-only code snippet editor: write your steps, style the frame, play the
 animation, and export images. Everything runs in the browser — there is no
 backend, no API route, and no server-side rendering of user data.
 
+**Try it at [codereel.dev](https://www.codereel.dev/app)** — no sign-up, no install.
+
+## Why CodeReel
+
+Carbon and ray.so turn one snippet into one static image. CodeReel lets you
+walk through code step by step: write several versions of the snippet, and
+the frame animates from one to the next, with lines moving, appearing, and
+fading in place. That makes it a good fit for tutorials, talks, and short
+videos where you want to show how the code changes, not just what it ends up as.
+
+|                       | Carbon / ray.so | CodeReel |
+| --------------------- | --------------- | -------- |
+| Styled code image     | ✅              | ✅       |
+| Multiple steps        | —               | ✅       |
+| Animated transitions  | —               | ✅       |
+| No account, no upload | ✅              | ✅       |
+
+Your code never leaves the browser: there is no backend to send it to.
+
 ## The editor
 
 Type your code straight into the frame and click line numbers to highlight
