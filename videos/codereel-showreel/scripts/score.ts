@@ -135,6 +135,24 @@ const blip = (frame: number, freq: number, g = 1, len = 0.25) =>
     0.6,
   );
 
+// Soft, muffled landing: a low sine drop with a little lowpassed noise, no click.
+const thud = (frame: number, g = 1) => {
+  let ph = 0;
+  let lp = 0;
+  add(
+    at(frame),
+    SR * 0.35,
+    (t) => {
+      ph += (2 * Math.PI * (55 + 45 * Math.exp(-t * 25))) / SR;
+      lp += (rnd() - lp) * 0.02;
+      return (Math.sin(ph) + lp * 1.5) * Math.exp(-t * 11) * Math.min(1, t * 250);
+    },
+    0.45 * g,
+    0,
+    0.3,
+  );
+};
+
 // Band-passed noise sweep: a whoosh from `a` to `b` frames, rising or falling.
 const whoosh = (a: number, b: number, g = 1, rising = true, pan = 0) => {
   const len = at(b) - at(a);
@@ -260,15 +278,19 @@ blip(K + KINETIC.meet + 24, 1320, 0.7);
 // Breakdown under the name: quieter than the groove, but it keeps building.
 const breakdown = K + KINETIC.words[4] + BEAT;
 pad(breakdown, P + 12, [hz(45), hz(57), hz(64), hz(69)], 0.9, 0.05);
-for (let f = K + KINETIC.iris; f < P; f += BEAT * 2) {
+// Heartbeat on every other beat of the grid, so the drop lands on the pulse.
+for (let f = P - 6 * BEAT; f < P; f += BEAT * 2) {
   kick(f, 0.45);
   bass(f, hz(33), 0.9, 0.7);
 }
 riser(K + KINETIC.meet, P, 1.1);
-// Snare roll into the drop, tightening from eighths to thirty-seconds.
-for (let f = P - 60, gap = 15; f < P; f += gap, gap = Math.max(4, gap - 2)) {
-  snap(f, 0.3 + 0.7 * (1 - (P - f) / 60), f % 2 ? 0.3 : -0.3);
-}
+// Snare roll into the drop on the grid: eighths, then sixteenths, then 32nds.
+const roll = [
+  ...[4, 3].map((n) => P - n * (BEAT / 2)),
+  ...[4, 3, 2].map((n) => P - n * (BEAT / 4)),
+  ...[3, 2, 1].map((n) => P - n * (BEAT / 8)),
+];
+roll.forEach((f, i) => snap(f, 0.35 + 0.65 * (i / (roll.length - 1)), i % 2 ? 0.3 : -0.3));
 
 // 3–5. Product, themes and export ride one groove
 boom(P, 1);
@@ -276,11 +298,15 @@ const progression = [45, 45, 41, 43];
 for (let b = 0; P + b * BEAT < E; b++) {
   const f = P + b * BEAT;
   const inFocus = f >= P + PRODUCT.focus && f < P + PRODUCT.focusOut;
-  kick(f, b % 4 === 0 ? 1 : 0.85);
-  hat(f + BEAT / 2, 1, 0.25);
-  if (!inFocus) hat(f + BEAT / 4, 0.5, -0.25);
-  if (b % 2 === 1) snap(f, 0.7);
-  bass(f, hz(progression[Math.floor(b / 2) % 4] - 12), 0.4);
+  // Drums step aside once Export is pressed, leaving the shutter and folder up front.
+  const exporting = f >= EX + EXPORT_T.click - 4;
+  if (!exporting) {
+    kick(f, b % 4 === 0 ? 1 : 0.85);
+    hat(f + BEAT / 2, 1, 0.25);
+    if (!inFocus) hat(f + BEAT / 4, 0.5, -0.25);
+    if (b % 2 === 1) snap(f, 0.7);
+  }
+  bass(f, hz(progression[Math.floor(b / 2) % 4] - 12), 0.4, exporting ? 0.6 : 1);
   bass(f + BEAT / 2, hz(progression[Math.floor(b / 2) % 4]), 0.2, 0.6);
 }
 pad(P - 18, TH, [hz(45), hz(57), hz(60), hz(64), hz(69)], 1.1, 0.04);
@@ -315,10 +341,11 @@ click(EX + EXPORT_T.flash + 3, 1.6);
 boom(EX + EXPORT_T.flash, 0.6);
 whoosh(EX + EXPORT_T.lift - 2, EX + EXPORT_T.drop + 4, 0.6, true, 0.2);
 whoosh(EX + EXPORT_T.drop, EX + EXPORT_T.shut + 2, 0.5, false);
-kick(EX + EXPORT_T.shut, 0.5);
-snap(EX + EXPORT_T.shut + 2, 0.6);
-blip(EX + EXPORT_T.shut + 10, 2093, 0.6);
-riser(E - 60, E, 1.1);
+// The folder closes with a soft thud, then an in-key two-note chime for "saved".
+thud(EX + EXPORT_T.shut + 2, 1);
+blip(EX + EXPORT_T.shut + 10, hz(81), 0.35, 0.5);
+blip(EX + EXPORT_T.shut + 16, hz(88), 0.3, 0.6);
+riser(EX + EXPORT_T.shut + 14, E, 1.1);
 
 // 6. End card: final hit and a resolving chord that rings out
 boom(E, 1.3);
