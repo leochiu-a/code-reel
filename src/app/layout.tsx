@@ -5,6 +5,7 @@ import "@shikijs/magic-move/style.css";
 
 import { Toaster } from "@/components/ui/sonner";
 import { GoogleAnalytics } from "@next/third-parties/google";
+import { Analytics } from "@vercel/analytics/next";
 
 import "./globals.css";
 
@@ -41,6 +42,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <body suppressHydrationWarning>
           {children}
           <Toaster richColors position="top-center" />
+          <Analytics />
           <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID ?? ""} />
         </body>
       </html>
