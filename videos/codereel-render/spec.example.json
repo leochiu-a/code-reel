@@ -1,0 +1,19 @@
+{
+  "language": "typescript",
+  "theme": "one-dark",
+  "hold": 1,
+  "steps": [
+    {
+      "code": "export function greet(name: string) {\n  return `Hello, ${name}`;\n}",
+      "highlightLines": [2]
+    },
+    {
+      "code": "export function greet(name: string, excited = false) {\n  const message = `Hello, ${name}`;\n  return excited ? `${message}!` : message;\n}",
+      "highlightLines": [3]
+    },
+    {
+      "code": "export async function greet(name: string, excited = false) {\n  const user = await fetchUser(name);\n  const message = `Hello, ${user.displayName}`;\n  return excited ? `${message}!` : message;\n}",
+      "highlightLines": [2, 3]
+    }
+  ]
+}

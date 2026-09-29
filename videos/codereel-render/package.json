@@ -1,0 +1,25 @@
+{
+  "name": "codereel-render",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "studio": "remotion studio src/index.tsx",
+    "render": "remotion render src/index.tsx CodeReel --scale=2",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@remotion/bundler": "4.0.528",
+    "@remotion/cli": "4.0.528",
+    "@remotion/google-fonts": "4.0.528",
+    "@remotion/tailwind-v4": "4.0.528",
+    "@shikijs/magic-move": "^4.4.3",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "remotion": "4.0.528",
+    "shiki": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/react": "19.3.0",
+    "typescript": "~7.0.2"
+  }
+}
