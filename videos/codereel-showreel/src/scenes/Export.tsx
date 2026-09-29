@@ -5,6 +5,10 @@ import { Caption } from "../components/Caption";
 import { Plate, THEMES } from "./Themes";
 import { LogoMark } from "../components/LogoMark";
 
+const DOWNLOAD = "M12 3v12m0 0-5-5m5 5 5-5M5 21h14";
+const CLAPPER =
+  "M4 11h16v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1zM4 11l2.5-5.5 14 2.5-.5 3M8.5 6.7l2.5 4M13.5 7.6l2.5 3.4";
+
 const W = 1920;
 const H = 1080;
 const HERO = THEMES.find((t) => t.id === "dracula")!;
@@ -18,17 +22,16 @@ const CH = H * CARD.scale;
 const RIGHT = CARD.cx + CW / 2;
 const TOP = CARD.cy - CH / 2;
 
-// Popover, 1.6x the editor's `w-64 p-4` ImageExportPopover.
+// Popover, 1.6x the editor's `w-64 p-4` VideoExportPopover.
 const POP = { w: 420, pad: 26, row: 52, gap: 12, label: 30 };
 const POP_TOP = TOP + 8;
 const POP_LEFT = RIGHT - POP.w;
 const itemW = (POP.w - POP.pad * 2 - POP.gap * 2) / 3;
 const itemX = (i: number) => POP_LEFT + POP.pad + i * (itemW + POP.gap);
-const formatY = POP_TOP + POP.pad + POP.label;
-const scaleY = formatY + POP.row + POP.pad + POP.label;
+const scaleY = POP_TOP + POP.pad + POP.label;
 const exportY = scaleY + POP.row + POP.pad;
 
-// Folder the saved image drops into, centred below the card's rest spot.
+// Folder the saved file drops into, centred below the card's rest spot.
 const FOLDER = { cx: 960, top: 390, w: 400, back: 300, front: 220 };
 const IN = {
   lift: { x: 960, y: FOLDER.top - 70 },
@@ -36,7 +39,10 @@ const IN = {
   scale: 0.17,
 };
 
+// Toolbar: Export Image sits beside Export Video, which is the one the demo presses.
 const BUTTON = { w: 220, h: 56, x: RIGHT - 220, y: TOP - 76 };
+const IMAGE_BUTTON_X = BUTTON.x - BUTTON.w - 14;
+const FORMATS = ["PNG", "WEBP", "JPEG", "MP4"];
 
 const CURSOR: [number, number, number][] = [
   [6, 1560, 960],
@@ -133,11 +139,13 @@ export const Export = () => {
   const popOpen = f >= T.open ? pop * (1 - closed) : 0;
   const scaleValue = spring({ frame: f - T.scale, fps, config: { damping: 16, stiffness: 200 } });
   const exporting = f >= T.click && f < T.flash;
+  const progress = tw(f, T.click + 2, T.flash - 2, 0, 1, ease.inOut);
+  const rendering = `Rendering ${Math.round(progress * 100)}%`;
   const flash = tw(f, T.flash, T.flash + 2) * (1 - tw(f, T.flash + 2, T.flash + 16));
   const folderIn = spring({ frame: f - T.folder, fps, config: { damping: 13, stiffness: 150 } });
   const lift = tw(f, T.lift, T.drop, 0, 1, ease.inOut);
   const drop = tw(f, T.drop, T.shut, 0, 1, ease.in);
-  // The front flap tips open to receive the image, then snaps shut.
+  // The front flap tips open to receive the file, then snaps shut.
   const flap =
     tw(f, T.folder + 4, T.lift + 8, 0, 1, ease.out) *
     (1 - tw(f, T.shut, T.shut + 8, 0, 1, ease.in));
@@ -297,47 +305,101 @@ export const Export = () => {
         >
           ✓
         </span>
-        codereel@2x.png
+        codereel.mp4
       </div>
 
-      {/* Toolbar button: the editor's emerald "Export Image". */}
+      {/* Every format the export can produce, lighting up after the save. */}
       <div
         style={{
           position: "absolute",
-          left: BUTTON.x,
-          top: BUTTON.y,
-          width: BUTTON.w,
-          height: BUTTON.h,
-          borderRadius: 12,
-          background: "#10b981",
-          boxShadow: "0 12px 30px rgba(6,78,59,0.4)",
+          left: FOLDER.cx - 300,
+          top: FOLDER.top + FOLDER.back + 100,
+          width: 600,
           display: "flex",
-          alignItems: "center",
           justifyContent: "center",
-          gap: 10,
-          color: "#fff",
+          gap: 14,
+          fontFamily: MONO,
           fontSize: 22,
-          fontWeight: 600,
-          opacity: tw(f, 8, 20) * (1 - tw(f, T.folder, T.folder + 8)),
-          transform: `scale(${press(f, T.open)})`,
         }}
       >
-        <svg
-          width="22"
-          height="22"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M12 3v12m0 0-5-5m5 5 5-5M5 21h14" />
-        </svg>
-        {exporting ? "Exporting..." : "Export Image"}
+        {FORMATS.map((label, i) => {
+          const on = tw(f, T.formats + i * 6, T.formats + i * 6 + 10);
+          return (
+            <span
+              key={label}
+              style={{
+                padding: "6px 18px",
+                borderRadius: 999,
+                border: "1.5px solid rgba(16,185,129,0.7)",
+                color: "#a7f3d0",
+                opacity: on,
+                transform: `translateY(${(1 - on) * 12}px)`,
+              }}
+            >
+              {label}
+            </span>
+          );
+        })}
       </div>
 
-      {/* ImageExportPopover: Format, Scale, Export. */}
+      {/* Toolbar: the editor's emerald "Export Image" and the secondary "Export Video". */}
+      {[
+        { x: IMAGE_BUTTON_X, label: "Export Image", icon: DOWNLOAD, video: false },
+        { x: BUTTON.x, label: exporting ? rendering : "Export Video", icon: CLAPPER, video: true },
+      ].map((b) => (
+        <div
+          key={b.label.startsWith("Rendering") ? "Export Video" : b.label}
+          style={{
+            position: "absolute",
+            left: b.x,
+            top: BUTTON.y,
+            width: BUTTON.w,
+            height: BUTTON.h,
+            borderRadius: 12,
+            overflow: "hidden",
+            background: b.video ? "rgba(255,255,255,0.08)" : "#10b981",
+            border: b.video ? "1px solid rgba(255,255,255,0.14)" : "none",
+            boxShadow: b.video ? "none" : "0 12px 30px rgba(6,78,59,0.4)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 10,
+            color: "#fff",
+            fontSize: 22,
+            fontWeight: 600,
+            fontVariantNumeric: "tabular-nums",
+            opacity: tw(f, 8, 20) * (1 - tw(f, T.folder, T.folder + 8)),
+            transform: b.video ? `scale(${press(f, T.open)})` : undefined,
+          }}
+        >
+          {b.video && exporting && (
+            <div
+              style={{
+                position: "absolute",
+                inset: 0,
+                width: `${progress * 100}%`,
+                background: "rgba(16,185,129,0.45)",
+              }}
+            />
+          )}
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            style={{ position: "relative" }}
+          >
+            <path d={b.icon} />
+          </svg>
+          <span style={{ position: "relative" }}>{b.label}</span>
+        </div>
+      ))}
+
+      {/* VideoExportPopover: Resolution, Export. */}
       {popOpen > 0.01 && (
         <div
           style={{
@@ -356,9 +418,7 @@ export const Export = () => {
             color: "#e2e8f0",
           }}
         >
-          <Label y={formatY}>FORMAT</Label>
-          <Toggle items={["PNG", "WEBP", "JPEG"]} value={0} y={formatY} />
-          <Label y={scaleY}>SCALE</Label>
+          <Label y={scaleY}>RESOLUTION</Label>
           <Toggle items={["1x", "2x", "3x"]} value={f >= T.scale ? scaleValue : 0} y={scaleY} />
           <div
             style={{
@@ -375,10 +435,23 @@ export const Export = () => {
               fontSize: 20,
               fontWeight: 600,
               color: "#fff",
+              overflow: "hidden",
               transform: `scale(${press(f, T.click)})`,
             }}
           >
-            {exporting ? "Exporting..." : "Export"}
+            {exporting && (
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  width: `${progress * 100}%`,
+                  background: "rgba(255,255,255,0.25)",
+                }}
+              />
+            )}
+            <span style={{ position: "relative", fontVariantNumeric: "tabular-nums" }}>
+              {exporting ? rendering : "Export"}
+            </span>
           </div>
         </div>
       )}
@@ -422,7 +495,7 @@ export const Export = () => {
 
       <Caption
         f={f}
-        cues={[{ at: 6, num: "05", text: "Export a crisp image", color: ACCENT.green }]}
+        cues={[{ at: 6, num: "05", text: "Export an image or an MP4", color: ACCENT.green }]}
       />
       <AbsoluteFill style={{ background: "#fff", opacity: flash, pointerEvents: "none" }} />
     </AbsoluteFill>

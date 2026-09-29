@@ -51,5 +51,5 @@ pnpm start
 ## Exports
 
 - **Images** (PNG / JPEG / WebP) are rendered in the browser via `modern-screenshot`.
-- **Video**: use the in-app Recording Guide — play the animation and capture the
-  highlighted region with your own screen recorder (CleanShot, OBS, etc.).
+- **Video** (MP4) is rendered in the browser with `mediabunny`; pick a resolution
+  (1x / 2x / 3x) from the Export Video panel.
