@@ -5,6 +5,7 @@ import {
   BEAT,
   DURATION,
   END,
+  EXPORT_REEL,
   EXPORT_T,
   FPS,
   IGNITION,
@@ -299,7 +300,9 @@ for (let b = 0; P + b * BEAT < E; b++) {
   const f = P + b * BEAT;
   const inFocus = f >= P + PRODUCT.focus && f < P + PRODUCT.focusOut;
   // Drums step aside once Export is pressed, leaving the shutter and folder up front.
-  const exporting = f >= EX + EXPORT_T.click - 4;
+  const exporting =
+    (f >= EX + EXPORT_T.imgClick - 4 && f < EX + EXPORT_T.imgSaved) ||
+    f >= EX + EXPORT_T.vidClick - 4;
   if (!exporting) {
     kick(f, b % 4 === 0 ? 1 : 0.85);
     hat(f + BEAT / 2, 1, 0.25);
@@ -333,19 +336,25 @@ THEME_CUTS.forEach((c, i) => {
 whoosh(TH + THEMES_T.deck - 4, TH + THEMES_T.deck + 30, 0.9, false);
 whoosh(TH + THEMES_T.collapse - 6, EX + 6, 0.8, true);
 
-[EXPORT_T.open, EXPORT_T.scale, EXPORT_T.click].forEach((c) => click(EX + c, 1.4, 0.3));
-blip(EX + EXPORT_T.open + 2, 1318, 0.4);
-// Shutter: two sharp clicks and a burst as the image is saved.
-click(EX + EXPORT_T.flash, 2.2);
-click(EX + EXPORT_T.flash + 3, 1.6);
-boom(EX + EXPORT_T.flash, 0.6);
-whoosh(EX + EXPORT_T.lift - 2, EX + EXPORT_T.drop + 4, 0.6, true, 0.2);
-whoosh(EX + EXPORT_T.drop, EX + EXPORT_T.shut + 2, 0.5, false);
-// The folder closes with a soft thud, then an in-key two-note chime for "saved".
-thud(EX + EXPORT_T.shut + 2, 1);
-blip(EX + EXPORT_T.shut + 10, hz(81), 0.35, 0.5);
-blip(EX + EXPORT_T.shut + 16, hz(88), 0.3, 0.6);
-riser(EX + EXPORT_T.shut + 14, E, 1.1);
+const X = EXPORT_T;
+[X.imgOpen, X.imgClick, X.vidOpen, X.vidClick].forEach((c) => click(EX + c, 1.4, 0.3));
+[X.imgOpen, X.vidOpen].forEach((c) => blip(EX + c + 2, 1318, 0.4));
+// The looping reel keeps a soft Magic Move whoosh under the whole scene.
+const XR = EXPORT_REEL;
+for (let m = XR.start + XR.hold; m < SCENES.export.duration; m += XR.hold + XR.move)
+  whoosh(EX + m - 2, EX + m + XR.move, 0.35, false, 0.2);
+// Image: a camera shutter grabs one frame, which peels off to the side.
+click(EX + X.imgFlash, 2.2);
+click(EX + X.imgFlash + 3, 1.6);
+boom(EX + X.imgFlash, 0.6);
+whoosh(EX + X.move - 2, EX + X.imgSaved, 0.6, true, -0.4);
+blip(EX + X.imgSaved, hz(81), 0.3, 0.4);
+// Video: the render builds under the playing reel and lands on a chime.
+riser(EX + X.vidClick, EX + X.vidDone, 0.7);
+thud(EX + X.vidDone, 0.8);
+blip(EX + X.vidDone + 4, hz(81), 0.35, 0.5);
+blip(EX + X.vidDone + 10, hz(88), 0.3, 0.6);
+riser(EX + X.saved + 20, E, 1.1);
 
 // 6. End card: final hit and a resolving chord that rings out
 boom(E, 1.3);

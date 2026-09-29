@@ -25,8 +25,8 @@ const OUTER: Record<string, string> = {
     "linear-gradient(140deg, rgb(9, 171, 241), rgb(5, 105, 148), rgb(4, 84, 118), rgb(6, 119, 167))",
 };
 
-const Window = ({ theme }: { theme: Theme }) => {
-  const code = <StaticCode tokens={theme.tokens} m={M} cols={51} lines={4} />;
+const Window = ({ theme, children }: { theme: Theme; children?: React.ReactNode }) => {
+  const code = children ?? <StaticCode tokens={theme.tokens} m={M} cols={51} lines={4} />;
   if (theme.id === "vercel") return <VercelFrame>{code}</VercelFrame>;
   const brand = ["tailwind", "prisma", "trigger"].includes(theme.id);
   const border =
@@ -83,10 +83,13 @@ export const Plate = ({
   theme,
   dots,
   shift = 0,
+  code,
 }: {
   theme: Theme;
   dots?: boolean;
   shift?: number;
+  /** Replaces the theme's static snippet, e.g. with a playing Magic Move. */
+  code?: React.ReactNode;
 }) => (
   <AbsoluteFill
     style={{ background: OUTER[theme.id], alignItems: "center", justifyContent: "center" }}
@@ -101,7 +104,7 @@ export const Plate = ({
     )}
     {/* `shift` makes room for the theme drawer on the right. */}
     <div style={{ transform: `translateX(${-250 * shift}px) scale(${1 - 0.24 * shift})` }}>
-      <Window theme={theme} />
+      <Window theme={theme}>{code}</Window>
     </div>
   </AbsoluteFill>
 );

@@ -86,8 +86,12 @@ const pair = (a: Piece[], b: Piece[]) => {
   return { from, to };
 };
 
-const stepPieces = STEPS.map((code) => pieces(code, "vercel").tokens);
-const pairs = stepPieces.slice(1).map((next, i) => pair(stepPieces[i], next));
+const stepsIn = (theme: string) => STEPS.map((code) => pieces(code, theme).tokens);
+const vercelSteps = stepsIn("vercel");
+const pairs = vercelSteps.slice(1).map((next, i) => pair(vercelSteps[i], next));
+// The Export scene loops the reel in Dracula: step 3 glides back to 1, then on to 2 and 3.
+const [s1, s2, s3] = stepsIn("dracula");
+const heroPairs = [pair(s3, s1), pair(s1, s2), pair(s2, s3)];
 
 const themes = MONTAGE.map((m) => {
   const r = pieces(STEPS[2], typeof m.theme === "string" ? m.theme : m.theme.name!);
@@ -102,5 +106,5 @@ const themes = MONTAGE.map((m) => {
 
 writeFileSync(
   new URL("../src/tokens.json", import.meta.url),
-  JSON.stringify({ steps: STEPS, pairs, themes }),
+  JSON.stringify({ steps: STEPS, pairs, heroPairs, themes }),
 );

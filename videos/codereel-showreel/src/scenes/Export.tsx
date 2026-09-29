@@ -1,13 +1,10 @@
 import { AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
+import data from "../tokens.json";
 import { ACCENT, MONO, SANS, ease, tw } from "../lib";
-import { EXPORT_T as T } from "../timeline";
+import { EXPORT_REEL as R, EXPORT_T as T } from "../timeline";
 import { Caption } from "../components/Caption";
+import { MagicCode, StaticCode, type Tok } from "../components/Code";
 import { Plate, THEMES } from "./Themes";
-import { LogoMark } from "../components/LogoMark";
-
-const DOWNLOAD = "M12 3v12m0 0-5-5m5 5 5-5M5 21h14";
-const CLAPPER =
-  "M4 11h16v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1zM4 11l2.5-5.5 14 2.5-.5 3M8.5 6.7l2.5 4M13.5 7.6l2.5 3.4";
 
 const W = 1920;
 const H = 1080;
@@ -15,41 +12,62 @@ const HERO = THEMES.find((t) => t.id === "dracula")!;
 // The Themes fold ends at scale 0.34 + 0.1, lifted 20px towards a 2400px lens.
 const START = 0.44 * (2400 / 2380);
 
-// Card at rest after the push-in, in screen space.
-const CARD = { cx: 860, cy: 580, scale: 0.5 };
-const CW = W * CARD.scale;
-const CH = H * CARD.scale;
-const RIGHT = CARD.cx + CW / 2;
-const TOP = CARD.cy - CH / 2;
+type Spot = { cx: number; cy: number; scale: number };
+const mix = (a: Spot, b: Spot, p: number): Spot => ({
+  cx: a.cx + (b.cx - a.cx) * p,
+  cy: a.cy + (b.cy - a.cy) * p,
+  scale: a.scale + (b.scale - a.scale) * p,
+});
 
-// Popover, 1.6x the editor's `w-64 p-4` VideoExportPopover.
+// Card at rest after the push-in; after the image export it steps aside, and the
+// grabbed frame lands in the space it leaves. Neither moves again.
+const CARD: Spot = { cx: 860, cy: 580, scale: 0.5 };
+const SLOT_VIDEO: Spot = { cx: 1340, cy: 560, scale: 0.36 };
+const SLOT_IMAGE: Spot = { cx: 580, cy: 560, scale: 0.36 };
+
+// The toolbar and popovers ride above the card's top-right corner, like the editor.
+const BTN = { w: 220, h: 56 };
 const POP = { w: 420, pad: 26, row: 52, gap: 12, label: 30 };
-const POP_TOP = TOP + 8;
-const POP_LEFT = RIGHT - POP.w;
 const itemW = (POP.w - POP.pad * 2 - POP.gap * 2) / 3;
-const itemX = (i: number) => POP_LEFT + POP.pad + i * (itemW + POP.gap);
-const scaleY = POP_TOP + POP.pad + POP.label;
-const exportY = scaleY + POP.row + POP.pad;
-
-// Folder the saved file drops into, centred below the card's rest spot.
-const FOLDER = { cx: 960, top: 390, w: 400, back: 300, front: 220 };
-const IN = {
-  lift: { x: 960, y: FOLDER.top - 70 },
-  rest: { x: 960, y: FOLDER.top + 118 },
-  scale: 0.17,
+const chrome = (s: Spot) => {
+  const right = s.cx + (W * s.scale) / 2;
+  const top = s.cy - (H * s.scale) / 2;
+  const videoX = right - BTN.w;
+  return { btnY: top - 76, videoX, imageX: videoX - BTN.w - 14, popTop: top + 8, right };
 };
+const DOWNLOAD = "M12 3v12m0 0-5-5m5 5 5-5M5 21h14";
+const CLAPPER =
+  "M4 11h16v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1zM4 11l2.5-5.5 14 2.5-.5 3M8.5 6.7l2.5 4M13.5 7.6l2.5 3.4";
 
-// Toolbar: Export Image sits beside Export Video, which is the one the demo presses.
-const BUTTON = { w: 220, h: 56, x: RIGHT - 220, y: TOP - 76 };
-const IMAGE_BUTTON_X = BUTTON.x - BUTTON.w - 14;
-const FORMATS = ["PNG", "WEBP", "JPEG", "MP4"];
+// Popover rows, 1.6x the editor's `w-64 p-4` ImageExportPopover / VideoExportPopover.
+// The defaults already read 2x, so the demo goes straight to Export.
+type Row = { label: string; items: string[]; value: number };
+const IMAGE_ROWS: Row[] = [
+  { label: "FORMAT", items: ["PNG", "WEBP", "JPEG"], value: 0 },
+  { label: "SCALE", items: ["1x", "2x", "3x"], value: 1 },
+];
+const VIDEO_ROWS: Row[] = [{ label: "RESOLUTION", items: ["1x", "2x", "3x"], value: 1 }];
+const rowOffset = (i: number) => POP.pad + POP.label + i * (POP.row + POP.pad + POP.label);
+const exportOffset = (rows: Row[]) => rowOffset(rows.length - 1) + POP.row + POP.pad;
 
+const IMAGE_AT = chrome(CARD);
+const VIDEO_AT = chrome(SLOT_VIDEO);
 const CURSOR: [number, number, number][] = [
   [6, 1560, 960],
-  [T.open - 2, BUTTON.x + BUTTON.w / 2, BUTTON.y + BUTTON.h / 2],
-  [T.scale - 4, itemX(1) + itemW / 2, scaleY + POP.row / 2],
-  [T.click - 4, POP_LEFT + POP.w / 2, exportY + POP.row / 2],
+  [T.imgOpen - 2, IMAGE_AT.imageX + BTN.w / 2, IMAGE_AT.btnY + BTN.h / 2],
+  [
+    T.imgClick - 4,
+    IMAGE_AT.imageX + BTN.w - POP.w / 2,
+    IMAGE_AT.popTop + exportOffset(IMAGE_ROWS) + POP.row / 2,
+  ],
+  [T.vidOpen - 2, VIDEO_AT.videoX + BTN.w / 2, VIDEO_AT.btnY + BTN.h / 2],
+  [
+    T.vidClick - 4,
+    VIDEO_AT.right - POP.w / 2,
+    VIDEO_AT.popTop + exportOffset(VIDEO_ROWS) + POP.row / 2,
+  ],
 ];
+const CLICKS = [T.imgOpen, T.imgClick, T.vidOpen, T.vidClick];
 
 const cursorAt = (f: number) => {
   const frames = CURSOR.map((k) => k[0]);
@@ -68,12 +86,210 @@ const cursorAt = (f: number) => {
 const press = (f: number, at: number) =>
   1 - 0.08 * Math.sin(tw(f, at, at + 8, 0, 1, (t) => t) * Math.PI);
 
-const Toggle = ({ items, value, y }: { items: string[]; value: number; y: number }) => (
+// The reel loops as Magic Moves only, 3 → 1 → 2 → 3, so playback never cuts.
+const HERO_PAIRS = data.heroPairs as { from: Tok[]; to: Tok[] }[];
+const M = { size: 44, lh: 74 };
+const SEG = R.hold + R.move;
+const LOOP = SEG * HERO_PAIRS.length;
+const loopAt = (f: number) => Math.max(0, f - R.start) % LOOP;
+const Reel = ({ f }: { f: number }) => {
+  const t = loopAt(f);
+  const pair = HERO_PAIRS[Math.floor(t / SEG)];
+  const local = t % SEG;
+  if (f < R.start || local < R.hold)
+    return <StaticCode tokens={pair.from} m={M} cols={51} lines={4} />;
+  return (
+    <MagicCode
+      from={pair.from}
+      to={pair.to}
+      p={(local - R.hold) / R.move}
+      m={M}
+      cols={51}
+      lines={4}
+    />
+  );
+};
+
+const Card = ({
+  spot,
+  rotate = 0,
+  children,
+}: {
+  spot: Spot;
+  rotate?: number;
+  children: React.ReactNode;
+}) => (
+  <div
+    style={{
+      position: "absolute",
+      left: spot.cx - W / 2,
+      top: spot.cy - H / 2,
+      width: W,
+      height: H,
+      borderRadius: 40,
+      overflow: "hidden",
+      transform: `scale(${spot.scale}) rotate(${rotate}deg)`,
+      boxShadow: "0 60px 160px rgba(0,0,0,0.8)",
+    }}
+  >
+    {children}
+  </div>
+);
+
+/** Player controls laid over the video card: a play glyph and a scrub bar. */
+const Controls = ({ progress, opacity }: { progress: number; opacity: number }) => (
+  <div
+    style={{
+      position: "absolute",
+      left: 80,
+      right: 80,
+      bottom: 56,
+      display: "flex",
+      alignItems: "center",
+      gap: 36,
+      opacity,
+    }}
+  >
+    <svg width="72" height="72" viewBox="0 0 24 24" fill="#fff">
+      <path d="M7 4.5v15l12.5-7.5z" />
+    </svg>
+    <div style={{ flex: 1, height: 20, borderRadius: 20, background: "rgba(255,255,255,0.28)" }}>
+      <div
+        style={{
+          width: `${progress * 100}%`,
+          height: "100%",
+          borderRadius: 20,
+          background: "#fff",
+        }}
+      />
+    </div>
+  </div>
+);
+
+const FileLabel = ({
+  spot,
+  name,
+  on,
+  pop,
+}: {
+  spot: Spot;
+  name: string;
+  on: number;
+  pop: number;
+}) => (
+  <div
+    style={{
+      position: "absolute",
+      left: spot.cx - 300,
+      top: spot.cy + (H * spot.scale) / 2 + 26,
+      width: 600,
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      gap: 14,
+      fontFamily: MONO,
+      fontSize: 26,
+      color: "rgba(255,255,255,0.9)",
+      opacity: on,
+      transform: `translateY(${(1 - on) * 16}px)`,
+    }}
+  >
+    <span
+      style={{
+        display: "inline-flex",
+        width: 32,
+        height: 32,
+        borderRadius: 32,
+        background: "#10b981",
+        color: "#fff",
+        fontSize: 20,
+        alignItems: "center",
+        justifyContent: "center",
+        transform: `scale(${0.4 + 0.6 * pop})`,
+      }}
+    >
+      ✓
+    </span>
+    {name}
+  </div>
+);
+
+const ToolbarButton = ({
+  x,
+  y,
+  icon,
+  label,
+  primary,
+  progress,
+  scale,
+  opacity,
+}: {
+  x: number;
+  y: number;
+  icon: string;
+  label: string;
+  primary: boolean;
+  progress: number | null;
+  scale: number;
+  opacity: number;
+}) => (
+  <div
+    style={{
+      position: "absolute",
+      left: x,
+      top: y,
+      width: BTN.w,
+      height: BTN.h,
+      borderRadius: 12,
+      overflow: "hidden",
+      background: primary ? "#10b981" : "rgba(255,255,255,0.08)",
+      border: primary ? "none" : "1px solid rgba(255,255,255,0.14)",
+      boxShadow: primary ? "0 12px 30px rgba(6,78,59,0.4)" : "none",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 10,
+      color: "#fff",
+      fontSize: 22,
+      fontWeight: 600,
+      fontVariantNumeric: "tabular-nums",
+      opacity,
+      transform: `scale(${scale})`,
+    }}
+  >
+    {progress !== null && (
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          width: `${progress * 100}%`,
+          background: "rgba(16,185,129,0.45)",
+        }}
+      />
+    )}
+    <svg
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{ position: "relative" }}
+    >
+      <path d={icon} />
+    </svg>
+    <span style={{ position: "relative" }}>{label}</span>
+  </div>
+);
+
+const Toggle = ({ items, value, top }: { items: string[]; value: number; top: number }) => (
   <div
     style={{
       position: "absolute",
       left: POP.pad,
-      top: y - POP_TOP,
+      top,
       width: POP.w - POP.pad * 2,
       height: POP.row,
     }}
@@ -104,7 +320,7 @@ const Toggle = ({ items, value, y }: { items: string[]; value: number; y: number
           justifyContent: "center",
           fontSize: 20,
           fontWeight: 600,
-          color: Math.round(value) === i ? "#fff" : "rgba(226,232,240,0.55)",
+          color: value === i ? "#fff" : "rgba(226,232,240,0.55)",
         }}
       >
         {label}
@@ -113,77 +329,129 @@ const Toggle = ({ items, value, y }: { items: string[]; value: number; y: number
   </div>
 );
 
-const Label = ({ y, children }: { y: number; children: string }) => (
-  <div
-    style={{
-      position: "absolute",
-      left: POP.pad,
-      top: y - POP_TOP - POP.label + 2,
-      fontSize: 16,
-      fontWeight: 600,
-      letterSpacing: "0.12em",
-      color: "#94a3b8",
-    }}
-  >
-    {children}
-  </div>
-);
+const Popover = ({
+  left,
+  top,
+  rows,
+  open,
+  pressed,
+  label,
+  progress,
+}: {
+  left: number;
+  top: number;
+  rows: Row[];
+  open: number;
+  pressed: number;
+  label: string;
+  progress: number | null;
+}) =>
+  open > 0.01 && (
+    <div
+      style={{
+        position: "absolute",
+        left,
+        top,
+        width: POP.w,
+        height: exportOffset(rows) + POP.row + POP.pad,
+        borderRadius: 20,
+        background: "#1b1b1b",
+        border: "1px solid rgba(255,255,255,0.1)",
+        boxShadow: "0 40px 100px rgba(0,0,0,0.7)",
+        opacity: open,
+        transform: `translateY(${(1 - open) * -14}px) scale(${0.95 + 0.05 * open})`,
+        transformOrigin: "top right",
+        color: "#e2e8f0",
+      }}
+    >
+      {rows.map((r, i) => (
+        <div key={r.label}>
+          <div
+            style={{
+              position: "absolute",
+              left: POP.pad,
+              top: rowOffset(i) - POP.label + 2,
+              fontSize: 16,
+              fontWeight: 600,
+              letterSpacing: "0.12em",
+              color: "#94a3b8",
+            }}
+          >
+            {r.label}
+          </div>
+          <Toggle items={r.items} value={r.value} top={rowOffset(i)} />
+        </div>
+      ))}
+      <div
+        style={{
+          position: "absolute",
+          left: POP.pad,
+          top: exportOffset(rows),
+          width: POP.w - POP.pad * 2,
+          height: POP.row,
+          borderRadius: 12,
+          background: "#10b981",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontSize: 20,
+          fontWeight: 600,
+          color: "#fff",
+          overflow: "hidden",
+          transform: `scale(${pressed})`,
+        }}
+      >
+        {progress !== null && (
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              width: `${progress * 100}%`,
+              background: "rgba(255,255,255,0.25)",
+            }}
+          />
+        )}
+        <span style={{ position: "relative", fontVariantNumeric: "tabular-nums" }}>{label}</span>
+      </div>
+    </div>
+  );
 
 export const Export = () => {
   const f = useCurrentFrame();
   const { fps } = useVideoConfig();
+  const sp = (at: number, stiffness = 220, damping = 18) =>
+    f >= at ? spring({ frame: f - at, fps, config: { damping, stiffness } }) : 0;
 
+  // Image: press Export and the shutter grabs whatever frame is playing.
+  const imgOpen = sp(T.imgOpen) * (1 - tw(f, T.imgFlash - 2, T.imgFlash + 6));
+  const imgBusy = f >= T.imgClick && f < T.imgFlash;
+  const flash = tw(f, T.imgFlash, T.imgFlash + 2) * (1 - tw(f, T.imgFlash + 2, T.imgFlash + 16));
+
+  // Video: the render follows the playback, and the reel never stops.
+  const vidOpen = sp(T.vidOpen) * (1 - tw(f, T.vidDone - 2, T.vidDone + 6));
+  const rendering = f >= T.vidClick && f < T.vidDone;
+  const progress = tw(f, T.vidClick + 2, T.vidDone - 2, 0, 1, (t) => t);
+  const status = `Rendering ${Math.round(progress * 100)}%`;
+  const scrub = f < T.vidDone ? progress : loopAt(f) / LOOP;
+
+  // One move: the card steps aside as the grabbed frame peels off into its slot.
   const settle = tw(f, 0, 30, 0, 1, ease.inOut);
-  const pop = spring({ frame: f - T.open, fps, config: { damping: 18, stiffness: 220 } });
-  const closed = tw(f, T.flash - 2, T.flash + 6);
-  const popOpen = f >= T.open ? pop * (1 - closed) : 0;
-  const scaleValue = spring({ frame: f - T.scale, fps, config: { damping: 16, stiffness: 200 } });
-  const exporting = f >= T.click && f < T.flash;
-  const progress = tw(f, T.click + 2, T.flash - 2, 0, 1, ease.inOut);
-  const rendering = `Rendering ${Math.round(progress * 100)}%`;
-  const flash = tw(f, T.flash, T.flash + 2) * (1 - tw(f, T.flash + 2, T.flash + 16));
-  const folderIn = spring({ frame: f - T.folder, fps, config: { damping: 13, stiffness: 150 } });
-  const lift = tw(f, T.lift, T.drop, 0, 1, ease.inOut);
-  const drop = tw(f, T.drop, T.shut, 0, 1, ease.in);
-  // The front flap tips open to receive the file, then snaps shut.
-  const flap =
-    tw(f, T.folder + 4, T.lift + 8, 0, 1, ease.out) *
-    (1 - tw(f, T.shut, T.shut + 8, 0, 1, ease.in));
-  const bounce = 1 - 0.07 * Math.sin(tw(f, T.shut + 6, T.shut + 20, 0, 1, (t) => t) * Math.PI);
-  const cursor = cursorAt(f);
-  const cursorOn = tw(f, 4, 12) * (1 - tw(f, T.flash, T.flash + 6));
-  const clickAt = [T.open, T.scale, T.click].find((c) => f >= c && f < c + 8);
+  const rest: Spot = {
+    cx: interpolate(settle, [0, 1], [W / 2, CARD.cx]),
+    cy: interpolate(settle, [0, 1], [H / 2, CARD.cy]),
+    scale: interpolate(settle, [0, 1], [START, CARD.scale]),
+  };
+  const move = tw(f, T.move, T.imgSaved, 0, 1, ease.inOut);
+  const cardSpot = mix(rest, SLOT_VIDEO, move);
+  const peel = tw(f, T.imgFlash, T.imgSaved, 0, 1, ease.inOut);
+  const imageSpot = mix(CARD, SLOT_IMAGE, peel);
+  const lift = Math.sin(peel * Math.PI);
+  const at = chrome(cardSpot);
 
-  // Card: settles from the Themes fold, lifts over the folder and drops in.
-  const restScale = interpolate(settle, [0, 1], [START, CARD.scale]);
-  const cx = interpolate(settle, [0, 1], [W / 2, CARD.cx]) + lift * (IN.lift.x - CARD.cx);
-  const cy =
-    interpolate(settle, [0, 1], [H / 2, CARD.cy]) +
-    lift * (IN.lift.y - CARD.cy) +
-    drop * (IN.rest.y - IN.lift.y);
-  const cardScale = restScale + lift * (IN.scale - CARD.scale);
-  const tilt = lift * -4 * (1 - drop);
-  const folderScale = f >= T.folder ? folderIn : 0;
-  const saved = tw(f, T.shut + 10, T.shut + 22);
-  // Above the flap while it flies over, behind it once it drops in.
-  const inside = f >= T.drop;
-  const card = (
-    <div
-      style={{
-        position: "absolute",
-        left: cx - W / 2,
-        top: cy - H / 2,
-        width: W,
-        height: H,
-        borderRadius: 40,
-        overflow: "hidden",
-        transform: `scale(${cardScale}) rotate(${tilt}deg)`,
-        boxShadow: "0 60px 160px rgba(0,0,0,0.8)",
-      }}
-    >
-      <Plate theme={HERO} />
-    </div>
-  );
+  const toolbarOn = tw(f, 8, 20) * (1 - tw(f, T.vidDone, T.vidDone + 10));
+  const cursor = cursorAt(f);
+  const cursorOn = tw(f, 4, 12) * (1 - tw(f, T.vidDone, T.vidDone + 8));
+  const clickAt = CLICKS.find((c) => f >= c && f < c + 8);
 
   return (
     <AbsoluteFill style={{ background: "#050505", overflow: "hidden", fontFamily: SANS }}>
@@ -192,269 +460,79 @@ export const Export = () => {
           background: "radial-gradient(ellipse at 50% 45%, rgba(255,77,141,0.18), transparent 60%)",
         }}
       />
-      {/* Folder, card and flap share one layer so the landing bounce moves them together. */}
-      <AbsoluteFill
-        style={{
-          transform: `scaleY(${bounce}) scaleX(${2 - bounce})`,
-          transformOrigin: `${FOLDER.cx}px ${FOLDER.top + FOLDER.back}px`,
-        }}
-      >
-        <div
-          style={{
-            position: "absolute",
-            left: FOLDER.cx - FOLDER.w / 2,
-            top: FOLDER.top - 36,
-            width: FOLDER.w,
-            height: FOLDER.back + 36,
-            transform: `scale(${folderScale})`,
-            transformOrigin: "50% 100%",
-          }}
-        >
-          <div
-            style={{
-              position: "absolute",
-              left: 0,
-              bottom: -26,
-              width: FOLDER.w,
-              height: 40,
-              borderRadius: "50%",
-              background: "rgba(0,0,0,0.55)",
-              filter: "blur(18px)",
-            }}
-          />
-          <div
-            style={{
-              position: "absolute",
-              left: 0,
-              top: 0,
-              width: 160,
-              height: 60,
-              borderRadius: "18px 18px 0 0",
-              background: "#2f6fd6",
-            }}
-          />
-          <div
-            style={{
-              position: "absolute",
-              left: 0,
-              top: 36,
-              width: FOLDER.w,
-              height: FOLDER.back,
-              borderRadius: "0 22px 22px 22px",
-              background: "linear-gradient(180deg, #3b82f6, #2563d9)",
-            }}
-          />
-        </div>
-        {inside && card}
-        <div
-          style={{
-            position: "absolute",
-            left: FOLDER.cx - FOLDER.w / 2,
-            top: FOLDER.top + FOLDER.back - FOLDER.front,
-            width: FOLDER.w,
-            height: FOLDER.front,
-            borderRadius: 22,
-            background: "linear-gradient(180deg, #7cc0ff 0%, #4d9bf7 100%)",
-            boxShadow: "inset 0 2px 0 rgba(255,255,255,0.55), 0 -6px 24px rgba(0,0,0,0.25)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            transform: `translateY(${(1 - folderScale) * 140}px) perspective(900px) rotateX(${-50 * flap}deg) scale(${folderScale})`,
-            transformOrigin: "50% 100%",
-            opacity: Math.min(1, folderScale * 3),
-          }}
-        >
-          <div style={{ opacity: 0.45 }}>
-            <LogoMark size={110} />
-          </div>
-        </div>
-        {!inside && card}
-      </AbsoluteFill>
 
-      {/* Saved-file label under the folder. */}
-      <div
-        style={{
-          position: "absolute",
-          left: FOLDER.cx - 300,
-          top: FOLDER.top + FOLDER.back + 34,
-          width: 600,
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          gap: 14,
-          fontFamily: MONO,
-          fontSize: 26,
-          color: "rgba(255,255,255,0.9)",
-          opacity: saved,
-          transform: `translateY(${(1 - saved) * 16}px)`,
-        }}
-      >
-        <span
-          style={{
-            display: "inline-flex",
-            width: 32,
-            height: 32,
-            borderRadius: 32,
-            background: "#10b981",
-            color: "#fff",
-            fontSize: 20,
-            alignItems: "center",
-            justifyContent: "center",
-            transform: `scale(${0.4 + 0.6 * spring({ frame: f - T.shut - 10, fps, config: { damping: 9, stiffness: 200 } })})`,
-          }}
-        >
-          ✓
-        </span>
-        codereel.mp4
-      </div>
+      {/* The reel, playing the whole time; the video export renders exactly this. */}
+      <Card spot={cardSpot}>
+        <Plate theme={HERO} code={<Reel f={f} />} />
+        <Controls progress={scrub} opacity={tw(f, T.vidClick, T.vidClick + 8)} />
+      </Card>
 
-      {/* Every format the export can produce, lighting up after the save. */}
-      <div
-        style={{
-          position: "absolute",
-          left: FOLDER.cx - 300,
-          top: FOLDER.top + FOLDER.back + 100,
-          width: 600,
-          display: "flex",
-          justifyContent: "center",
-          gap: 14,
-          fontFamily: MONO,
-          fontSize: 22,
-        }}
-      >
-        {FORMATS.map((label, i) => {
-          const on = tw(f, T.formats + i * 6, T.formats + i * 6 + 10);
-          return (
-            <span
-              key={label}
-              style={{
-                padding: "6px 18px",
-                borderRadius: 999,
-                border: "1.5px solid rgba(16,185,129,0.7)",
-                color: "#a7f3d0",
-                opacity: on,
-                transform: `translateY(${(1 - on) * 12}px)`,
-              }}
-            >
-              {label}
-            </span>
-          );
-        })}
-      </div>
-
-      {/* Toolbar: the editor's emerald "Export Image" and the secondary "Export Video". */}
-      {[
-        { x: IMAGE_BUTTON_X, label: "Export Image", icon: DOWNLOAD, video: false },
-        { x: BUTTON.x, label: exporting ? rendering : "Export Video", icon: CLAPPER, video: true },
-      ].map((b) => (
-        <div
-          key={b.label.startsWith("Rendering") ? "Export Video" : b.label}
-          style={{
-            position: "absolute",
-            left: b.x,
-            top: BUTTON.y,
-            width: BUTTON.w,
-            height: BUTTON.h,
-            borderRadius: 12,
-            overflow: "hidden",
-            background: b.video ? "rgba(255,255,255,0.08)" : "#10b981",
-            border: b.video ? "1px solid rgba(255,255,255,0.14)" : "none",
-            boxShadow: b.video ? "none" : "0 12px 30px rgba(6,78,59,0.4)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 10,
-            color: "#fff",
-            fontSize: 22,
-            fontWeight: 600,
-            fontVariantNumeric: "tabular-nums",
-            opacity: tw(f, 8, 20) * (1 - tw(f, T.folder, T.folder + 8)),
-            transform: b.video ? `scale(${press(f, T.open)})` : undefined,
+      {/* The PNG: the one frame the shutter grabbed, peeling off the card. */}
+      {f >= T.imgFlash && (
+        <Card
+          spot={{
+            ...imageSpot,
+            cy: imageSpot.cy - lift * 60,
+            scale: imageSpot.scale + lift * 0.04,
           }}
+          rotate={lift * -5}
         >
-          {b.video && exporting && (
-            <div
-              style={{
-                position: "absolute",
-                inset: 0,
-                width: `${progress * 100}%`,
-                background: "rgba(16,185,129,0.45)",
-              }}
-            />
-          )}
-          <svg
-            width="22"
-            height="22"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            style={{ position: "relative" }}
-          >
-            <path d={b.icon} />
-          </svg>
-          <span style={{ position: "relative" }}>{b.label}</span>
-        </div>
-      ))}
-
-      {/* VideoExportPopover: Resolution, Export. */}
-      {popOpen > 0.01 && (
-        <div
-          style={{
-            position: "absolute",
-            left: POP_LEFT,
-            top: POP_TOP,
-            width: POP.w,
-            height: exportY + POP.row + POP.pad - POP_TOP,
-            borderRadius: 20,
-            background: "#1b1b1b",
-            border: "1px solid rgba(255,255,255,0.1)",
-            boxShadow: "0 40px 100px rgba(0,0,0,0.7)",
-            opacity: popOpen,
-            transform: `translateY(${(1 - popOpen) * -14}px) scale(${0.95 + 0.05 * popOpen})`,
-            transformOrigin: "top right",
-            color: "#e2e8f0",
-          }}
-        >
-          <Label y={scaleY}>RESOLUTION</Label>
-          <Toggle items={["1x", "2x", "3x"]} value={f >= T.scale ? scaleValue : 0} y={scaleY} />
-          <div
-            style={{
-              position: "absolute",
-              left: POP.pad,
-              top: exportY - POP_TOP,
-              width: POP.w - POP.pad * 2,
-              height: POP.row,
-              borderRadius: 12,
-              background: "#10b981",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: 20,
-              fontWeight: 600,
-              color: "#fff",
-              overflow: "hidden",
-              transform: `scale(${press(f, T.click)})`,
-            }}
-          >
-            {exporting && (
-              <div
-                style={{
-                  position: "absolute",
-                  inset: 0,
-                  width: `${progress * 100}%`,
-                  background: "rgba(255,255,255,0.25)",
-                }}
-              />
-            )}
-            <span style={{ position: "relative", fontVariantNumeric: "tabular-nums" }}>
-              {exporting ? rendering : "Export"}
-            </span>
-          </div>
-        </div>
+          <Plate theme={HERO} code={<Reel f={T.imgFlash} />} />
+        </Card>
       )}
+
+      <FileLabel
+        spot={SLOT_IMAGE}
+        name="codereel@2x.png"
+        on={tw(f, T.imgSaved, T.imgSaved + 12)}
+        pop={sp(T.imgSaved, 200, 9)}
+      />
+      <FileLabel
+        spot={SLOT_VIDEO}
+        name="codereel.mp4"
+        on={tw(f, T.saved, T.saved + 12)}
+        pop={sp(T.saved, 200, 9)}
+      />
+
+      <ToolbarButton
+        x={at.imageX}
+        y={at.btnY}
+        icon={DOWNLOAD}
+        label={imgBusy ? "Exporting..." : "Export Image"}
+        primary
+        progress={null}
+        scale={press(f, T.imgOpen)}
+        opacity={toolbarOn}
+      />
+      <ToolbarButton
+        x={at.videoX}
+        y={at.btnY}
+        icon={CLAPPER}
+        label={rendering ? status : "Export Video"}
+        primary={false}
+        progress={rendering ? progress : null}
+        scale={press(f, T.vidOpen)}
+        opacity={toolbarOn}
+      />
+
+      <Popover
+        left={at.imageX + BTN.w - POP.w}
+        top={at.popTop}
+        rows={IMAGE_ROWS}
+        open={imgOpen}
+        pressed={press(f, T.imgClick)}
+        label={imgBusy ? "Exporting..." : "Export"}
+        progress={null}
+      />
+      <Popover
+        left={at.right - POP.w}
+        top={at.popTop}
+        rows={VIDEO_ROWS}
+        open={vidOpen}
+        pressed={press(f, T.vidClick)}
+        label={rendering ? status : "Export"}
+        progress={rendering ? progress : null}
+      />
 
       {/* Pointer with a click ring. */}
       <div style={{ position: "absolute", left: cursor.x, top: cursor.y, opacity: cursorOn }}>
@@ -495,7 +573,15 @@ export const Export = () => {
 
       <Caption
         f={f}
-        cues={[{ at: 6, num: "05", text: "Export an image or an MP4", color: ACCENT.green }]}
+        cues={[
+          { at: 6, num: "05", text: "Export a crisp image", color: ACCENT.green },
+          {
+            at: T.vidOpen - 16,
+            num: "05",
+            text: "Or the whole animation as MP4",
+            color: ACCENT.green,
+          },
+        ]}
       />
       <AbsoluteFill style={{ background: "#fff", opacity: flash, pointerEvents: "none" }} />
     </AbsoluteFill>
