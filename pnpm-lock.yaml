@@ -145,9 +145,6 @@ importers:
       '@remotion/tailwind-v4':
         specifier: 4.0.528
         version: 4.0.528(@remotion/bundler@4.0.528(@swc/helpers@0.5.23)(postcss@8.5.28)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(@rspack/core@1.7.11(@swc/helpers@0.5.23))(webpack@5.105.0(esbuild@0.28.1)(postcss@8.5.28))
-      '@shikijs/magic-move':
-        specifier: ^4.4.3
-        version: 4.4.3(react@19.3.0)(shiki@4.4.3)
       react:
         specifier: 19.3.0
         version: 19.3.0

@@ -1,23 +1,25 @@
-import { Easing } from "remotion";
+import { cubicBezier } from "motion";
 import {
   HIGHLIGHT_STEP_DELAY_MS,
   MAGIC_MOVE_DELAY_MOVE_S,
   MAGIC_MOVE_DURATION_MS,
-} from "../../../src/constants";
+} from "../constants";
 import type { Scene } from "./scene";
 
 export const FPS = 60;
 
-// The editor's Magic Move options (src/components/CodeEditor.tsx): leave and
+// The editor's Magic Move options (components/CodeEditor.tsx): leave and
 // enter keep the library defaults. Delays are ratios of the duration.
 const DURATION = MAGIC_MOVE_DURATION_MS;
 const DELAY_LEAVE = 0;
 const DELAY_MOVE = MAGIC_MOVE_DELAY_MOVE_S;
 const DELAY_ENTER = 0.7;
+const DELAY_CONTAINER = 0.4;
 // CSS `ease`, the library's default easing.
-const EASE = Easing.bezier(0.25, 0.1, 0.25, 1);
+const EASE = cubicBezier(0.25, 0.1, 0.25, 1);
 
-const TRANSITION_MS = DURATION * (1 + Math.max(DELAY_LEAVE, DELAY_MOVE, DELAY_ENTER));
+const TRANSITION_MS =
+  DURATION * (1 + Math.max(DELAY_LEAVE, DELAY_MOVE, DELAY_ENTER, DELAY_CONTAINER));
 
 const toFrames = (ms: number) => Math.ceil((ms / 1000) * FPS);
 
@@ -48,8 +50,11 @@ const clampedEase = (ms: number, delay: number, duration: number) =>
 export const leaveProgress = (ms: number) => clampedEase(ms, DELAY_LEAVE * DURATION, DURATION);
 export const moveProgress = (ms: number) => clampedEase(ms, DELAY_MOVE * DURATION, DURATION);
 export const enterProgress = (ms: number) => clampedEase(ms, DELAY_ENTER * DURATION, DURATION);
+/** The code container resizes to the next step's lines, as Magic Move's `animateContainer`. */
+export const containerProgress = (ms: number) =>
+  clampedEase(ms, DELAY_CONTAINER * DURATION, DURATION);
 
-// The editor's highlight bars (src/components/CodeEditor.tsx): a bar slides to
+// The editor's highlight bars (components/CodeEditor.tsx): a bar slides to
 // its next line like a token moves, and added or dropped bars fade.
 const HIGHLIGHT_FADE_MS = 400;
 

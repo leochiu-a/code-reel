@@ -12,7 +12,6 @@
     "@remotion/cli": "4.0.528",
     "@remotion/google-fonts": "4.0.528",
     "@remotion/tailwind-v4": "4.0.528",
-    "@shikijs/magic-move": "^4.4.3",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "remotion": "4.0.528",

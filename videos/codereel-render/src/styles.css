@@ -1,4 +1,5 @@
 @import "tailwindcss";
 
-/* The editor's frame lives in the app, outside this package's own sources. */
+/* The reel and the editor's frame live in the app, outside this package's sources. */
 @source "../../../src/components/Frame.tsx";
+@source "../../../src/reel";

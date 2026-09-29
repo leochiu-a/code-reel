@@ -1,18 +1,20 @@
-import { createHighlighter } from "shiki";
+import type { Highlighter } from "shiki";
 import type { KeyedToken, KeyedTokensInfo } from "@shikijs/magic-move/types";
-import {
-  DEFAULT_BORDER_RADIUS,
-  DEFAULT_EDITOR_SETTINGS,
-  LANGUAGES,
-  resolveShikiThemeName,
-  THEME_BACKGROUND_MAP,
-  THEMES,
-} from "../../../src/constants";
-import { FRAME_PRESENTATION, type FrameId } from "../../../src/components/Frame";
-import { codeToScopedKeyedTokens, syncMagicMoveStep } from "../../../src/services/magicMoveTokens";
-import { normalizeHighlightLines } from "../../../src/utils/highlightLines";
-import type { EditorSettings } from "../../../src/types";
-import type { Spec } from "./spec";
+import { LANGUAGES, resolveShikiThemeName, THEMES } from "../constants";
+import { FRAME_PRESENTATION, type FrameId } from "../components/Frame";
+import { codeToScopedKeyedTokens, syncMagicMoveStep } from "../services/magicMoveTokens";
+import { normalizeHighlightLines } from "../utils/highlightLines";
+import type { EditorSettings } from "../types";
+
+/** What a reel is made of: the editor's settings and its steps. */
+export type ReelInput = {
+  settings: EditorSettings;
+  steps: { code: string; highlightLines?: number[] }[];
+  /** Seconds each step stays still before the next transition starts. */
+  hold: number;
+  /** The frame's width in px, as resized in the editor; it fits the code when omitted. */
+  width?: number;
+};
 
 /** A token placed on the code grid: `x` in px from the line start, `line` from 0. */
 export type Piece = {
@@ -28,6 +30,7 @@ export type Piece = {
 
 export type Transition = { from: Piece[]; to: Piece[] };
 
+/** Everything a frame of the reel renders from, laid out once up front. */
 export type Scene = {
   settings: EditorSettings;
   frame?: FrameId;
@@ -36,12 +39,14 @@ export type Scene = {
   fontFamily: string;
   lineHeight: number;
   codeWidth: number;
-  codeHeight: number;
+  /** Line count of every step: the window grows and shrinks with the code. */
+  lineCounts: number[];
   first: Piece[];
   transitions: Transition[];
   /** Normalized highlight lines of every step. */
   highlights: number[][];
   hold: number;
+  width?: number;
 };
 
 // Shiki's FontStyle bit flags.
@@ -75,37 +80,19 @@ const place = (info: KeyedTokensInfo, measure: (token: KeyedToken) => number): P
   return pieces;
 };
 
-/** Resolves settings the way the editor does when a theme is picked (ThemePicker, App). */
-const resolveSettings = (spec: Spec, themeCodeBackground: string): EditorSettings => {
-  const themeConfig = THEMES[spec.theme];
-  const overrides = Object.fromEntries(
-    Object.entries({
-      padding: spec.padding,
-      background: spec.background,
-      showLineNumbers: spec.showLineNumbers,
-      windowControls: spec.windowControls,
-    }).filter(([, value]) => value !== undefined),
-  );
-  return {
-    ...DEFAULT_EDITOR_SETTINGS,
-    ...themeConfig.defaults,
-    background:
-      THEME_BACKGROUND_MAP[spec.theme] ?? themeConfig.defaults?.background ?? themeCodeBackground,
-    ...overrides,
-    // Fixed globally in the editor, whatever the theme says.
-    fontSize: DEFAULT_EDITOR_SETTINGS.fontSize,
-    borderRadius: DEFAULT_BORDER_RADIUS,
-  };
-};
-
-export const buildScene = async (spec: Spec, fontFamily: string): Promise<Scene> => {
-  const themeConfig = THEMES[spec.theme];
-  const lang = LANGUAGES[spec.language].shiki;
+/**
+ * Tokenizes and lays out every step. `fontFamily` must already be loaded:
+ * tokens are placed by their measured width.
+ */
+export const buildScene = (
+  { settings, steps, hold, width }: ReelInput,
+  highlighter: Highlighter,
+  fontFamily: string,
+): Scene => {
+  const themeConfig = THEMES[settings.theme];
+  const lang = LANGUAGES[settings.language].shiki;
   // Every bundled custom theme (src/themes) carries a name.
   const themeName = resolveShikiThemeName(themeConfig)!;
-  const highlighter = await createHighlighter({ themes: [themeConfig.shikiTheme], langs: [lang] });
-  const themeBackground = highlighter.getTheme(themeName).bg;
-  const settings = resolveSettings(spec, themeBackground);
 
   const ctx = new OffscreenCanvas(1, 1).getContext("2d")!;
   const measure = (token: Pick<KeyedToken, "content" | "fontStyle">) => {
@@ -120,10 +107,10 @@ export const buildScene = async (spec: Spec, fontFamily: string): Promise<Scene>
 
   // The same step-to-step diff the editor's playback runs, so tokens pair up
   // exactly as they do in the app.
-  let previous = tokenize(spec.steps[0].code);
+  let previous = tokenize(steps[0].code);
   const first = place(previous, measure);
   const transitions: Transition[] = [];
-  for (const step of spec.steps.slice(1)) {
+  for (const step of steps.slice(1)) {
     const { from, to } = syncMagicMoveStep(previous, tokenize(step.code));
     transitions.push({ from: place(from, measure), to: place(to, measure) });
     previous = to;
@@ -133,21 +120,21 @@ export const buildScene = async (spec: Spec, fontFamily: string): Promise<Scene>
   const codeWidth = Math.ceil(
     Math.max(0, ...placed.flat().map((p) => p.x + measure({ content: p.text }))),
   );
-  const lines = Math.max(...spec.steps.map((step) => step.code.split("\n").length));
   const lineHeight = Math.round(settings.fontSize * FRAME_PRESENTATION.editorLineHeightMultiplier);
 
   return {
     settings,
     frame: themeConfig.frame,
-    themeBackground,
-    title: LANGUAGES[spec.language].label,
+    themeBackground: highlighter.getTheme(themeName).bg,
+    title: LANGUAGES[settings.language].label,
     fontFamily,
     lineHeight,
     codeWidth,
-    codeHeight: lines * lineHeight,
+    lineCounts: steps.map((step) => step.code.split("\n").length),
     first,
     transitions,
-    highlights: spec.steps.map((step) => normalizeHighlightLines(step.highlightLines, step.code)),
-    hold: spec.hold,
+    highlights: steps.map((step) => normalizeHighlightLines(step.highlightLines, step.code)),
+    hold,
+    width,
   };
 };
