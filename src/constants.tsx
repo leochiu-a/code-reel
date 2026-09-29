@@ -447,6 +447,9 @@ export const HIGHLIGHT_STEP_DELAY_MS = 300;
 // after the move delay + animation duration finishes.
 export const PLAY_ANIMATION_INTERVAL_MS = MAGIC_MOVE_DURATION_MS + MAGIC_MOVE_DELAY_MOVE_S * 1000;
 
+// Fixed for every theme; the settings panel does not expose it.
+export const DEFAULT_BORDER_RADIUS = 16;
+
 export const DEFAULT_EDITOR_SETTINGS: EditorSettings = {
   theme: "one-dark",
   language: "javascript",

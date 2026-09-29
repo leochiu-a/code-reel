@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useLocalStorage } from "usehooks-ts";
 import { EditorSettings } from "../types";
 import {
+  DEFAULT_BORDER_RADIUS,
   DEFAULT_EDITOR_SETTINGS,
   FEEDBACK_URL,
   HIGHLIGHT_STEP_DELAY_MS,
@@ -27,7 +28,6 @@ import CopyIcon from "@/components/ui/copy-icon";
 import MessageCircleIcon from "@/components/ui/message-circle-icon";
 
 const DEBUG_HIGHLIGHT = false;
-const DEFAULT_BORDER_RADIUS = 16;
 
 const countLines = (code: string) => (code || "").split(/\r\n|\r|\n/).length || 1;
 

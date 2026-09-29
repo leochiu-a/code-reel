@@ -16,15 +16,14 @@ import { getThemeBackground, getThemeForeground } from "../services/shiki";
 import Frame, { FRAME_PRESENTATION } from "./Frame";
 import CodeTextarea from "./CodeTextarea";
 import MagicMoveCode from "./MagicMoveCode";
+import {
+  countLines,
+  diffHighlightLines,
+  normalizeHighlightLines,
+  type HighlightMove,
+} from "../utils/highlightLines";
 
 const firaCode = Fira_Code();
-
-/**
- * A bar with `from === to` stays put. Preview needs those: the steady-state
- * bars only render while editing, so a line with no move / fade entry has
- * nothing drawn for it at all.
- */
-type HighlightMoveTarget = { id: number; from: number; to: number };
 
 interface CodeEditorProps {
   code: string;
@@ -95,7 +94,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   const [dynamicEditorHeight, setDynamicEditorHeight] = useState(180);
 
   const [highlightCycle, setHighlightCycle] = useState(0);
-  const [moveTargets, setMoveTargets] = useState<HighlightMoveTarget[]>([]);
+  const [moveTargets, setMoveTargets] = useState<HighlightMove[]>([]);
   const [fadeInLines, setFadeInLines] = useState<number[]>([]);
   const [fadeOutLines, setFadeOutLines] = useState<number[]>([]);
   const [moveActive, setMoveActive] = useState(false);
@@ -131,15 +130,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
 
   const displayedLanguage = languageConfig.shiki;
   const displayedCode = code;
-  const highlightLineCount =
-    displayedCode.length > 0 ? displayedCode.split(/\r\n|\r|\n/).length : 1;
-
-  const rawHighlightLineNumbers = (highlightLines ?? [])
-    .filter((line) => Number.isFinite(line) && line > 0 && line <= highlightLineCount)
-    .filter((line, index, list) => list.indexOf(line) === index)
-    .sort((a, b) => a - b);
-
-  const highlightLineNumbers = rawHighlightLineNumbers;
+  const highlightLineNumbers = normalizeHighlightLines(highlightLines, displayedCode);
 
   const [debugSnapshot, setDebugSnapshot] = useState<{
     prev: number[];
@@ -229,41 +220,15 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
       return;
     }
 
-    if (highlightLineNumbers.length === 0) {
-      if (prevHighlightLinesRef.current.length > 0) {
-        setMoveTargets((prev) => (prev.length === 0 ? prev : []));
-        setFadeInLines((prev) => (prev.length === 0 ? prev : []));
-        setFadeOutLines(prevHighlightLinesRef.current);
-        setMoveActive(false);
-        setHighlightCycle((prev) => prev + 1);
-      }
-      prevHighlightLinesRef.current = [];
-      return;
-    }
-
     const prevLines = prevHighlightLinesRef.current;
     if (arraysEqual(prevLines, highlightLineNumbers)) {
       return;
     }
-    const nextLines = highlightLineNumbers;
-    const prevLen = prevLines.length;
-    const nextLen = nextLines.length;
-    const commonLen = Math.min(prevLen, nextLen);
+    const { move, fadeIn, fadeOut } = diffHighlightLines(prevLines, highlightLineNumbers);
 
-    // from === to kept deliberately: dropping those left a highlight that does
-    // not change line between two steps with no element at all, so it blinked
-    // out for the whole of the second step.
-    const nextMoveTargets: HighlightMoveTarget[] = Array.from(
-      { length: commonLen },
-      (_, index) => ({ id: index, from: prevLines[index], to: nextLines[index] }),
-    );
-
-    const newFadeOut = prevLines.slice(commonLen);
-    const newFadeIn = nextLines.slice(commonLen);
-
-    setFadeInLines(newFadeIn);
-    setFadeOutLines(newFadeOut);
-    setMoveTargets(nextMoveTargets);
+    setFadeInLines(fadeIn);
+    setFadeOutLines(fadeOut);
+    setMoveTargets(move);
     setMoveActive(false);
     setHighlightCycle((prev) => prev + 1);
     prevHighlightLinesRef.current = highlightLineNumbers;
@@ -272,9 +237,9 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
       setDebugSnapshot({
         prev: prevLines,
         next: highlightLineNumbers,
-        move: nextMoveTargets,
-        fadeIn: newFadeIn,
-        fadeOut: newFadeOut,
+        move,
+        fadeIn,
+        fadeOut,
       });
     }
   }, [debugHighlight, highlightLineNumbers, showPreview]);
@@ -372,7 +337,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
     const rect = event.currentTarget.getBoundingClientRect();
     const offsetY = event.clientY - rect.top - editorPadding.top;
     const nextLine = Math.floor(offsetY / lineHeight) + 1;
-    const lineNumber = Math.max(1, Math.min(nextLine, highlightLineCount));
+    const lineNumber = Math.max(1, Math.min(nextLine, countLines(displayedCode)));
 
     onHighlightLineChange(lineNumber);
   };
