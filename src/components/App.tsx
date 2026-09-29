@@ -20,7 +20,7 @@ import SnippetControls from "./SnippetControls";
 import SettingsPanel from "./SettingsPanel";
 import CodeEditor from "./CodeEditor";
 import VideoOnboarding from "./VideoOnboarding";
-import VideoExportButton from "./VideoExportButton";
+import VideoExportPopover from "./VideoExportPopover";
 import LogoText from "./LogoText";
 import { FRAME_PRESENTATION } from "./Frame";
 import { Button } from "@/components/ui/button";
@@ -73,6 +73,7 @@ const App: React.FC = () => {
     useImageExport();
   const [imageExportFormat, setImageExportFormat] = useState<"png" | "jpeg" | "webp">("png");
   const [imageExportScale, setImageExportScale] = useState<1 | 2 | 3>(2);
+  const [videoExportScale, setVideoExportScale] = useState<1 | 2 | 3>(2);
   const [isVideoOnboardingOpen, setIsVideoOnboardingOpen] = useState(false);
   const mainRef = useRef<HTMLDivElement | null>(null);
   const maxLineCount = useMemo(
@@ -169,10 +170,12 @@ const App: React.FC = () => {
             {isCopying ? "Copying..." : "Copy"}
           </Button>
 
-          <VideoExportButton
+          <VideoExportPopover
             progress={videoProgress}
             disabled={!highlighter}
-            onExport={() => onExportVideo(settings, snippets)}
+            scale={videoExportScale}
+            onScaleChange={setVideoExportScale}
+            onExport={() => onExportVideo(settings, snippets, videoExportScale)}
           />
 
           <ImageExportPopover

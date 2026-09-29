@@ -28,7 +28,7 @@ const useVideoExport = ({ highlighter, onUnsupported }: UseVideoExportOptions) =
   const [videoProgress, setVideoProgress] = useState<number | null>(null);
 
   const onExportVideo = useCallback(
-    async (settings: ReelInput["settings"], steps: ReelInput["steps"]) => {
+    async (settings: ReelInput["settings"], steps: ReelInput["steps"], scale: number) => {
       if (!highlighter) return;
       setVideoProgress(0);
       try {
@@ -41,7 +41,7 @@ const useVideoExport = ({ highlighter, onUnsupported }: UseVideoExportOptions) =
           highlighter,
           firaCode.style.fontFamily,
         );
-        download(await exportReelVideo(scene, { onProgress: setVideoProgress }));
+        download(await exportReelVideo(scene, { scale, onProgress: setVideoProgress }));
         toast.success("Video exported.");
       } catch (err) {
         if (err instanceof VideoEncodingUnsupportedError) {
