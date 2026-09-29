@@ -36,7 +36,7 @@ const STEPS = [
   },
   {
     title: "Export and share",
-    description: "Save a crisp PNG, JPEG or WebP, or record the playback as a walkthrough video.",
+    description: "Save a crisp PNG, JPEG or WebP, or export the whole animation as an MP4.",
   },
 ] as const;
 
