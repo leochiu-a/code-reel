@@ -1,6 +1,20 @@
 import React from "react";
 import clsx from "clsx";
-import styles from "./Frame.module.css";
+import baseStyles from "./Frame.module.css";
+import prismaStyles from "./frames/prisma.module.css";
+import tailwindStyles from "./frames/tailwind.module.css";
+import triggerStyles from "./frames/trigger.module.css";
+import vercelStyles from "./frames/vercel.module.css";
+
+// Each frame's classes come from its own module: a CSS `@import` between
+// modules does not re-export the imported class names under every bundler.
+const styles = {
+  ...baseStyles,
+  ...vercelStyles,
+  ...tailwindStyles,
+  ...prismaStyles,
+  ...triggerStyles,
+};
 
 export type FrameId = "vercel" | "tailwind" | "prisma" | "trigger";
 
