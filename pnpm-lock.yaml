@@ -54,6 +54,9 @@ importers:
       lucide-react:
         specifier: ^1.47.0
         version: 1.47.0(react@19.3.0)
+      mediabunny:
+        specifier: ^1.60.0
+        version: 1.60.0
       modern-screenshot:
         specifier: ^4.7.0
         version: 4.7.0
@@ -3249,6 +3252,9 @@ packages:
 
   mediabunny@1.56.1:
     resolution: {integrity: sha512-DNOm0bRBmeOxJgCK/g3LxNWbxY5morTauNdlychujGmJ9L37ezVezkNoI1WtO2Xdb4WlWWJlYfIKnOEzd5phRw==}
+
+  mediabunny@1.60.0:
+    resolution: {integrity: sha512-CRQ/2D+qUF9w2IyjbjTxxSLEG+PeWeD4whb43UpUBpeNomWb/ffn+ngKgqJSPZ+bmO66MX2yBJQITZ6ijfRjug==}
 
   memfs@3.4.3:
     resolution: {integrity: sha512-eivjfi7Ahr6eQTn44nvTnR60e4a1Fs1Via2kCR5lHo/kyNoiMWaXCNJ/GpSd0ilXas2JSOl9B5FTIhflXu0hlg==}
@@ -6877,6 +6883,11 @@ snapshots:
       vfile: 6.0.3
 
   mediabunny@1.56.1:
+    dependencies:
+      '@types/dom-mediacapture-transform': 0.1.12
+      '@types/dom-webcodecs': 0.1.13
+
+  mediabunny@1.60.0:
     dependencies:
       '@types/dom-mediacapture-transform': 0.1.12
       '@types/dom-webcodecs': 0.1.13

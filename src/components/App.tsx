@@ -14,16 +14,17 @@ import {
 } from "../constants";
 import useStepState from "../hooks/useStepState";
 import useImageExport from "../hooks/useImageExport";
+import useVideoExport from "../hooks/useVideoExport";
 import useHighlighter from "../hooks/useHighlighter";
 import SnippetControls from "./SnippetControls";
 import SettingsPanel from "./SettingsPanel";
 import CodeEditor from "./CodeEditor";
 import VideoOnboarding from "./VideoOnboarding";
+import VideoExportButton from "./VideoExportButton";
 import LogoText from "./LogoText";
 import { FRAME_PRESENTATION } from "./Frame";
 import { Button } from "@/components/ui/button";
 import ImageExportPopover from "./ImageExportPopover";
-import BulbSvg from "@/components/ui/bulb-svg";
 import CopyIcon from "@/components/ui/copy-icon";
 import MessageCircleIcon from "@/components/ui/message-circle-icon";
 
@@ -96,9 +97,14 @@ const App: React.FC = () => {
 
   const shouldShowPreview = Boolean(highlighter) && isPlaying;
 
+  // Browsers without a video encoder fall back to the screen-recording guide.
   const handleOpenVideoOnboarding = useCallback(() => {
     setIsVideoOnboardingOpen(true);
   }, []);
+  const { onExportVideo, videoProgress } = useVideoExport({
+    highlighter,
+    onUnsupported: handleOpenVideoOnboarding,
+  });
 
   const handleImageExport = useCallback(async () => {
     await onExport({ format: imageExportFormat, scale: imageExportScale });
@@ -163,14 +169,11 @@ const App: React.FC = () => {
             {isCopying ? "Copying..." : "Copy"}
           </Button>
 
-          <Button
-            onClick={handleOpenVideoOnboarding}
-            variant="secondary"
-            animatedIcon={<BulbSvg size={14} className="text-emerald-100" />}
-            className="h-8 cursor-pointer border border-white/10 bg-white/5 px-3 text-xs text-slate-100 hover:bg-white/10 hover:text-white"
-          >
-            Export Video
-          </Button>
+          <VideoExportButton
+            progress={videoProgress}
+            disabled={!highlighter}
+            onExport={() => onExportVideo(settings, snippets)}
+          />
 
           <ImageExportPopover
             isExporting={isExporting}

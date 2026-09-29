@@ -2,7 +2,6 @@
 
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { Highlighter } from "shiki";
-import { Fira_Code } from "next/font/google";
 
 import { EditorSettings } from "../types";
 import {
@@ -13,6 +12,7 @@ import {
   THEMES,
 } from "../constants";
 import { getThemeBackground, getThemeForeground } from "../services/shiki";
+import { firaCode } from "../fonts";
 import Frame, { FRAME_PRESENTATION } from "./Frame";
 import CodeTextarea from "./CodeTextarea";
 import MagicMoveCode from "./MagicMoveCode";
@@ -22,8 +22,6 @@ import {
   normalizeHighlightLines,
   type HighlightMove,
 } from "../utils/highlightLines";
-
-const firaCode = Fira_Code();
 
 interface CodeEditorProps {
   code: string;
