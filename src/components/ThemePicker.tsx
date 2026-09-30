@@ -8,6 +8,7 @@ import {
   DEFAULT_EDITOR_SETTINGS,
   THEME_BACKGROUND_MAP,
   THEMES,
+  getThemeSettings,
   resolveShikiThemeName,
 } from "../constants";
 import { getThemeBackground, getThemeForeground } from "../services/shiki";
@@ -188,12 +189,7 @@ const ThemePicker: React.FC<ThemePickerProps> = ({
 
   const selectTheme = useCallback(
     (option: ThemeOption) => {
-      onSettingsChange({
-        theme: option.key,
-        ...option.defaults,
-        background:
-          THEME_BACKGROUND_MAP[option.key] ?? option.defaults.background ?? option.background,
-      });
+      onSettingsChange(getThemeSettings(option.key, option.background));
     },
     [onSettingsChange],
   );

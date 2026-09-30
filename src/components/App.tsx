@@ -2,8 +2,9 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useLocalStorage } from "usehooks-ts";
-import { EditorSettings } from "../types";
+import { EditorSettings, Theme } from "../types";
 import {
   DEFAULT_BORDER_RADIUS,
   DEFAULT_EDITOR_SETTINGS,
@@ -11,6 +12,8 @@ import {
   HIGHLIGHT_STEP_DELAY_MS,
   PLAY_ANIMATION_INTERVAL_MS,
   PREVIEW_STEPS,
+  THEMES,
+  getThemeSettings,
 } from "../constants";
 import useStepState from "../hooks/useStepState";
 import useImageExport from "../hooks/useImageExport";
@@ -29,6 +32,13 @@ import CopyIcon from "@/components/ui/copy-icon";
 import MessageCircleIcon from "@/components/ui/message-circle-icon";
 
 const DEBUG_HIGHLIGHT = false;
+
+// The landing page's template cards open the editor with `?theme=` to start
+// from that look. It is read through the router: on a client-side navigation
+// the page renders before the browser URL changes, so `window.location` would
+// still show the landing page.
+const parseLinkedTheme = (theme: string | null): Theme | null =>
+  theme && theme in THEMES ? (theme as Theme) : null;
 
 const countLines = (code: string) => (code || "").split(/\r\n|\r|\n/).length || 1;
 
@@ -54,6 +64,7 @@ const App: React.FC = () => {
     intervalMs: PLAY_ANIMATION_INTERVAL_MS,
   });
   const highlighter = useHighlighter();
+  const searchParams = useSearchParams();
   // null until the frame is first resized, so it keeps the editor's default width.
   const [editorWidth, setEditorWidth] = useLocalStorage<number | null>(
     "codesnap-editor-width",
@@ -63,12 +74,22 @@ const App: React.FC = () => {
     "codesnap-settings",
     DEFAULT_EDITOR_SETTINGS,
   );
-  const [settings, setSettings] = useState<EditorSettings>({
-    ...DEFAULT_EDITOR_SETTINGS,
-    ...storedSettings,
-    fontSize: DEFAULT_EDITOR_SETTINGS.fontSize,
-    borderRadius: DEFAULT_BORDER_RADIUS,
+  const [settings, setSettings] = useState<EditorSettings>(() => {
+    const restored = { ...DEFAULT_EDITOR_SETTINGS, ...storedSettings };
+    const linkedTheme = parseLinkedTheme(searchParams.get("theme"));
+    return {
+      ...restored,
+      ...(linkedTheme && getThemeSettings(linkedTheme, restored.background)),
+      fontSize: DEFAULT_EDITOR_SETTINGS.fontSize,
+      borderRadius: DEFAULT_BORDER_RADIUS,
+    };
   });
+
+  // The linked theme is applied once; drop it so a reload keeps later changes.
+  useEffect(() => {
+    if (!searchParams.has("theme")) return;
+    window.history.replaceState(null, "", window.location.pathname);
+  }, [searchParams]);
   const { onExport, onCopyImage, isCopying, isExporting, copyStatus, isCopySupported } =
     useImageExport();
   const [imageExportFormat, setImageExportFormat] = useState<"png" | "jpeg" | "webp">("png");

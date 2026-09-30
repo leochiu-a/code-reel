@@ -389,6 +389,22 @@ export const THEMES: Record<Theme, ThemeConfig> = {
 export const resolveShikiThemeName = (themeConfig: ThemeConfig) =>
   typeof themeConfig.shikiTheme === "string" ? themeConfig.shikiTheme : themeConfig.shikiTheme.name;
 
+/**
+ * The settings a theme brings with it when picked. Themes without a canvas of
+ * their own keep `fallbackBackground`.
+ */
+export const getThemeSettings = (
+  theme: Theme,
+  fallbackBackground: string,
+): Partial<EditorSettings> => {
+  const defaults = THEMES[theme].defaults ?? {};
+  return {
+    theme,
+    ...defaults,
+    background: THEME_BACKGROUND_MAP[theme] ?? defaults.background ?? fallbackBackground,
+  };
+};
+
 export const LANGUAGES = {
   javascript: {
     label: "JavaScript",
