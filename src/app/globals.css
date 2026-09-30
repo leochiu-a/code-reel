@@ -144,14 +144,16 @@ body {
 }
 
 /* The code differs between the card and the editor, and stretching text reads
-   as a glitch, so the code layer keeps its aspect ratio and hands over early:
-   the card's code clears while the editor's comes in. */
+   as a glitch, so the code layer keeps its aspect ratio. The two snippets hand
+   over in turn rather than crossfade, since two different texts on top of each
+   other read as noise: the card's code blurs away, then the editor's settles in
+   from a slight blur and rise while the window keeps growing around it. */
 ::view-transition-old(editor-frame-code) {
-  animation: 450ms ease-out both reel-morph-out;
+  animation: 450ms ease-in both reel-code-out;
 }
 
 ::view-transition-new(editor-frame-code) {
-  animation: 450ms ease-out both reel-morph-reveal;
+  animation: 450ms cubic-bezier(0.22, 1, 0.36, 1) both reel-code-in;
 }
 
 /* The card's frame stays opaque under the editor's and leaves once covered. */
@@ -165,13 +167,30 @@ body {
   }
 }
 
-@keyframes reel-morph-out {
+@keyframes reel-code-out {
   0% {
     opacity: 1;
+    filter: blur(0);
   }
-  35%,
+  30%,
   100% {
     opacity: 0;
+    filter: blur(3px);
+  }
+}
+
+@keyframes reel-code-in {
+  0%,
+  30% {
+    opacity: 0;
+    filter: blur(4px);
+    translate: 0 6px;
+  }
+  80%,
+  100% {
+    opacity: 1;
+    filter: blur(0);
+    translate: 0 0;
   }
 }
 
