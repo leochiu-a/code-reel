@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { ViewTransition } from "react";
 import "@shikijs/magic-move/style.css";
 
 import { Toaster } from "@/components/ui/sonner";
@@ -37,15 +36,13 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <ViewTransition>
-      <html lang="en" className={`${inter.variable} dark`} suppressHydrationWarning>
-        <body suppressHydrationWarning>
-          {children}
-          <Toaster richColors position="top-center" />
-          <Analytics />
-          <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID ?? ""} />
-        </body>
-      </html>
-    </ViewTransition>
+    <html lang="en" className={`${inter.variable} dark`} suppressHydrationWarning>
+      <body suppressHydrationWarning>
+        {children}
+        <Toaster richColors position="top-center" />
+        <Analytics />
+        <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID ?? ""} />
+      </body>
+    </html>
   );
 }

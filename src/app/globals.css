@@ -88,6 +88,116 @@ body {
   height: 100%;
 }
 
+/* Route changes. The leaving page fades out fast and the arriving one fades in
+   as it clears, with nothing sliding, so the only motion across the cut is the
+   shared elements: the logo, and a template card growing into the editor. */
+::view-transition-old(.page-exit) {
+  animation: 160ms ease-out both reel-page-fade reverse;
+}
+
+::view-transition-new(.page-enter) {
+  animation: 260ms ease-out 120ms both reel-page-fade;
+}
+
+@keyframes reel-page-fade {
+  from {
+    opacity: 0;
+    filter: blur(4px);
+  }
+}
+
+/* A template card growing into the editor frame. The two frames hold different
+   code, so the default crossfade would leave both half transparent mid-flight
+   and the frame would seem to empty out. Instead the card stays opaque
+   underneath while the editor fades in over it as the frame grows. */
+/* Groups stack old names first and new-only names after, so the arriving
+   page (named only on the new side) would paint over the morphing frame and
+   its opaque background would hide it as the page fades in. */
+::view-transition-group(.morph) {
+  z-index: 1;
+  animation-duration: 450ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* The frame and its code window morph as two layers (see Frame): each moves
+   from its place on the card to its place in the editor, so neither overshoots.
+   Every snapshot is opaque from start to end and none blends with another. */
+::view-transition-old(.morph),
+::view-transition-new(.morph) {
+  mix-blend-mode: normal;
+}
+
+/* The frame layer is the theme's background and chrome, the same on both sides,
+   so both snapshots stretch to its box: by default they keep their own aspect
+   ratio at its width, and the card's would stick out past the growing frame. */
+::view-transition-old(editor-frame),
+::view-transition-new(editor-frame) {
+  height: 100%;
+}
+
+::view-transition-old(editor-frame) {
+  animation: 450ms linear both reel-morph-hold;
+}
+
+::view-transition-new(editor-frame) {
+  animation: 450ms ease-out both reel-morph-reveal;
+}
+
+/* The code differs between the card and the editor, and stretching text reads
+   as a glitch, so the code layer keeps its aspect ratio and hands over early:
+   the card's code clears while the editor's comes in. */
+::view-transition-old(editor-frame-code) {
+  animation: 450ms ease-out both reel-morph-out;
+}
+
+::view-transition-new(editor-frame-code) {
+  animation: 450ms ease-out both reel-morph-reveal;
+}
+
+/* The card's frame stays opaque under the editor's and leaves once covered. */
+@keyframes reel-morph-hold {
+  0%,
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes reel-morph-out {
+  0% {
+    opacity: 1;
+  }
+  35%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes reel-morph-reveal {
+  0%,
+  15% {
+    opacity: 0;
+  }
+  65%,
+  100% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(.page-exit),
+  ::view-transition-new(.page-enter),
+  ::view-transition-group(.morph),
+  ::view-transition-old(editor-frame),
+  ::view-transition-new(editor-frame),
+  ::view-transition-old(editor-frame-code),
+  ::view-transition-new(editor-frame-code) {
+    animation: none;
+  }
+}
+
 @keyframes codesnap-highlight-fade-out {
   from {
     opacity: 1;

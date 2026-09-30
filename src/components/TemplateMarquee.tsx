@@ -1,11 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { memo, useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 
-import { DEFAULT_EDITOR_SETTINGS, LANGUAGES, THEMES, getThemeSettings } from "@/constants";
+import {
+  DEFAULT_EDITOR_SETTINGS,
+  EDITOR_VIEW_TRANSITION,
+  LANGUAGES,
+  THEMES,
+  getThemeSettings,
+} from "@/constants";
 import useHighlighter from "@/hooks/useHighlighter";
+import { storeTheme } from "@/services/editorSettings";
 import type { EditorSettings, Language, Theme } from "@/types";
 import type { Highlighter } from "shiki";
 
@@ -136,21 +143,40 @@ type TemplateCardProps = {
   highlighter: Highlighter | null;
   /** False for the marquee's second copy, which screen readers and Tab skip. */
   focusable: boolean;
+  id: string;
+  /** The clicked card, whose preview morphs into the editor frame. */
+  opening: boolean;
+  onOpen: (id: string) => void;
 };
 
-function TemplateCard({ theme, settings, steps, highlighter, focusable }: TemplateCardProps) {
+// Memoised so a click re-renders only the card whose `opening` flips: each card
+// is a live editor, and re-rendering all of them delays the navigation.
+const TemplateCard = memo(function TemplateCard({
+  theme,
+  settings,
+  steps,
+  highlighter,
+  focusable,
+  id,
+  opening,
+  onOpen,
+}: TemplateCardProps) {
   const [playing, setPlaying] = useState(false);
   const step = steps[playing ? 1 : 0];
 
   return (
     <Link
-      href={`/app?theme=${theme}`}
+      href="/app"
       tabIndex={focusable ? undefined : -1}
       className="group block w-[300px] shrink-0 rounded-2xl border border-white/10 bg-[#212121] p-2 transition-[border-color,transform] duration-300 hover:-translate-y-1 hover:border-white/25 focus-visible:border-white/40 focus-visible:outline-none"
       onPointerEnter={() => setPlaying(true)}
       onPointerLeave={() => setPlaying(false)}
       onFocus={() => setPlaying(true)}
       onBlur={() => setPlaying(false)}
+      onClick={() => {
+        storeTheme(theme);
+        onOpen(id);
+      }}
     >
       <div
         className="overflow-hidden rounded-xl"
@@ -170,6 +196,9 @@ function TemplateCard({ theme, settings, steps, highlighter, focusable }: Templa
             containerWidth={RENDER_WIDTH}
             containerHeight={RENDER_HEIGHT}
             scale={PREVIEW_SCALE}
+            // Only the clicked card takes the shared name: the loop repeats
+            // every card, and two elements with one name would abort it.
+            viewTransitionName={opening ? EDITOR_VIEW_TRANSITION : undefined}
           />
         </div>
       </div>
@@ -184,10 +213,11 @@ function TemplateCard({ theme, settings, steps, highlighter, focusable }: Templa
       </div>
     </Link>
   );
-}
+});
 
 export function TemplateMarquee() {
   const highlighter = useHighlighter();
+  const [openingCard, setOpeningCard] = useState<string | null>(null);
 
   return (
     <div className="reel-marquee-mask relative overflow-hidden motion-reduce:overflow-x-auto">
@@ -197,11 +227,21 @@ export function TemplateMarquee() {
           // screen, so it must stay clickable (not inert); it only leaves the
           // accessibility tree and the tab order.
           <ul key={copy} aria-hidden={copy === 1} className="flex shrink-0 gap-3">
-            {TEMPLATES.map((template) => (
-              <li key={template.theme}>
-                <TemplateCard {...template} highlighter={highlighter} focusable={copy === 0} />
-              </li>
-            ))}
+            {TEMPLATES.map((template) => {
+              const id = `${copy}-${template.theme}`;
+              return (
+                <li key={template.theme}>
+                  <TemplateCard
+                    {...template}
+                    highlighter={highlighter}
+                    focusable={copy === 0}
+                    id={id}
+                    opening={openingCard === id}
+                    onOpen={setOpeningCard}
+                  />
+                </li>
+              );
+            })}
           </ul>
         ))}
       </div>

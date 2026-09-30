@@ -42,6 +42,8 @@ interface CodeEditorProps {
   /** CSS transform scale applied by an ancestor; magic-move divides its measurements by it. */
   scale?: number;
   debugHighlight?: boolean;
+  /** Shared view transition name for the frame; see Frame. */
+  viewTransitionName?: string;
 }
 
 // The capture frame's closest ancestors shrink-wrap to their content, so their
@@ -85,6 +87,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   onWidthChange,
   scale = 1,
   debugHighlight = false,
+  viewTransitionName,
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
@@ -383,6 +386,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
           borderShadow={settings.borderShadow}
           windowControls={settings.windowControls}
           windowTitle={languageConfig.label}
+          viewTransitionName={viewTransitionName}
         >
           <div className={FRAME_PRESENTATION.editorShellClassName}>
             {!showPreview && settings.showLineNumbers && (

@@ -2,23 +2,22 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 import { useLocalStorage } from "usehooks-ts";
-import { EditorSettings, Theme } from "../types";
+import { EditorSettings } from "../types";
 import {
   DEFAULT_BORDER_RADIUS,
   DEFAULT_EDITOR_SETTINGS,
+  EDITOR_VIEW_TRANSITION,
   FEEDBACK_URL,
   HIGHLIGHT_STEP_DELAY_MS,
   PLAY_ANIMATION_INTERVAL_MS,
   PREVIEW_STEPS,
-  THEMES,
-  getThemeSettings,
 } from "../constants";
 import useStepState from "../hooks/useStepState";
 import useImageExport from "../hooks/useImageExport";
 import useVideoExport from "../hooks/useVideoExport";
 import useHighlighter from "../hooks/useHighlighter";
+import { readStoredSettings, writeStoredSettings } from "../services/editorSettings";
 import SnippetControls from "./SnippetControls";
 import SettingsPanel from "./SettingsPanel";
 import CodeEditor from "./CodeEditor";
@@ -32,13 +31,6 @@ import CopyIcon from "@/components/ui/copy-icon";
 import MessageCircleIcon from "@/components/ui/message-circle-icon";
 
 const DEBUG_HIGHLIGHT = false;
-
-// The landing page's template cards open the editor with `?theme=` to start
-// from that look. It is read through the router: on a client-side navigation
-// the page renders before the browser URL changes, so `window.location` would
-// still show the landing page.
-const parseLinkedTheme = (theme: string | null): Theme | null =>
-  theme && theme in THEMES ? (theme as Theme) : null;
 
 const countLines = (code: string) => (code || "").split(/\r\n|\r|\n/).length || 1;
 
@@ -64,32 +56,17 @@ const App: React.FC = () => {
     intervalMs: PLAY_ANIMATION_INTERVAL_MS,
   });
   const highlighter = useHighlighter();
-  const searchParams = useSearchParams();
   // null until the frame is first resized, so it keeps the editor's default width.
   const [editorWidth, setEditorWidth] = useLocalStorage<number | null>(
     "codesnap-editor-width",
     null,
   );
-  const [storedSettings, setStoredSettings] = useLocalStorage<EditorSettings>(
-    "codesnap-settings",
-    DEFAULT_EDITOR_SETTINGS,
-  );
-  const [settings, setSettings] = useState<EditorSettings>(() => {
-    const restored = { ...DEFAULT_EDITOR_SETTINGS, ...storedSettings };
-    const linkedTheme = parseLinkedTheme(searchParams.get("theme"));
-    return {
-      ...restored,
-      ...(linkedTheme && getThemeSettings(linkedTheme, restored.background)),
-      fontSize: DEFAULT_EDITOR_SETTINGS.fontSize,
-      borderRadius: DEFAULT_BORDER_RADIUS,
-    };
-  });
-
-  // The linked theme is applied once; drop it so a reload keeps later changes.
-  useEffect(() => {
-    if (!searchParams.has("theme")) return;
-    window.history.replaceState(null, "", window.location.pathname);
-  }, [searchParams]);
+  const [settings, setSettings] = useState<EditorSettings>(() => ({
+    ...DEFAULT_EDITOR_SETTINGS,
+    ...readStoredSettings(),
+    fontSize: DEFAULT_EDITOR_SETTINGS.fontSize,
+    borderRadius: DEFAULT_BORDER_RADIUS,
+  }));
   const { onExport, onCopyImage, isCopying, isExporting, copyStatus, isCopySupported } =
     useImageExport();
   const [imageExportFormat, setImageExportFormat] = useState<"png" | "jpeg" | "webp">("png");
@@ -148,12 +125,12 @@ const App: React.FC = () => {
   const highlightDelayMs = previewIndex * HIGHLIGHT_STEP_DELAY_MS;
 
   useEffect(() => {
-    setStoredSettings({
+    writeStoredSettings({
       ...settings,
       fontSize: DEFAULT_EDITOR_SETTINGS.fontSize,
       borderRadius: DEFAULT_BORDER_RADIUS,
     });
-  }, [settings, setStoredSettings]);
+  }, [settings]);
 
   return (
     <div className="flex h-screen w-full flex-col overflow-hidden bg-[#181818] text-neutral-100 selection:bg-emerald-400/30 selection:text-emerald-100">
@@ -232,6 +209,7 @@ const App: React.FC = () => {
                 onWidthChange={setEditorWidth}
                 highlighter={highlighter}
                 debugHighlight={DEBUG_HIGHLIGHT}
+                viewTransitionName={EDITOR_VIEW_TRANSITION}
               />
 
               <SnippetControls

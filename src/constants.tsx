@@ -478,5 +478,10 @@ export const DEFAULT_EDITOR_SETTINGS: EditorSettings = {
     "rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px, rgba(255, 255, 255, 0.4) 0px 0px 0px 1.5px inset, rgba(0, 0, 0, 0.45) 0px 25px 20px -20px",
 };
 
+// Shared by the landing page's template cards and the editor frame, so a card
+// morphs into the editor when it is opened. Frame names its code window
+// `${name}-code`, and globals.css styles both layers by these names.
+export const EDITOR_VIEW_TRANSITION = "editor-frame";
+
 export const REPOSITORY_URL = "https://github.com/leochiu-a/code-reel";
 export const FEEDBACK_URL = `${REPOSITORY_URL}/issues/new`;

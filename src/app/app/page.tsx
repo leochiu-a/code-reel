@@ -1,11 +1,25 @@
 "use client";
 
-import dynamic from "next/dynamic";
+import { useSyncExternalStore } from "react";
 
-const App = dynamic(() => import("@/components/App"), {
-  ssr: false,
-});
+import App from "@/components/App";
+import { PageTransition } from "@/components/PageTransition";
+
+const subscribe = () => () => {};
 
 export default function Page() {
-  return <App />;
+  // The editor reads localStorage and browser APIs as it renders, so it skips
+  // the server render and hydration. A client-side navigation renders it at
+  // once, in the navigation's own commit, which lets the landing page's
+  // template card morph into it; a lazy chunk would suspend and break the pair.
+  const isClient = useSyncExternalStore(
+    subscribe,
+    () => true,
+    () => false,
+  );
+  return isClient ? (
+    <PageTransition>
+      <App />
+    </PageTransition>
+  ) : null;
 }

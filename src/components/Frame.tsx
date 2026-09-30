@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ViewTransition } from "react";
 import clsx from "clsx";
 import baseStyles from "./Frame.module.css";
 import prismaStyles from "./frames/prisma.module.css";
@@ -50,6 +50,12 @@ type FrameProps = {
   borderShadow: string;
   windowControls: boolean;
   windowTitle: string;
+  /**
+   * Names the frame and its code window for a shared view transition. They
+   * morph as two layers: scaling the frame as one snapshot would carry the code
+   * window's placement from one padding to the other and snap it at the end.
+   */
+  viewTransitionName?: string;
   children: React.ReactNode;
 };
 
@@ -63,6 +69,7 @@ const Frame: React.FC<FrameProps> = ({
   borderShadow,
   windowControls,
   windowTitle,
+  viewTransitionName,
   children,
 }) => {
   const framePresentation = FRAME_PRESENTATION;
@@ -122,8 +129,23 @@ const Frame: React.FC<FrameProps> = ({
     </div>
   );
 
+  const content = (
+    <ViewTransition
+      name={viewTransitionName && `${viewTransitionName}-code`}
+      share="morph"
+      default="none"
+    >
+      <div className={styles.content}>{shellContent}</div>
+    </ViewTransition>
+  );
+  const named = (node: React.ReactElement) => (
+    <ViewTransition name={viewTransitionName} share="morph" default="none">
+      {node}
+    </ViewTransition>
+  );
+
   if (frame === "vercel") {
-    return (
+    return named(
       <div className="relative flex w-full flex-col overflow-hidden" style={containerStyle}>
         <div className={clsx(styles.frame, styles.vercelFrame)} style={style}>
           <div className={styles.vercelWindow}>
@@ -131,15 +153,15 @@ const Frame: React.FC<FrameProps> = ({
             <span className={styles.vercelGridlinesVertical} data-grid />
             <span className={styles.vercelBracketLeft} data-grid />
             <span className={styles.vercelBracketRight} data-grid />
-            <div className={styles.content}>{shellContent}</div>
+            {content}
           </div>
         </div>
-      </div>
+      </div>,
     );
   }
 
   if (frame === "tailwind") {
-    return (
+    return named(
       <div className="relative flex w-full flex-col overflow-hidden" style={containerStyle}>
         <div className={clsx(styles.frame, styles.tailwindFrame)} style={style}>
           <div className={styles.tailwindBeams} aria-hidden />
@@ -160,15 +182,15 @@ const Frame: React.FC<FrameProps> = ({
               </div>
             </div>
 
-            <div className={styles.content}>{shellContent}</div>
+            {content}
           </div>
         </div>
-      </div>
+      </div>,
     );
   }
 
   if (frame === "prisma") {
-    return (
+    return named(
       <div className="relative flex w-full flex-col overflow-hidden" style={containerStyle}>
         <div className={clsx(styles.frame, styles.prismaFrame)} style={style}>
           <div className={styles.prismaWindow}>
@@ -177,15 +199,15 @@ const Frame: React.FC<FrameProps> = ({
             <span data-frameborder />
             <span data-frameborder />
 
-            <div className={styles.content}>{shellContent}</div>
+            {content}
           </div>
         </div>
-      </div>
+      </div>,
     );
   }
 
   if (frame === "trigger") {
-    return (
+    return named(
       <div className="relative flex w-full flex-col overflow-hidden" style={containerStyle}>
         <div className={clsx(styles.frame, styles.triggerFrame)} style={style}>
           <div className={styles.triggerPatternTop} aria-hidden />
@@ -193,19 +215,19 @@ const Frame: React.FC<FrameProps> = ({
           <div className={styles.triggerWindow}>
             <span className={styles.triggerGridlinesHorizontal} data-grid />
             <span className={styles.triggerGridlinesVertical} data-grid />
-            <div className={styles.content}>{shellContent}</div>
+            {content}
           </div>
         </div>
-      </div>
+      </div>,
     );
   }
 
-  return (
+  return named(
     <div className="relative flex w-full flex-col overflow-hidden" style={containerStyle}>
       <div className={styles.frame} style={style}>
-        <div className={styles.content}>{shellContent}</div>
+        {content}
       </div>
-    </div>
+    </div>,
   );
 };
 
