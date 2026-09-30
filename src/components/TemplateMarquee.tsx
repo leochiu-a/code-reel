@@ -7,6 +7,7 @@ import Link from "next/link";
 import {
   DEFAULT_EDITOR_SETTINGS,
   EDITOR_VIEW_TRANSITION,
+  HIGHLIGHT_STEP_DELAY_MS,
   LANGUAGES,
   THEMES,
   getThemeSettings,
@@ -192,6 +193,9 @@ const TemplateCard = memo(function TemplateCard({
             settings={settings}
             showPreview={Boolean(highlighter)}
             highlightLines={step.highlightLines}
+            // Every step change delays the highlight the way playback and the
+            // exported video do, so the code moves first and the line follows.
+            highlightDelayMs={HIGHLIGHT_STEP_DELAY_MS}
             highlighter={highlighter}
             containerWidth={RENDER_WIDTH}
             containerHeight={RENDER_HEIGHT}
