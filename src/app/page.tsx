@@ -5,6 +5,7 @@ import LogoText from "@/components/LogoText";
 import { CodePreview } from "@/components/CodePreview";
 import { HeroBackdrop } from "@/components/HeroBackdrop";
 import { HeroCta, NavActions } from "@/components/LandingActions";
+import { TemplateMarquee } from "@/components/TemplateMarquee";
 import { LANGUAGES } from "@/constants";
 
 const FEATURES = [
@@ -180,6 +181,22 @@ export default function Page() {
             );
           })}
         </div>
+      </section>
+
+      {/* Template gallery */}
+      <section aria-labelledby="templates-heading" className="pb-24">
+        <div className="mx-auto w-full max-w-6xl px-6">
+          <h2
+            id="templates-heading"
+            className="reel-reveal text-center text-2xl font-semibold tracking-tight text-white sm:text-3xl"
+          >
+            Start from a look you like
+          </h2>
+          <p className="reel-reveal mx-auto mt-3 mb-10 max-w-xl text-center text-sm text-white/60 sm:text-base">
+            Hover a card to watch it play, then open it in the editor with your own code.
+          </p>
+        </div>
+        <TemplateMarquee />
       </section>
 
       {/* How it works */}
