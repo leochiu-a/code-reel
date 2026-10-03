@@ -30,7 +30,7 @@ const calculateMetadata: CalculateMetadataFunction<Props> = async ({ props }) =>
     }),
     font.waitUntilDone(),
   ]);
-  const scene = buildScene(toReelInput(spec, highlighter), highlighter, font.fontFamily);
+  const scene = buildScene(toReelInput(spec), highlighter, font.fontFamily);
   return {
     ...measureReel(scene),
     fps: FPS,

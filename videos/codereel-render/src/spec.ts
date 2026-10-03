@@ -1,10 +1,7 @@
-import type { Highlighter } from "shiki";
 import {
   DEFAULT_BORDER_RADIUS,
   DEFAULT_EDITOR_SETTINGS,
   LANGUAGES,
-  resolveShikiThemeName,
-  THEME_BACKGROUND_MAP,
   THEMES,
 } from "../../../src/constants";
 import type { ReelInput } from "../../../src/reel/scene";
@@ -99,9 +96,8 @@ export const parseSpec = (input: unknown): Spec => {
 };
 
 /** Resolves settings the way the editor does when a theme is picked (ThemePicker, App). */
-export const toReelInput = (spec: Spec, highlighter: Highlighter): ReelInput => {
+export const toReelInput = (spec: Spec): ReelInput => {
   const themeConfig = THEMES[spec.theme];
-  const themeCodeBackground = highlighter.getTheme(resolveShikiThemeName(themeConfig)!).bg;
   const overrides = Object.fromEntries(
     Object.entries({
       padding: spec.padding,
@@ -114,8 +110,6 @@ export const toReelInput = (spec: Spec, highlighter: Highlighter): ReelInput => 
     settings: {
       ...DEFAULT_EDITOR_SETTINGS,
       ...themeConfig.defaults,
-      background:
-        THEME_BACKGROUND_MAP[spec.theme] ?? themeConfig.defaults?.background ?? themeCodeBackground,
       ...overrides,
       theme: spec.theme,
       language: spec.language,
