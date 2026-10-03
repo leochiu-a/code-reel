@@ -3,7 +3,7 @@
 import React from "react";
 import type { Highlighter } from "shiki";
 import { EditorSettings, Language } from "../types";
-import { DEFAULT_EDITOR_SETTINGS, LANGUAGES } from "../constants";
+import { DEFAULT_EDITOR_SETTINGS, LANGUAGES, THEMES } from "../constants";
 import {
   ToggleGroup,
   ToggleGroupItem,
@@ -33,6 +33,9 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
   copyStatus,
 }) => {
   const paddingOptions = [16, 32, 64, 96];
+  // A brand frame draws its own window chrome and shadow, so those options
+  // only apply to the plain window.
+  const hasOwnFrame = Boolean(THEMES[settings.theme].frame);
   const borderShadowOptions = [
     { label: "None", value: "border-none" },
     {
@@ -97,21 +100,23 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
             </ToggleGroup>
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <span className="text-xs text-white/80">Shadow</span>
-            <ToggleGroup
-              type="single"
-              value={settings.borderShadow ?? DEFAULT_EDITOR_SETTINGS.borderShadow}
-              onValueChange={(value) => value && onSettingsChange({ borderShadow: value })}
-              className="w-full justify-start gap-1"
-            >
-              {borderShadowOptions.map((option) => (
-                <ToggleGroupItem key={option.value} value={option.value} className="h-8 flex-1">
-                  {option.label}
-                </ToggleGroupItem>
-              ))}
-            </ToggleGroup>
-          </div>
+          {!hasOwnFrame && (
+            <div className="flex flex-col gap-1.5">
+              <span className="text-xs text-white/80">Shadow</span>
+              <ToggleGroup
+                type="single"
+                value={settings.borderShadow ?? DEFAULT_EDITOR_SETTINGS.borderShadow}
+                onValueChange={(value) => value && onSettingsChange({ borderShadow: value })}
+                className="w-full justify-start gap-1"
+              >
+                {borderShadowOptions.map((option) => (
+                  <ToggleGroupItem key={option.value} value={option.value} className="h-8 flex-1">
+                    {option.label}
+                  </ToggleGroupItem>
+                ))}
+              </ToggleGroup>
+            </div>
+          )}
         </div>
 
         {/* Visibility */}
@@ -129,18 +134,22 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
               className="cursor-pointer border-white/20 data-[state=checked]:border-emerald-500 data-[state=checked]:bg-emerald-500"
             />
           </div>
-          <div
-            className="flex cursor-pointer items-center justify-between rounded-md border border-white/10 bg-white/5 p-3 transition-colors hover:border-white/20"
-            onClick={() => onSettingsChange({ windowControls: !settings.windowControls })}
-          >
-            <span className="text-sm text-slate-200">Window Controls</span>
-            <Checkbox
-              checked={settings.windowControls}
-              onCheckedChange={(checked) => onSettingsChange({ windowControls: Boolean(checked) })}
-              onClick={(event) => event.stopPropagation()}
-              className="cursor-pointer border-white/20 data-[state=checked]:border-emerald-500 data-[state=checked]:bg-emerald-500"
-            />
-          </div>
+          {!hasOwnFrame && (
+            <div
+              className="flex cursor-pointer items-center justify-between rounded-md border border-white/10 bg-white/5 p-3 transition-colors hover:border-white/20"
+              onClick={() => onSettingsChange({ windowControls: !settings.windowControls })}
+            >
+              <span className="text-sm text-slate-200">Window Controls</span>
+              <Checkbox
+                checked={settings.windowControls}
+                onCheckedChange={(checked) =>
+                  onSettingsChange({ windowControls: Boolean(checked) })
+                }
+                onClick={(event) => event.stopPropagation()}
+                className="cursor-pointer border-white/20 data-[state=checked]:border-emerald-500 data-[state=checked]:bg-emerald-500"
+              />
+            </div>
+          )}
         </div>
       </div>
 

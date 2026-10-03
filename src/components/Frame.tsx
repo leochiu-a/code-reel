@@ -12,7 +12,6 @@ export type FramePresentation = {
   editorFontFamily: string;
   editorContainerTransparent: boolean;
   editorContainerRadius: number;
-  editorContainerShadow: "none" | "theme";
 };
 
 export const FRAME_PRESENTATION: FramePresentation = {
@@ -23,7 +22,6 @@ export const FRAME_PRESENTATION: FramePresentation = {
   editorFontFamily: "Fira Code, monospace",
   editorContainerTransparent: true,
   editorContainerRadius: 0,
-  editorContainerShadow: "none",
 };
 
 type FrameProps = {
@@ -80,10 +78,6 @@ const Frame: React.FC<FrameProps> = ({
     backgroundColor: framePresentation.editorContainerTransparent ? "transparent" : themeBackground,
     borderRadius: `${framePresentation.editorContainerRadius}px`,
     fontSize: `${fontSize}px`,
-    boxShadow:
-      framePresentation.editorContainerShadow === "none" || borderShadow === "border-none"
-        ? "none"
-        : borderShadow,
     height: "100%",
   };
   const style = {
