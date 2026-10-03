@@ -43,7 +43,7 @@ export const THEMES: Record<Theme, ThemeConfig> = {
     defaults: {
       background: "linear-gradient(140deg, #0c1d26 0%, #0a0c17 100%)",
       borderShadow: "border-none",
-      padding: 72,
+      padding: 64,
       showLineNumbers: false,
       windowControls: false,
     },
@@ -55,7 +55,7 @@ export const THEMES: Record<Theme, ThemeConfig> = {
     defaults: {
       background: "linear-gradient(140deg, #0f172a, #0b1220)",
       borderShadow: "border-none",
-      padding: 72,
+      padding: 64,
       showLineNumbers: true,
       windowControls: false,
     },
@@ -79,7 +79,7 @@ export const THEMES: Record<Theme, ThemeConfig> = {
     defaults: {
       background: "#121317",
       borderShadow: "border-none",
-      padding: 72,
+      padding: 64,
       showLineNumbers: false,
       windowControls: false,
     },
