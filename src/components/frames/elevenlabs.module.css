@@ -43,8 +43,9 @@
 .elevenlabsGridlineHorizontalCenter,
 .elevenlabsGridlineHorizontalBottom {
   position: absolute;
-  left: -150px;
-  width: 1200px;
+  /* Far past the window: the frame clips the lines at the canvas edge. */
+  left: -9999px;
+  width: calc(100% + 19998px);
   height: 1px;
   background: var(--elevenlabs-border-color);
 }
@@ -66,9 +67,9 @@
 .elevenlabsGridlineVerticalCenter,
 .elevenlabsGridlineVerticalRight {
   position: absolute;
-  top: -150px;
+  top: -9999px;
   width: 1px;
-  height: calc(100% + 300px);
+  height: calc(100% + 19998px);
   background: var(--elevenlabs-border-color);
 }
 
