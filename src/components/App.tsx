@@ -27,8 +27,8 @@ import LogoText from "./LogoText";
 import { FRAME_PRESENTATION } from "./Frame";
 import { Button } from "@/components/ui/button";
 import ImageExportPopover from "./ImageExportPopover";
-import CopyIcon from "@/components/ui/copy-icon";
-import MessageCircleIcon from "@/components/ui/message-circle-icon";
+import { CopyIcon } from "@/components/ui/copy";
+import { MessageCircleIcon } from "@/components/ui/message-circle";
 
 const DEBUG_HIGHLIGHT = false;
 
