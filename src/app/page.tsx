@@ -1,6 +1,6 @@
-import SparklesIcon from "@/components/ui/sparkles-icon";
-import GearIcon from "@/components/ui/gear-icon";
-import PlayerIcon from "@/components/ui/player-icon";
+import { SparklesIcon } from "@/components/ui/sparkles";
+import { SettingsIcon } from "@/components/ui/settings";
+import { PlayIcon } from "@/components/ui/play";
 import LogoText from "@/components/LogoText";
 import { CodePreview } from "@/components/CodePreview";
 import { HeroBackdrop } from "@/components/HeroBackdrop";
@@ -18,12 +18,12 @@ const FEATURES = [
   {
     title: "Customize",
     description: "Tune themes, fonts, spacing, and backgrounds to fit your brand.",
-    icon: GearIcon,
+    icon: SettingsIcon,
   },
   {
     title: "Instant preview",
     description: "Play the sequence and refine timing without leaving the editor.",
-    icon: PlayerIcon,
+    icon: PlayIcon,
   },
 ] as const;
 
@@ -176,7 +176,7 @@ export default function Page() {
                     className="absolute -top-16 -right-16 size-40 rounded-full bg-violet-500/0 blur-3xl transition-colors duration-500 group-hover:bg-violet-500/25"
                   />
                   <div className="mb-4 flex size-11 items-center justify-center rounded-xl bg-white/10 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3">
-                    <Icon className="size-5 text-white" />
+                    <Icon size={20} className="text-white" />
                   </div>
                   <h3 className="text-base font-semibold text-white">{feature.title}</h3>
                   <p className="mt-2 text-sm text-white/60">{feature.description}</p>

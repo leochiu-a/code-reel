@@ -13,18 +13,17 @@ import {
   PopoverTrigger,
 } from "@/components/animate-ui/components/radix/popover";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import type { AnimatedIconHandle } from "@/components/ui/button";
 import { DeleteIcon } from "@/components/ui/delete";
 import { PlayIcon } from "@/components/ui/play";
 import { RotateCCWIcon } from "@/components/ui/rotate-ccw";
-
-type IconHandle = { startAnimation: () => void; stopAnimation: () => void };
 
 /**
  * Plays a lucide-animated icon while its whole button is hovered, not just
  * the icon's own box.
  */
 const useIconHover = () => {
-  const ref = React.useRef<IconHandle>(null);
+  const ref = React.useRef<AnimatedIconHandle>(null);
   const onMouseEnter = React.useCallback(() => ref.current?.startAnimation(), []);
   const onMouseLeave = React.useCallback(() => ref.current?.stopAnimation(), []);
   return [ref, onMouseEnter, onMouseLeave] as const;

@@ -11,7 +11,7 @@ import {
   ToggleGroupItem,
 } from "@/components/animate-ui/components/radix/toggle-group";
 import { Button } from "@/components/ui/button";
-import ClapperboardIcon from "@/components/ui/clapperboard-icon";
+import { ClapIcon } from "@/components/ui/clap";
 
 type VideoExportScale = 1 | 2 | 3;
 
@@ -54,7 +54,7 @@ const VideoExportPopover: React.FC<VideoExportPopoverProps> = ({
         <Button
           disabled={disabled || isExporting}
           variant="secondary"
-          animatedIcon={<ClapperboardIcon size={14} className="text-slate-200" />}
+          animatedIcon={<ClapIcon size={14} className="text-slate-200" />}
           className="relative h-8 min-w-28 cursor-pointer overflow-hidden border border-white/10 bg-white/5 px-3 text-xs text-slate-100 hover:bg-white/10 hover:text-white disabled:opacity-100"
         >
           {isExporting && (

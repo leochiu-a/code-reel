@@ -11,7 +11,7 @@ import {
   ToggleGroupItem,
 } from "@/components/animate-ui/components/radix/toggle-group";
 import { Button } from "@/components/ui/button";
-import ArrowBigDownDashIcon from "@/components/ui/arrow-big-down-dash-icon";
+import { ArrowBigDownDashIcon } from "@/components/ui/arrow-big-down-dash";
 
 type ImageExportFormat = "png" | "jpeg" | "webp";
 type ImageExportScale = 1 | 2 | 3;
