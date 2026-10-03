@@ -2,7 +2,7 @@
 
 import React from "react";
 import dynamic from "next/dynamic";
-import { Plus, Trash2, Play } from "lucide-react";
+import { Plus } from "lucide-react";
 import {
   ToggleGroup,
   ToggleGroupItem,
@@ -13,6 +13,21 @@ import {
   PopoverTrigger,
 } from "@/components/animate-ui/components/radix/popover";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { DeleteIcon } from "@/components/ui/delete";
+import { PlayIcon } from "@/components/ui/play";
+
+type IconHandle = { startAnimation: () => void; stopAnimation: () => void };
+
+/**
+ * Plays a lucide-animated icon while its whole button is hovered, not just
+ * the icon's own box.
+ */
+const useIconHover = () => {
+  const ref = React.useRef<IconHandle>(null);
+  const onMouseEnter = React.useCallback(() => ref.current?.startAnimation(), []);
+  const onMouseLeave = React.useCallback(() => ref.current?.stopAnimation(), []);
+  return [ref, onMouseEnter, onMouseLeave] as const;
+};
 
 type CodeSnippet = {
   id: string;
@@ -102,6 +117,7 @@ type RemoveButtonProps = {
 
 const RemoveButton: React.FC<RemoveButtonProps> = ({ snippets, isPlaying, onRemoveSnippet }) => {
   const isLastStep = snippets.length === 1;
+  const [removeIconRef, startRemoveIcon, stopRemoveIcon] = useIconHover();
   return (
     <Tooltip>
       {/* A disabled button fires no pointer events, so the span carries the
@@ -112,9 +128,11 @@ const RemoveButton: React.FC<RemoveButtonProps> = ({ snippets, isPlaying, onRemo
             onClick={onRemoveSnippet}
             disabled={isLastStep || isPlaying}
             aria-label="Remove step"
+            onMouseEnter={startRemoveIcon}
+            onMouseLeave={stopRemoveIcon}
             className="flex size-8 cursor-pointer items-center justify-center rounded-full border border-white/10 bg-[#222] text-slate-300 transition-colors hover:bg-white/10 hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-30"
           >
-            <Trash2 className="size-4" />
+            <DeleteIcon ref={removeIconRef} size={16} />
           </button>
         </span>
       </TooltipTrigger>
@@ -161,113 +179,119 @@ const SnippetControls: React.FC<SnippetControlsProps> = ({
   onPlay,
   isPlaying,
   isPlayDisabled,
-}) => (
-  <TooltipProvider delayDuration={300}>
-    <section className="mx-auto max-w-fit rounded-2xl border border-white/10 bg-[#1c1c1c] p-2 shadow-[0_18px_40px_-20px_rgba(0,0,0,0.9)]">
-      <div className="flex flex-wrap items-center gap-4">
-        <div className="flex items-center gap-2">
-          <ClientOnlySnippetList
-            snippets={snippets}
-            activeSnippetId={activeSnippetId}
-            isPlaying={isPlaying}
-            onSelectSnippet={onSelectSnippet}
-            onReorderSnippet={onReorderSnippet}
-          />
-          <Tooltip>
-            {/* The span keeps the tooltip reachable while the button is disabled. */}
-            <TooltipTrigger asChild>
-              <span className="inline-flex">
-                <button
-                  onClick={onAddSnippet}
-                  disabled={isPlaying}
-                  aria-label="Add step"
-                  className="flex size-8 cursor-pointer items-center justify-center rounded-full border border-white/10 bg-[#222] text-slate-300 transition-colors hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
-                >
-                  <Plus className="size-5" />
-                </button>
-              </span>
-            </TooltipTrigger>
-            <TooltipContent side="top" sideOffset={6}>
-              {isPlaying ? "Can't add steps while playing" : "Add step"}
-            </TooltipContent>
-          </Tooltip>
-        </div>
+}) => {
+  const [playIconRef, startPlayIcon, stopPlayIcon] = useIconHover();
 
-        <div className="h-6 w-px bg-white/10" />
-
-        <div className="flex items-center gap-2">
-          <ClientOnlyRemoveButton
-            snippets={snippets}
-            isPlaying={isPlaying}
-            onRemoveSnippet={onRemoveSnippet}
-          />
-
-          <Popover open={isResetOpen} onOpenChange={setIsResetOpen}>
+  return (
+    <TooltipProvider delayDuration={300}>
+      <section className="mx-auto max-w-fit rounded-2xl border border-white/10 bg-[#1c1c1c] p-2 shadow-[0_18px_40px_-20px_rgba(0,0,0,0.9)]">
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="flex items-center gap-2">
+            <ClientOnlySnippetList
+              snippets={snippets}
+              activeSnippetId={activeSnippetId}
+              isPlaying={isPlaying}
+              onSelectSnippet={onSelectSnippet}
+              onReorderSnippet={onReorderSnippet}
+            />
             <Tooltip>
+              {/* The span keeps the tooltip reachable while the button is disabled. */}
               <TooltipTrigger asChild>
-                <PopoverTrigger asChild>
-                  <button className="flex h-8 cursor-pointer items-center gap-1.5 rounded-full border border-white/10 bg-[#222] px-3 text-xs font-medium text-slate-300 transition-colors hover:bg-white/10 hover:text-white">
-                    Reset
+                <span className="inline-flex">
+                  <button
+                    onClick={onAddSnippet}
+                    disabled={isPlaying}
+                    aria-label="Add step"
+                    className="flex size-8 cursor-pointer items-center justify-center rounded-full border border-white/10 bg-[#222] text-slate-300 transition-colors hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
+                  >
+                    <Plus className="size-5" />
                   </button>
-                </PopoverTrigger>
+                </span>
               </TooltipTrigger>
               <TooltipContent side="top" sideOffset={6}>
-                Reset all steps
+                {isPlaying ? "Can't add steps while playing" : "Add step"}
               </TooltipContent>
             </Tooltip>
-            <PopoverContent
-              align="end"
-              side="top"
-              sideOffset={8}
-              // Returning focus to the trigger would reopen its tooltip.
-              onCloseAutoFocus={(event) => event.preventDefault()}
-              className="w-56 rounded-xl border border-white/10 bg-[#1b1b1b] p-4 shadow-2xl"
-            >
-              <p className="mb-4 text-sm text-slate-300">
-                Are you sure you want to reset all steps?
-              </p>
-              <div className="flex items-center justify-end gap-2">
-                <button
-                  onClick={() => setIsResetOpen(false)}
-                  className="cursor-pointer rounded-lg px-3 py-1.5 text-xs font-medium text-slate-400 transition-colors hover:text-white"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={() => {
-                    onResetConfirm();
-                    setIsResetOpen(false);
-                  }}
-                  className="cursor-pointer rounded-lg bg-rose-500/90 px-3 py-1.5 text-xs font-medium text-white shadow-sm transition-colors hover:bg-rose-500"
-                >
-                  Reset All
-                </button>
-              </div>
-            </PopoverContent>
-          </Popover>
+          </div>
 
-          <button
-            data-testid="play-animation"
-            onClick={onPlay}
-            disabled={isPlayDisabled}
-            className="flex h-8 cursor-pointer items-center gap-1.5 rounded-full bg-emerald-500 px-4 text-xs font-bold text-white shadow-lg shadow-emerald-900/30 transition-all hover:bg-emerald-400 hover:shadow-emerald-900/45 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none"
-          >
-            {isPlaying ? (
-              <>
-                <span className="h-2 w-2 animate-pulse rounded-full bg-white" />
-                Playing...
-              </>
-            ) : (
-              <>
-                <Play className="h-3 w-3" />
-                Play
-              </>
-            )}
-          </button>
+          <div className="h-6 w-px bg-white/10" />
+
+          <div className="flex items-center gap-2">
+            <ClientOnlyRemoveButton
+              snippets={snippets}
+              isPlaying={isPlaying}
+              onRemoveSnippet={onRemoveSnippet}
+            />
+
+            <Popover open={isResetOpen} onOpenChange={setIsResetOpen}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <PopoverTrigger asChild>
+                    <button className="flex h-8 cursor-pointer items-center gap-1.5 rounded-full border border-white/10 bg-[#222] px-3 text-xs font-medium text-slate-300 transition-colors hover:bg-white/10 hover:text-white">
+                      Reset
+                    </button>
+                  </PopoverTrigger>
+                </TooltipTrigger>
+                <TooltipContent side="top" sideOffset={6}>
+                  Reset all steps
+                </TooltipContent>
+              </Tooltip>
+              <PopoverContent
+                align="end"
+                side="top"
+                sideOffset={8}
+                // Returning focus to the trigger would reopen its tooltip.
+                onCloseAutoFocus={(event) => event.preventDefault()}
+                className="w-56 rounded-xl border border-white/10 bg-[#1b1b1b] p-4 shadow-2xl"
+              >
+                <p className="mb-4 text-sm text-slate-300">
+                  Are you sure you want to reset all steps?
+                </p>
+                <div className="flex items-center justify-end gap-2">
+                  <button
+                    onClick={() => setIsResetOpen(false)}
+                    className="cursor-pointer rounded-lg px-3 py-1.5 text-xs font-medium text-slate-400 transition-colors hover:text-white"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => {
+                      onResetConfirm();
+                      setIsResetOpen(false);
+                    }}
+                    className="cursor-pointer rounded-lg bg-rose-500/90 px-3 py-1.5 text-xs font-medium text-white shadow-sm transition-colors hover:bg-rose-500"
+                  >
+                    Reset All
+                  </button>
+                </div>
+              </PopoverContent>
+            </Popover>
+
+            <button
+              data-testid="play-animation"
+              onClick={onPlay}
+              disabled={isPlayDisabled}
+              onMouseEnter={startPlayIcon}
+              onMouseLeave={stopPlayIcon}
+              className="flex h-8 cursor-pointer items-center gap-1.5 rounded-full bg-emerald-500 px-4 text-xs font-bold text-white shadow-lg shadow-emerald-900/30 transition-all hover:bg-emerald-400 hover:shadow-emerald-900/45 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none"
+            >
+              {isPlaying ? (
+                <>
+                  <span className="h-2 w-2 animate-pulse rounded-full bg-white" />
+                  Playing...
+                </>
+              ) : (
+                <>
+                  <PlayIcon ref={playIconRef} size={12} />
+                  Play
+                </>
+              )}
+            </button>
+          </div>
         </div>
-      </div>
-    </section>
-  </TooltipProvider>
-);
+      </section>
+    </TooltipProvider>
+  );
+};
 
 export default SnippetControls;
