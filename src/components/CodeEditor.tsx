@@ -16,6 +16,7 @@ import { firaCode } from "../fonts";
 import Frame, { FRAME_PRESENTATION } from "./Frame";
 import CodeTextarea from "./CodeTextarea";
 import MagicMoveCode from "./MagicMoveCode";
+import { measureCodeWidth } from "../utils/measureCode";
 import {
   countLines,
   diffHighlightLines,
@@ -34,11 +35,20 @@ interface CodeEditorProps {
   onHighlightLineChange?: (line: number) => void;
   highlighter?: Highlighter | null;
   minCaptureHeight?: number;
+  /** The frame's width, for previews that render it at a fixed size. */
   containerWidth?: number | string;
   containerHeight?: number;
   minWidth?: number | string;
-  /** Makes the frame resizable from its side handles; the parent owns the width via `containerWidth`. */
-  onWidthChange?: (width: number) => void;
+  /**
+   * The code window's width, with the frame grown around it by its padding and
+   * chrome; `null` fits the widest line of `autoWidthCodes`. Takes the place
+   * of `containerWidth`.
+   */
+  windowWidth?: number | null;
+  /** Every step's code, so an auto width holds still from step to step. */
+  autoWidthCodes?: string[];
+  /** Makes the window resizable from its side handles; `null` goes back to auto width. */
+  onWindowWidthChange?: (width: number | null) => void;
   /** CSS transform scale applied by an ancestor; magic-move divides its measurements by it. */
   scale?: number;
   debugHighlight?: boolean;
@@ -46,29 +56,26 @@ interface CodeEditorProps {
   viewTransitionName?: string;
 }
 
-// The capture frame's closest ancestors shrink-wrap to their content, so their
-// width just mirrors the frame's own. Measure the scroll container instead and
-// subtract the padding between it and the frame, leaving room for the handles.
-const RESIZE_HANDLE_GUTTER = 64;
+// The code's inset from the window on every side.
+const EDITOR_INSET = 16;
 
-const getAvailableWidth = (wrapper: HTMLElement) => {
-  const container = wrapper.closest("main");
-  if (!container) return Number.POSITIVE_INFINITY;
+export const MIN_WINDOW_WIDTH = 320;
+export const MAX_WINDOW_WIDTH = 1600;
 
-  let inset = 0;
-  for (let node = wrapper.parentElement; node && node !== container; node = node.parentElement) {
-    const style = getComputedStyle(node);
-    inset +=
-      Number.parseFloat(style.paddingLeft) +
-      Number.parseFloat(style.paddingRight) +
-      Number.parseFloat(style.borderLeftWidth) +
-      Number.parseFloat(style.borderRightWidth);
-  }
-  const containerStyle = getComputedStyle(container);
-  inset +=
-    Number.parseFloat(containerStyle.paddingLeft) + Number.parseFloat(containerStyle.paddingRight);
+const clampWindowWidth = (width: number) =>
+  Math.round(Math.min(Math.max(width, MIN_WINDOW_WIDTH), MAX_WINDOW_WIDTH));
 
-  return Math.max(0, container.clientWidth - inset - RESIZE_HANDLE_GUTTER);
+/** Resolves once the code font has loaded, so text can be measured in it. */
+const useFontsReady = () => {
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    let active = true;
+    void document.fonts.ready.then(() => active && setReady(true));
+    return () => {
+      active = false;
+    };
+  }, []);
+  return ready;
 };
 
 const CodeEditor: React.FC<CodeEditorProps> = ({
@@ -84,7 +91,9 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   containerWidth = 860,
   containerHeight,
   minWidth = "320px",
-  onWidthChange,
+  windowWidth,
+  autoWidthCodes,
+  onWindowWidthChange,
   scale = 1,
   debugHighlight = false,
   viewTransitionName,
@@ -118,12 +127,27 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
 
   const lineHeight = Math.round(settings.fontSize * FRAME_PRESENTATION.editorLineHeightMultiplier);
   const editorPadding = {
-    top: 16,
-    bottom: 16,
-    left: 16,
-    right: 16,
+    top: EDITOR_INSET,
+    bottom: EDITOR_INSET,
+    left: EDITOR_INSET,
+    right: EDITOR_INSET,
   };
   const lineNumberGutterWidth = settings.showLineNumbers ? 48 : 0;
+
+  const fontsReady = useFontsReady();
+  const fitsWindow = windowWidth !== undefined;
+  const autoWidthKey = (autoWidthCodes ?? [code]).join("\u0000");
+  // The widest line plus the editor's own insets, never narrower than the
+  // minimum. Only measured once the code font has loaded: its fallback has
+  // other widths.
+  const autoWindowWidth = useMemo(() => {
+    if (!fitsWindow || !fontsReady) return MIN_WINDOW_WIDTH;
+    const font = `${settings.fontSize}px ${firaCode.style.fontFamily}`;
+    const codeWidth = measureCodeWidth(autoWidthKey.split("\u0000"), font);
+    return Math.max(MIN_WINDOW_WIDTH, codeWidth + 2 * EDITOR_INSET + lineNumberGutterWidth);
+  }, [autoWidthKey, fitsWindow, fontsReady, settings.fontSize, lineNumberGutterWidth]);
+  const resolvedWindowWidth =
+    windowWidth === undefined ? undefined : (windowWidth ?? autoWindowWidth);
 
   const previewPaddingY = editorPadding.top;
   const previewOuterPadding = 0;
@@ -269,36 +293,27 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
     };
   }, [moveTargets, showPreview]);
 
-  const minResizeWidth = typeof minWidth === "number" ? minWidth : Number.parseFloat(minWidth) || 0;
-
-  const resizeBy = useCallback(
-    (delta: number) => {
-      const wrapper = wrapperRef.current;
-      if (!wrapper) return;
-      const max = getAvailableWidth(wrapper);
-      const current = wrapper.getBoundingClientRect().width;
-      onWidthChange?.(Math.round(Math.min(Math.max(current + delta, minResizeWidth), max)));
-    },
-    [minResizeWidth, onWidthChange],
-  );
+  const resizeBy = (delta: number) => {
+    if (resolvedWindowWidth === undefined) return;
+    onWindowWidthChange?.(clampWindowWidth(resolvedWindowWidth + delta));
+  };
 
   const startResize =
     (edge: "left" | "right") => (event: React.PointerEvent<HTMLButtonElement>) => {
-      const wrapper = wrapperRef.current;
-      if (!wrapper) return;
+      if (resolvedWindowWidth === undefined) return;
       event.preventDefault();
 
       const startX = event.clientX;
-      const startWidth = wrapper.getBoundingClientRect().width;
-      const max = getAvailableWidth(wrapper);
+      const startWidth = resolvedWindowWidth;
       const direction = edge === "right" ? 1 : -1;
       setIsResizing(true);
 
       const onMove = (moveEvent: PointerEvent) => {
         // The frame stays centred, so each edge only travels half of any width
-        // change. Doubling the delta keeps the bar under the pointer.
-        const next = startWidth + direction * (moveEvent.clientX - startX) * 2;
-        onWidthChange?.(Math.round(Math.min(Math.max(next, minResizeWidth), max)));
+        // change; doubling the delta keeps the bar under the pointer. Pointer
+        // travel is on screen, so it is undone by the view's scale.
+        const delta = ((moveEvent.clientX - startX) * 2) / scale;
+        onWindowWidthChange?.(clampWindowWidth(startWidth + direction * delta));
       };
       const onEnd = () => {
         setIsResizing(false);
@@ -335,8 +350,9 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
     if (showPreview) return;
     if (!onHighlightLineChange) return;
 
+    // The rect is on screen, scaled with the view; line positions are not.
     const rect = event.currentTarget.getBoundingClientRect();
-    const offsetY = event.clientY - rect.top - editorPadding.top;
+    const offsetY = (event.clientY - rect.top) / scale - editorPadding.top;
     const nextLine = Math.floor(offsetY / lineHeight) + 1;
     const lineNumber = Math.max(1, Math.min(nextLine, countLines(displayedCode)));
 
@@ -347,11 +363,16 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
     <div
       ref={wrapperRef}
       className="relative mx-auto"
-      style={{
-        width: typeof containerWidth === "number" ? `${containerWidth}px` : containerWidth,
-        maxWidth: "100%",
-        minWidth: typeof minWidth === "number" ? `${minWidth}px` : minWidth,
-      }}
+      style={
+        resolvedWindowWidth === undefined
+          ? {
+              width: typeof containerWidth === "number" ? `${containerWidth}px` : containerWidth,
+              maxWidth: "100%",
+              minWidth: typeof minWidth === "number" ? `${minWidth}px` : minWidth,
+            }
+          : // The frame wraps the window, whose width is set below.
+            { width: "max-content" }
+      }
     >
       <div
         className="relative flex w-full items-center justify-center overflow-hidden"
@@ -388,7 +409,10 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
           windowTitle={languageConfig.label}
           viewTransitionName={viewTransitionName}
         >
-          <div className={FRAME_PRESENTATION.editorShellClassName}>
+          <div
+            className={FRAME_PRESENTATION.editorShellClassName}
+            style={resolvedWindowWidth === undefined ? undefined : { width: resolvedWindowWidth }}
+          >
             {!showPreview && settings.showLineNumbers && (
               <div
                 className="absolute top-0 bottom-0 left-0 z-30 w-11 cursor-pointer"
@@ -518,7 +542,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
         </Frame>
       </div>
 
-      {onWidthChange && (
+      {onWindowWidthChange && (
         <>
           {(["left", "right"] as const).map((edge) => (
             <button

@@ -21,6 +21,7 @@ import { readStoredSettings, writeStoredSettings } from "../services/editorSetti
 import SnippetControls from "./SnippetControls";
 import SettingsPanel from "./SettingsPanel";
 import CodeEditor from "./CodeEditor";
+import ScaleToFit from "./ScaleToFit";
 import VideoOnboarding from "./VideoOnboarding";
 import VideoExportPopover from "./VideoExportPopover";
 import LogoText from "./LogoText";
@@ -33,6 +34,9 @@ import { MessageCircleIcon } from "@/components/ui/message-circle";
 const DEBUG_HIGHLIGHT = false;
 
 const countLines = (code: string) => (code || "").split(/\r\n|\r|\n/).length || 1;
+
+// Room beside the frame for its resize handles, which sit just outside it.
+const RESIZE_HANDLE_GUTTER = 64;
 
 const App: React.FC = () => {
   const {
@@ -57,10 +61,12 @@ const App: React.FC = () => {
   });
   const highlighter = useHighlighter();
   // null until the frame is first resized, so it keeps the editor's default width.
-  const [editorWidth, setEditorWidth] = useLocalStorage<number | null>(
-    "codesnap-editor-width",
+  // The code window's width once resized by hand; null fits the widest line.
+  const [windowWidth, setWindowWidth] = useLocalStorage<number | null>(
+    "codereel-window-width",
     null,
   );
+  const stepCodes = useMemo(() => snippets.map((snippet) => snippet.code), [snippets]);
   const [settings, setSettings] = useState<EditorSettings>(() => ({
     ...DEFAULT_EDITOR_SETTINGS,
     ...readStoredSettings(),
@@ -194,25 +200,42 @@ const App: React.FC = () => {
           className="flex flex-1 items-center-safe justify-center-safe overflow-y-auto bg-[#212121] px-3"
         >
           <div className="relative flex min-h-full w-full flex-col items-center-safe justify-center-safe gap-6 rounded-t-2xl border border-white/10 bg-[#181818] p-8 duration-700 lg:p-12">
-            {/* Capped at the available width so a frame widened on a larger screen
-                shrinks to fit instead of spilling past the preview area. */}
-            <div id="onboarding-highlight-area" className="flex max-w-full flex-col gap-6">
-              <CodeEditor
-                code={shouldShowPreview ? previewSnippet.code : activeSnippet.code}
-                onCodeChange={handleSnippetChange}
-                settings={settings}
-                showPreview={shouldShowPreview}
-                highlightLines={currentHighlightLines}
-                highlightDelayMs={highlightDelayMs}
-                onHighlightLineChange={handleHighlightLineChange}
-                minCaptureHeight={maxCaptureHeight}
-                containerHeight={maxCaptureHeight}
-                containerWidth={editorWidth ?? undefined}
-                onWidthChange={setEditorWidth}
-                highlighter={highlighter}
-                debugHighlight={DEBUG_HIGHLIGHT}
-                viewTransitionName={EDITOR_VIEW_TRANSITION}
-              />
+            <div id="onboarding-highlight-area" className="flex w-full flex-col items-center gap-6">
+              <div className="relative w-full">
+                {/* A frame wider than the preview area is shown scaled down;
+                    it keeps its real size for export. */}
+                <ScaleToFit gutter={RESIZE_HANDLE_GUTTER}>
+                  {(scale) => (
+                    <CodeEditor
+                      code={shouldShowPreview ? previewSnippet.code : activeSnippet.code}
+                      onCodeChange={handleSnippetChange}
+                      settings={settings}
+                      showPreview={shouldShowPreview}
+                      highlightLines={currentHighlightLines}
+                      highlightDelayMs={highlightDelayMs}
+                      onHighlightLineChange={handleHighlightLineChange}
+                      minCaptureHeight={maxCaptureHeight}
+                      containerHeight={maxCaptureHeight}
+                      windowWidth={windowWidth}
+                      autoWidthCodes={stepCodes}
+                      onWindowWidthChange={setWindowWidth}
+                      scale={scale}
+                      highlighter={highlighter}
+                      debugHighlight={DEBUG_HIGHLIGHT}
+                      viewTransitionName={EDITOR_VIEW_TRANSITION}
+                    />
+                  )}
+                </ScaleToFit>
+                {windowWidth !== null && (
+                  <button
+                    type="button"
+                    onClick={() => setWindowWidth(null)}
+                    className="absolute top-full left-1/2 mt-1 -translate-x-1/2 cursor-pointer rounded-full px-2 py-0.5 text-xs text-white/50 transition-colors hover:text-white"
+                  >
+                    Set to auto width
+                  </button>
+                )}
+              </div>
 
               <SnippetControls
                 snippets={snippets}
