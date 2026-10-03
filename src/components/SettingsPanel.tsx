@@ -22,6 +22,11 @@ import ThemePicker from "./ThemePicker";
 interface SettingsPanelProps {
   settings: EditorSettings;
   onSettingsChange: (settings: Partial<EditorSettings>) => void;
+  /** The code window's width once set by hand; null while it fits the code. */
+  windowWidth: number | null;
+  /** The width that fits the code, which Custom starts from. */
+  autoWindowWidth: number;
+  onWindowWidthChange: (width: number | null) => void;
   highlighter?: Highlighter | null;
   copyStatus?: { tone: "success" | "error"; message: string } | null;
 }
@@ -29,6 +34,9 @@ interface SettingsPanelProps {
 const SettingsPanel: React.FC<SettingsPanelProps> = ({
   settings,
   onSettingsChange,
+  windowWidth,
+  autoWindowWidth,
+  onWindowWidthChange,
   highlighter,
   copyStatus,
 }) => {
@@ -97,6 +105,27 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
                   {value}
                 </ToggleGroupItem>
               ))}
+            </ToggleGroup>
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <span className="text-xs text-white/80">Width</span>
+            <ToggleGroup
+              type="single"
+              value={windowWidth === null ? "auto" : "custom"}
+              onValueChange={(value) => {
+                if (value === "auto") onWindowWidthChange(null);
+                // A custom width starts from the frame as it is, ready to drag.
+                else if (value === "custom") onWindowWidthChange(autoWindowWidth);
+              }}
+              className="w-full justify-start gap-1"
+            >
+              <ToggleGroupItem value="auto" className="h-8 flex-1">
+                Auto fit
+              </ToggleGroupItem>
+              <ToggleGroupItem value="custom" className="h-8 flex-1">
+                {windowWidth === null ? "Custom" : `Custom · ${windowWidth}px`}
+              </ToggleGroupItem>
             </ToggleGroup>
           </div>
 

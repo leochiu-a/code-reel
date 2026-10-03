@@ -17,6 +17,7 @@ import useStepState from "../hooks/useStepState";
 import useImageExport from "../hooks/useImageExport";
 import useVideoExport from "../hooks/useVideoExport";
 import useHighlighter from "../hooks/useHighlighter";
+import useAutoWindowWidth from "../hooks/useAutoWindowWidth";
 import { readStoredSettings, writeStoredSettings } from "../services/editorSettings";
 import SnippetControls from "./SnippetControls";
 import SettingsPanel from "./SettingsPanel";
@@ -73,6 +74,9 @@ const App: React.FC = () => {
     fontSize: DEFAULT_EDITOR_SETTINGS.fontSize,
     borderRadius: DEFAULT_BORDER_RADIUS,
   }));
+  const autoWindowWidth = useAutoWindowWidth(stepCodes, settings);
+  const resetWindowWidth = useCallback(() => setWindowWidth(null), [setWindowWidth]);
+
   const { onExport, onCopyImage, isCopying, isExporting, copyStatus, isCopySupported } =
     useImageExport();
   const [imageExportFormat, setImageExportFormat] = useState<"png" | "jpeg" | "webp">("png");
@@ -201,41 +205,30 @@ const App: React.FC = () => {
         >
           <div className="relative flex min-h-full w-full flex-col items-center-safe justify-center-safe gap-6 rounded-t-2xl border border-white/10 bg-[#181818] p-8 duration-700 lg:p-12">
             <div id="onboarding-highlight-area" className="flex w-full flex-col items-center gap-6">
-              <div className="relative w-full">
-                {/* A frame wider than the preview area is shown scaled down;
-                    it keeps its real size for export. */}
-                <ScaleToFit gutter={RESIZE_HANDLE_GUTTER}>
-                  {(scale) => (
-                    <CodeEditor
-                      code={shouldShowPreview ? previewSnippet.code : activeSnippet.code}
-                      onCodeChange={handleSnippetChange}
-                      settings={settings}
-                      showPreview={shouldShowPreview}
-                      highlightLines={currentHighlightLines}
-                      highlightDelayMs={highlightDelayMs}
-                      onHighlightLineChange={handleHighlightLineChange}
-                      minCaptureHeight={maxCaptureHeight}
-                      containerHeight={maxCaptureHeight}
-                      windowWidth={windowWidth}
-                      autoWidthCodes={stepCodes}
-                      onWindowWidthChange={setWindowWidth}
-                      scale={scale}
-                      highlighter={highlighter}
-                      debugHighlight={DEBUG_HIGHLIGHT}
-                      viewTransitionName={EDITOR_VIEW_TRANSITION}
-                    />
-                  )}
-                </ScaleToFit>
-                {windowWidth !== null && (
-                  <button
-                    type="button"
-                    onClick={() => setWindowWidth(null)}
-                    className="absolute top-full left-1/2 mt-1 -translate-x-1/2 cursor-pointer rounded-full px-2 py-0.5 text-xs text-white/50 transition-colors hover:text-white"
-                  >
-                    Set to auto width
-                  </button>
+              {/* A frame wider than the preview area is shown scaled down;
+                  it keeps its real size for export. */}
+              <ScaleToFit gutter={RESIZE_HANDLE_GUTTER}>
+                {(scale) => (
+                  <CodeEditor
+                    code={shouldShowPreview ? previewSnippet.code : activeSnippet.code}
+                    onCodeChange={handleSnippetChange}
+                    settings={settings}
+                    showPreview={shouldShowPreview}
+                    highlightLines={currentHighlightLines}
+                    highlightDelayMs={highlightDelayMs}
+                    onHighlightLineChange={handleHighlightLineChange}
+                    minCaptureHeight={maxCaptureHeight}
+                    containerHeight={maxCaptureHeight}
+                    windowWidth={windowWidth ?? autoWindowWidth}
+                    onWindowWidthChange={setWindowWidth}
+                    onWindowWidthReset={resetWindowWidth}
+                    scale={scale}
+                    highlighter={highlighter}
+                    debugHighlight={DEBUG_HIGHLIGHT}
+                    viewTransitionName={EDITOR_VIEW_TRANSITION}
+                  />
                 )}
-              </div>
+              </ScaleToFit>
 
               <SnippetControls
                 snippets={snippets}
@@ -258,6 +251,9 @@ const App: React.FC = () => {
         <SettingsPanel
           settings={settings}
           onSettingsChange={handleSettingsChange}
+          windowWidth={windowWidth}
+          autoWindowWidth={autoWindowWidth}
+          onWindowWidthChange={setWindowWidth}
           highlighter={highlighter}
           copyStatus={copyStatus}
         />
