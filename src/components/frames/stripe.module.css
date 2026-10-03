@@ -1,0 +1,119 @@
+.stripeFrame {
+  --stripe-gridline: rgba(255, 255, 255, 0.1);
+  background: #0a2540;
+}
+
+/* Sized by its insets, so it can be the container the set's placement queries. */
+.stripeBackground {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  container-type: size;
+  pointer-events: none;
+}
+
+/* Spans the window's width: the frame minus its padding. */
+.stripeGridlineContainer {
+  position: absolute;
+  top: 0;
+  right: var(--stripe-padding);
+  bottom: 0;
+  left: var(--stripe-padding);
+}
+
+.stripeGridline {
+  position: absolute;
+  z-index: 1;
+  width: 1px;
+  height: 100%;
+  border-left: 1px dashed var(--stripe-gridline);
+}
+
+.stripeGridline:nth-child(1) {
+  left: 0;
+  border-left-style: solid;
+}
+
+.stripeGridline:nth-child(2) {
+  left: 25%;
+}
+
+.stripeGridline:nth-child(3) {
+  left: 50%;
+}
+
+.stripeGridline:nth-child(4) {
+  left: 75%;
+}
+
+.stripeGridline:nth-child(5) {
+  left: calc(100% - 1px);
+  border-left-style: solid;
+}
+
+.stripeBand {
+  position: absolute;
+  z-index: 0;
+  top: 60%;
+  left: 0;
+  width: 100%;
+  height: 40%;
+  background: hsl(213.69 52% 97.828%);
+  transform: skewY(-6deg);
+  transform-origin: 100% 0;
+  --stripe-gridline: rgba(66, 71, 112, 0.15);
+}
+
+.stripeSet {
+  position: absolute;
+  z-index: 1;
+  bottom: 65px;
+  left: calc(75% - 50px);
+  width: 500px;
+  height: 50px;
+  transform-origin: 100% 0;
+}
+
+@container (max-height: 239px) {
+  .stripeSet {
+    top: -49px;
+    bottom: auto;
+  }
+}
+
+.stripeLayer1 {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: rgb(17, 239, 227);
+}
+
+.stripeLayer2 {
+  position: absolute;
+  width: 100%;
+  height: 32px;
+  background: rgb(153, 102, 255);
+  transform: translate(50px, 50px);
+}
+
+.stripeIntersection {
+  position: absolute;
+  width: 100%;
+  height: 18px;
+  background: hsl(221.1 99.822% 44.876%);
+  transform: translate(50px, 32px);
+}
+
+.stripeWindow {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  border: 1px solid #0f395e;
+  border-radius: 8px;
+  background: #0c2e4e;
+  box-shadow:
+    rgba(50, 50, 93, 0.25) 0px 50px 100px -20px,
+    rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
+}

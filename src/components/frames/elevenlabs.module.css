@@ -1,0 +1,155 @@
+.elevenlabsFrame {
+  --elevenlabs-background: #111;
+  --elevenlabs-border-color: #353535;
+  position: relative;
+  overflow: hidden;
+  background: var(--elevenlabs-background);
+}
+
+.elevenlabsWindow {
+  position: relative;
+  width: 100%;
+}
+
+.elevenlabsWindow::before {
+  position: absolute;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  border: 1px solid var(--elevenlabs-border-color);
+  border-radius: 24px;
+  content: "";
+  pointer-events: none;
+}
+
+.elevenlabsEditor {
+  position: relative;
+  overflow: hidden;
+  border-radius: 24px;
+  background: var(--elevenlabs-background);
+}
+
+.elevenlabsCircle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border: 1px solid var(--elevenlabs-border-color);
+  border-radius: 9999px;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+}
+
+.elevenlabsGridlineHorizontalTop,
+.elevenlabsGridlineHorizontalCenter,
+.elevenlabsGridlineHorizontalBottom {
+  position: absolute;
+  left: -150px;
+  width: 1200px;
+  height: 1px;
+  background: var(--elevenlabs-border-color);
+}
+
+.elevenlabsGridlineHorizontalTop {
+  top: 0;
+}
+
+.elevenlabsGridlineHorizontalCenter {
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.elevenlabsGridlineHorizontalBottom {
+  bottom: 0;
+}
+
+.elevenlabsGridlineVerticalLeft,
+.elevenlabsGridlineVerticalCenter,
+.elevenlabsGridlineVerticalRight {
+  position: absolute;
+  top: -150px;
+  width: 1px;
+  height: calc(100% + 300px);
+  background: var(--elevenlabs-border-color);
+}
+
+.elevenlabsGridlineVerticalLeft {
+  left: 0;
+}
+
+.elevenlabsGridlineVerticalCenter {
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.elevenlabsGridlineVerticalRight {
+  right: 0;
+}
+
+.elevenlabsDotTopLeft,
+.elevenlabsDotTopRight,
+.elevenlabsDotBottomLeft,
+.elevenlabsDotBottomRight {
+  position: absolute;
+  z-index: 2;
+  width: 3px;
+  height: 3px;
+  background: white;
+}
+
+.elevenlabsDotTopLeft {
+  top: -1px;
+  left: -1px;
+}
+
+.elevenlabsDotTopRight {
+  top: -1px;
+  right: -1px;
+}
+
+.elevenlabsDotBottomLeft {
+  bottom: -1px;
+  left: -1px;
+}
+
+.elevenlabsDotBottomRight {
+  right: -1px;
+  bottom: -1px;
+}
+
+.elevenlabsGridlineCornerTopLeft,
+.elevenlabsGridlineCornerTopRight,
+.elevenlabsGridlineCornerBottomRight,
+.elevenlabsGridlineCornerBottomLeft {
+  position: absolute;
+  width: 1px;
+  height: 200px;
+  background: var(--elevenlabs-border-color);
+}
+
+.elevenlabsGridlineCornerTopLeft {
+  top: -200px;
+  left: 0;
+  transform: rotate(-45deg);
+  transform-origin: bottom right;
+}
+
+.elevenlabsGridlineCornerTopRight {
+  top: -200px;
+  right: 0;
+  transform: rotate(45deg);
+  transform-origin: bottom left;
+}
+
+.elevenlabsGridlineCornerBottomRight {
+  right: 0;
+  bottom: -200px;
+  transform: rotate(-45deg);
+  transform-origin: top left;
+}
+
+.elevenlabsGridlineCornerBottomLeft {
+  bottom: -200px;
+  left: 0;
+  transform: rotate(45deg);
+  transform-origin: top right;
+}

@@ -1,0 +1,110 @@
+.auth0Frame {
+  --auth0-gridline: rgb(255 255 255 / 0.12);
+  isolation: isolate;
+  background: linear-gradient(215deg, #191919 30%, #4612a7 60%, #375aed 100%);
+}
+
+.auth0Frame ::selection {
+  background: #8b66f4;
+  color: #f1f1f1;
+}
+
+.auth0Shell {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  padding: 4px;
+  border-radius: 14px;
+  background-color: rgb(17 18 23);
+}
+
+.auth0GridlinesHorizontal::before,
+.auth0GridlinesHorizontal::after {
+  position: absolute;
+  z-index: 0;
+  top: -1px;
+  left: -3rem;
+  width: calc(100% + 6rem);
+  height: 1px;
+  background: var(--auth0-gridline);
+  content: "";
+  mask-image: linear-gradient(
+    to left,
+    transparent,
+    white 3rem,
+    white calc(100% - 3rem),
+    transparent
+  );
+}
+
+.auth0GridlinesHorizontal::after {
+  top: auto;
+  bottom: -1px;
+}
+
+.auth0GridlinesVertical::before,
+.auth0GridlinesVertical::after {
+  position: absolute;
+  z-index: 0;
+  top: -3rem;
+  left: -1px;
+  width: 1px;
+  height: calc(100% + 6rem);
+  background: var(--auth0-gridline);
+  content: "";
+  mask-image: linear-gradient(
+    to top,
+    transparent,
+    white 3rem,
+    white calc(100% - 3rem),
+    transparent
+  );
+}
+
+.auth0GridlinesVertical::after {
+  right: -1px;
+  left: auto;
+}
+
+.auth0Toolbar {
+  display: grid;
+  align-items: center;
+  gap: 8px;
+  grid-template-columns: 60px minmax(0, 1fr) 60px;
+  padding: 4px 20px 8px 16px;
+}
+
+.auth0Controls {
+  display: flex;
+  gap: 8px;
+}
+
+.auth0Control {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  background: #373737;
+}
+
+.auth0Badge {
+  overflow: hidden;
+  color: #dedede;
+  font-size: 1rem;
+  font-variant-numeric: slashed-zero;
+  font-weight: 500;
+  line-height: 1.5;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.auth0Window {
+  overflow: hidden;
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgb(255 255 255 / 2.5%), transparent 15%), #171717;
+  box-shadow:
+    0 0 0 1px rgb(255 255 255 / 10%),
+    0 1px 3px rgb(0 0 0 / 6%),
+    0 1px 2px -1px rgb(0 0 0 / 6%);
+}

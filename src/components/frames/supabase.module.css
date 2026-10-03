@@ -1,0 +1,11 @@
+.supabaseFrame {
+  background: #121212;
+}
+
+.supabaseWindow {
+  position: relative;
+  width: 100%;
+  border: 1px solid #292929;
+  border-radius: 6px;
+  background: #171717;
+}

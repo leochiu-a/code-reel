@@ -103,13 +103,13 @@ const SNIPPETS: Snippet[] = [
 // Themes that bring their own canvas, so each card reads as a distinct look.
 const TEMPLATE_THEMES: Theme[] = [
   "vercel",
+  "supabase",
   "tailwind",
+  "openai",
   "prisma",
+  "stripe",
   "trigger",
-  "dracula",
-  "synthwave-84",
-  "github-dark",
-  "poimandres",
+  "gemini",
 ];
 
 const CARD_PADDING = 32;
@@ -118,7 +118,7 @@ const TEMPLATES = TEMPLATE_THEMES.map((theme, index) => {
   const snippet = SNIPPETS[index % SNIPPETS.length];
   const settings: EditorSettings = {
     ...DEFAULT_EDITOR_SETTINGS,
-    ...getThemeSettings(theme, DEFAULT_EDITOR_SETTINGS.background),
+    ...getThemeSettings(theme),
     language: snippet.language,
     fontSize: 16,
     // Theme paddings (up to 96px) would leave the code a sliver once the card

@@ -1,0 +1,76 @@
+.mintlifyFrame {
+  position: relative;
+  overflow: hidden;
+  background: #121212;
+}
+
+.mintlifyPatternWrapper {
+  position: absolute;
+  top: 0;
+  right: -25px;
+  width: 700px;
+  height: 600px;
+  background: radial-gradient(
+    49.63% 57.02% at 58.99% -7.2%,
+    rgba(13, 147, 115, 0.1) 39.4%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  pointer-events: none;
+}
+
+.mintlifyPattern {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 600px;
+  aspect-ratio: 790 / 640;
+  background: url("./mintlify/pattern.svg") no-repeat top right / 100% auto;
+}
+
+.mintlifyWindow {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  border-radius: 12px;
+  background: #070a08;
+  box-shadow:
+    0px 173px 48px 0px rgba(0, 0, 0, 0),
+    0px 110px 44px 0px rgba(0, 0, 0, 0.01),
+    0px 62px 37px 0px rgba(0, 0, 0, 0.05),
+    0px 28px 28px 0px rgba(0, 0, 0, 0.09),
+    0px 7px 15px 0px rgba(0, 0, 0, 0.1);
+}
+
+.mintlifyHeader {
+  display: flex;
+  height: 40px;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #141818;
+  background: #010201;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  gap: 12px;
+}
+
+/* The tab underline sits on the header's bottom border. */
+.mintlifyFileName {
+  position: relative;
+  height: 40px;
+  padding: 0 16px;
+  color: #55d799;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  line-height: 40px;
+}
+
+.mintlifyFileName::before {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: currentColor;
+  content: "";
+}

@@ -1,0 +1,74 @@
+.firecrawlFrame {
+  --firecrawl-grid: #444;
+  background: #000000;
+}
+
+.firecrawlWindow {
+  position: relative;
+  width: 100%;
+}
+
+.firecrawlAsciiArtContainer {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  container-type: inline-size;
+  pointer-events: none;
+}
+
+.firecrawlAsciiArt {
+  margin: 0;
+  color: #f97316;
+  font-family: monospace;
+  font-size: 1.3cqw;
+  line-height: 1;
+  mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.1) 0%,
+    rgba(0, 0, 0, 0.5) 50%,
+    rgba(0, 0, 0, 0.9) 100%
+  );
+  text-align: center;
+  white-space: pre;
+}
+
+.firecrawlGrid {
+  --line: linear-gradient(var(--firecrawl-grid), var(--firecrawl-grid));
+  position: absolute;
+  z-index: 10;
+  inset: 0;
+  background:
+    var(--line) left 0 top var(--firecrawl-padding) / 100% 1px no-repeat,
+    var(--line) left 0 bottom var(--firecrawl-padding) / 100% 1px no-repeat,
+    var(--line) left var(--firecrawl-padding) top 0 / 1px 100% no-repeat,
+    var(--line) right var(--firecrawl-padding) top 0 / 1px 100% no-repeat;
+  pointer-events: none;
+}
+
+.firecrawlStar {
+  position: absolute;
+  width: 22px;
+  height: 21px;
+  fill: var(--firecrawl-grid);
+}
+
+.firecrawlStarTopLeft {
+  top: calc(var(--firecrawl-padding) - 10px);
+  left: calc(var(--firecrawl-padding) - 11px);
+}
+
+.firecrawlStarTopRight {
+  top: calc(var(--firecrawl-padding) - 10px);
+  right: calc(var(--firecrawl-padding) - 11px);
+}
+
+.firecrawlStarBottomLeft {
+  bottom: calc(var(--firecrawl-padding) - 10px);
+  left: calc(var(--firecrawl-padding) - 11px);
+}
+
+.firecrawlStarBottomRight {
+  right: calc(var(--firecrawl-padding) - 11px);
+  bottom: calc(var(--firecrawl-padding) - 10px);
+}

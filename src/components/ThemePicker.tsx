@@ -6,13 +6,11 @@ import type { Highlighter } from "shiki";
 
 import {
   DEFAULT_EDITOR_SETTINGS,
-  THEME_BACKGROUND_MAP,
   THEMES,
   getThemeSettings,
   resolveShikiThemeName,
 } from "../constants";
 import { getThemeBackground, getThemeForeground } from "../services/shiki";
-import { computeThemePreviewBackground } from "../utils/themePreviewBackground";
 import type { EditorSettings, Theme } from "../types";
 import CodeEditor from "./CodeEditor";
 import {
@@ -29,15 +27,17 @@ import { cn } from "@/lib/utils";
 const SWATCH_SAMPLE = 'const greet = (name) => `Hi ${name}`; return "ok";';
 const SWATCH_BARS = ["62%", "38%", "80%"];
 
-const PREVIEW_CODE = `const preview = "Hello";\nconsole.log(preview);`;
+// Covers comment, keyword, function, string and number so themes that only
+// differ in a few token colours still look apart.
+const PREVIEW_CODE = `// Say hi
+function greet(name) {
+  return "Hi " + name + 1;
+}`;
 const PREVIEW_HEIGHT = 140;
 
 type ThemeOption = {
   key: Theme;
   label: string;
-  /** Background of the whole card, behind the preview. */
-  cardBackground: string;
-  foreground: string;
   /** Canvas background, used by the swatch and the preview. */
   background: string;
   codeBackground: string;
@@ -52,19 +52,17 @@ const buildThemeOptions = (
 ): ThemeOption[] =>
   (Object.entries(THEMES) as [Theme, (typeof THEMES)[Theme]][]).map(([key, theme]) => {
     const shikiTheme = resolveShikiThemeName(theme);
-    const mappedBackground = THEME_BACKGROUND_MAP[key];
+    const { background } = theme.defaults;
     const codeBackground = highlighter ? getThemeBackground(highlighter, shikiTheme) : "#0b0b0b";
     const foreground = highlighter ? getThemeForeground(highlighter, shikiTheme) : "#ededed";
-    const background = computeThemePreviewBackground(
-      mappedBackground,
-      theme.defaults?.background,
-      codeBackground,
-    );
 
     let colors = ["#ffffff40", "#ffffff40", "#ffffff40"];
     if (highlighter) {
       const tokenColors = highlighter
-        .codeToTokens(SWATCH_SAMPLE, { lang: "javascript", theme: shikiTheme })
+        .codeToTokens(SWATCH_SAMPLE, {
+          lang: "javascript",
+          theme: shikiTheme,
+        })
         .tokens.flat()
         .map((token) => token.color?.toLowerCase())
         .filter((color): color is string => Boolean(color) && color !== foreground.toLowerCase());
@@ -75,14 +73,10 @@ const buildThemeOptions = (
     return {
       key,
       label: theme.label,
-      cardBackground:
-        mappedBackground ??
-        (highlighter ? codeBackground : (theme.defaults?.background ?? "#0b0b0b")),
-      foreground,
       background,
       codeBackground,
       colors,
-      defaults: theme.defaults ?? {},
+      defaults: theme.defaults,
       previewSettings: {
         theme: key,
         language,
@@ -142,14 +136,15 @@ const ThemePreviewList = React.memo<ThemePreviewListProps>(
             onClick={() => onSelect(option)}
             aria-pressed={isActive}
             className={cn(
-              "w-full shrink-0 cursor-pointer overflow-hidden rounded-xl border text-left transition",
+              "w-full shrink-0 cursor-pointer overflow-hidden rounded-xl border bg-white/5 text-left text-slate-100 transition",
               isActive
                 ? "border-emerald-400/60 ring-2 ring-emerald-400/20"
                 : "border-white/10 hover:border-white/30",
             )}
-            style={{ background: option.cardBackground, color: option.foreground }}
           >
             <div className="px-3 pt-3 text-sm font-medium">{option.label}</div>
+            {/* The preview carries the theme's canvas; the label stays on the
+                panel so it reads the same on light and dark canvases. */}
             <div className="pointer-events-none mt-3 overflow-hidden">
               <CodeEditor
                 code={PREVIEW_CODE}
@@ -189,7 +184,7 @@ const ThemePicker: React.FC<ThemePickerProps> = ({
 
   const selectTheme = useCallback(
     (option: ThemeOption) => {
-      onSettingsChange(getThemeSettings(option.key, option.background));
+      onSettingsChange(getThemeSettings(option.key));
     },
     [onSettingsChange],
   );

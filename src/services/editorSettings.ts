@@ -1,4 +1,4 @@
-import { DEFAULT_EDITOR_SETTINGS, getThemeSettings } from "../constants";
+import { DEFAULT_EDITOR_SETTINGS, getThemeSettings, isTheme } from "../constants";
 import type { EditorSettings, Theme } from "../types";
 
 // The editor's settings, persisted between visits. They seed the editor on
@@ -8,7 +8,9 @@ const STORAGE_KEY = "codesnap-settings";
 
 export const readStoredSettings = (): Partial<EditorSettings> => {
   try {
-    return JSON.parse(window.localStorage.getItem(STORAGE_KEY) ?? "{}");
+    const { theme, ...rest } = JSON.parse(window.localStorage.getItem(STORAGE_KEY) ?? "{}");
+    // A theme that has since been removed would leave nothing to render with.
+    return isTheme(theme) ? { theme, ...rest } : rest;
   } catch {
     return {};
   }
@@ -30,5 +32,5 @@ export const writeStoredSettings = (settings: EditorSettings) => {
  */
 export const storeTheme = (theme: Theme) => {
   const stored = { ...DEFAULT_EDITOR_SETTINGS, ...readStoredSettings() };
-  writeStoredSettings({ ...stored, ...getThemeSettings(theme, stored.background) });
+  writeStoredSettings({ ...stored, ...getThemeSettings(theme) });
 };

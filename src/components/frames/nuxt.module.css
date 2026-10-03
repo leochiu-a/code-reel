@@ -1,0 +1,113 @@
+.nuxtFrame {
+  position: relative;
+  background: #0b0c11;
+}
+
+.nuxtStars {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  background: url("./stars.svg") center / cover no-repeat;
+  opacity: 0.15;
+  pointer-events: none;
+}
+
+.nuxtWindow {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  overflow: visible;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  background-color: #0b0c11;
+  --radius: 10px;
+}
+
+/* Green glows off the top-left and bottom-right corners. */
+.nuxtWindow::before,
+.nuxtWindow::after {
+  position: absolute;
+  width: 250px;
+  height: 180px;
+  background: radial-gradient(ellipse, rgba(0, 220, 130, 0.6), transparent 70%);
+  content: "";
+  filter: blur(60px);
+  pointer-events: none;
+}
+
+.nuxtWindow::before {
+  top: -200px;
+  left: -200px;
+}
+
+.nuxtWindow::after {
+  right: -200px;
+  bottom: -200px;
+}
+
+.nuxtWindow [data-frameborder] {
+  position: absolute;
+  border-radius: var(--radius);
+  pointer-events: none;
+}
+
+.nuxtWindow [data-frameborder]::before {
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    #00dc82 0%,
+    #00dc82 8%,
+    transparent 20%,
+    transparent 80%,
+    #00dc82 92%,
+    #00dc82 100%
+  );
+  content: "";
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+}
+
+.nuxtWindow [data-frameborder]:nth-of-type(1) {
+  inset: -1px;
+}
+
+.nuxtWindow [data-frameborder]:nth-of-type(2) {
+  border-radius: calc(var(--radius) + 8px);
+  inset: -8px;
+}
+
+.nuxtWindow [data-frameborder]:nth-of-type(2)::before {
+  background: linear-gradient(
+    135deg,
+    #00dc82 0%,
+    #00dc82 10%,
+    transparent 26%,
+    transparent 74%,
+    #00dc82 90%,
+    #00dc82 100%
+  );
+  opacity: 0.5;
+}
+
+.nuxtWindow [data-frameborder]:nth-of-type(3) {
+  border-radius: calc(var(--radius) + 15px);
+  inset: -14px;
+}
+
+.nuxtWindow [data-frameborder]:nth-of-type(3)::before {
+  background: linear-gradient(
+    135deg,
+    #00dc82 0%,
+    #00dc82 12%,
+    transparent 28%,
+    transparent 72%,
+    #00dc82 88%,
+    #00dc82 100%
+  );
+  opacity: 0.25;
+}

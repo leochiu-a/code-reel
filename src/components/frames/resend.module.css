@@ -1,0 +1,42 @@
+.resendFrame {
+  --resend-border: hsla(0, 0%, 24%, 0.13);
+  --resend-radius: 8px;
+  background: #000000;
+}
+
+.resendPattern {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: url("./resend/pattern-dark.png") center / cover;
+  pointer-events: none;
+}
+
+/* ray.so blurs the pattern behind the window; backdrop-filter does not export. */
+.resendWindow {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  border: 0.5px solid var(--resend-border);
+  border-radius: var(--resend-radius);
+  background: hsla(0, 0%, 0%, 0.88);
+}
+
+.resendHeader {
+  display: flex;
+  height: 40px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--resend-border);
+  background: hsla(0, 0%, 0%, 0.9);
+  border-top-left-radius: calc(var(--resend-radius) - 0.5px);
+  border-top-right-radius: calc(var(--resend-radius) - 0.5px);
+  gap: 12px;
+}
+
+.resendFileName {
+  color: hsl(0, 0%, 98%);
+  font-size: 14px;
+  line-height: 40px;
+}

@@ -1,0 +1,62 @@
+.geminiFrame {
+  position: relative;
+  overflow: hidden;
+  background: #0e1016;
+}
+
+.geminiStars {
+  position: absolute;
+  inset: 0;
+  background-image: url("./stars.svg");
+  background-position: center;
+  background-size: cover;
+  opacity: 0.8;
+  pointer-events: none;
+}
+
+.geminiWindow {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  overflow: hidden;
+  width: 100%;
+  min-height: 100px;
+  flex-direction: column;
+  align-items: stretch;
+  border-radius: 26px;
+  background: #16181d;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+}
+
+.geminiHeader {
+  display: flex;
+  overflow: hidden;
+  height: 40px;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.geminiFileName {
+  position: relative;
+  height: 40px;
+  margin: 0 16px;
+  color: #5c9ec7;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  line-height: 40px;
+  white-space: nowrap;
+}
+
+/* The active-tab underline */
+.geminiFileName::before {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: currentColor;
+  border-top-left-radius: 2px;
+  border-top-right-radius: 2px;
+  content: "";
+}
