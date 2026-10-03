@@ -15,6 +15,7 @@ import {
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { DeleteIcon } from "@/components/ui/delete";
 import { PlayIcon } from "@/components/ui/play";
+import { RotateCCWIcon } from "@/components/ui/rotate-ccw";
 
 type IconHandle = { startAnimation: () => void; stopAnimation: () => void };
 
@@ -180,6 +181,7 @@ const SnippetControls: React.FC<SnippetControlsProps> = ({
   isPlaying,
   isPlayDisabled,
 }) => {
+  const [resetIconRef, startResetIcon, stopResetIcon] = useIconHover();
   const [playIconRef, startPlayIcon, stopPlayIcon] = useIconHover();
 
   return (
@@ -227,7 +229,12 @@ const SnippetControls: React.FC<SnippetControlsProps> = ({
               <Tooltip>
                 <TooltipTrigger asChild>
                   <PopoverTrigger asChild>
-                    <button className="flex h-8 cursor-pointer items-center gap-1.5 rounded-full border border-white/10 bg-[#222] px-3 text-xs font-medium text-slate-300 transition-colors hover:bg-white/10 hover:text-white">
+                    <button
+                      onMouseEnter={startResetIcon}
+                      onMouseLeave={stopResetIcon}
+                      className="flex h-8 cursor-pointer items-center gap-1.5 rounded-full border border-white/10 bg-[#222] px-3 text-xs font-medium text-slate-300 transition-colors hover:bg-white/10 hover:text-white"
+                    >
+                      <RotateCCWIcon ref={resetIconRef} size={12} />
                       Reset
                     </button>
                   </PopoverTrigger>
