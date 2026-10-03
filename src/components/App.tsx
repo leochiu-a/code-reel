@@ -191,10 +191,12 @@ const App: React.FC = () => {
         {/* Main Preview Area */}
         <main
           ref={mainRef}
-          className="flex flex-1 items-center justify-center overflow-y-auto bg-[#212121] px-3"
+          className="flex flex-1 items-center-safe justify-center-safe overflow-y-auto bg-[#212121] px-3"
         >
-          <div className="relative flex min-h-full w-full flex-col items-center justify-center gap-6 rounded-t-2xl border border-white/10 bg-[#181818] p-8 duration-700 lg:p-12">
-            <div id="onboarding-highlight-area" className="flex flex-col gap-6">
+          <div className="relative flex min-h-full w-full flex-col items-center-safe justify-center-safe gap-6 rounded-t-2xl border border-white/10 bg-[#181818] p-8 duration-700 lg:p-12">
+            {/* Capped at the available width so a frame widened on a larger screen
+                shrinks to fit instead of spilling past the preview area. */}
+            <div id="onboarding-highlight-area" className="flex max-w-full flex-col gap-6">
               <CodeEditor
                 code={shouldShowPreview ? previewSnippet.code : activeSnippet.code}
                 onCodeChange={handleSnippetChange}
