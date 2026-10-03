@@ -2,7 +2,7 @@
   "language": "react",
   "theme": "vercel",
   "hold": 1.5,
-  "padding": 32,
+  "padding": 64,
   "steps": [
     {
       "code": "function Profile({ userId }) {\n  const [user, setUser] = useState(null);\n  const [loading, setLoading] = useState(true);\n\n  useEffect(() => {\n    setLoading(true);\n    fetchUser(userId).then((data) => {\n      setUser(data);\n      setLoading(false);\n    });\n  }, [userId]);\n\n  if (loading) return <Spinner />;\n  return <h1>{user.name}</h1>;\n}",
